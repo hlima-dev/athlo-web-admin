@@ -4,20 +4,20 @@ function getNotificationColor(type: string) {
   switch (type) {
     case "SUCCESS":
     case "DONATION_RECEIVED":
-      return "border-green-500/20 bg-green-500/10 text-green-400";
+      return "border-green-200 bg-green-50 text-green-600";
 
     case "WARNING":
     case "EVENT_REMINDER":
-      return "border-yellow-500/20 bg-yellow-500/10 text-yellow-400";
+      return "border-yellow-200 bg-yellow-50 text-yellow-600";
 
     case "ERROR":
-      return "border-red-500/20 bg-red-500/10 text-red-400";
+      return "border-red-200 bg-red-50 text-red-600";
 
     case "ACHIEVEMENT_UNLOCKED":
-      return "border-purple-500/20 bg-purple-500/10 text-purple-400";
+      return "border-purple-200 bg-purple-50 text-purple-600";
 
     default:
-      return "border-cyan-500/20 bg-cyan-500/10 text-cyan-400";
+      return "border-cyan-200 bg-cyan-50 text-cyan-600";
   }
 }
 
@@ -38,51 +38,58 @@ function formatType(type: string) {
 }
 
 export function Notifications() {
-  const { data: notifications = [], isLoading } = useNotifications();
+  const {
+    data: notifications = [],
+    isLoading,
+  } = useNotifications();
 
   return (
-    <div className="fade-in">
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
+    <div className="space-y-8">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
         <div>
-          <h1 className="text-4xl font-black">Notificações</h1>
+          <h1 className="text-5xl font-black text-[#071B3A]">
+            Notificações
+          </h1>
 
-          <p className="text-white/60 mt-2">
-            Atualizações reais da plataforma ATHLO e atividades recentes da ASDA.
+          <p className="text-slate-500 mt-3 text-lg max-w-3xl">
+            Atualizações da plataforma ATHLO
+            e atividades recentes da ASDA.
           </p>
         </div>
 
-        <button className="bg-cyan-400 hover:bg-cyan-300 transition text-[#07111f] font-bold px-6 py-4 rounded-2xl">
+        <button className="bg-cyan-600 hover:bg-cyan-500 transition text-white font-black px-6 py-4 rounded-2xl shadow-lg shadow-cyan-600/20">
           Marcar todas como lidas
         </button>
       </div>
 
       {isLoading && (
-        <div className="glass-card rounded-3xl p-8 text-white/60">
+        <div className="bg-white rounded-3xl border border-slate-200 p-8 text-slate-500 shadow-sm">
           Carregando notificações...
         </div>
       )}
 
-      {!isLoading && notifications.length === 0 && (
-        <div className="glass-card rounded-3xl p-8 text-white/60">
-          Nenhuma notificação encontrada.
-        </div>
-      )}
+      {!isLoading &&
+        notifications.length === 0 && (
+          <div className="bg-white rounded-3xl border border-slate-200 p-8 text-slate-500 shadow-sm">
+            Nenhuma notificação encontrada.
+          </div>
+        )}
 
       <div className="space-y-5">
         {notifications.map((notification) => (
           <div
             key={notification.id}
-            className={`rounded-3xl border p-6 transition hover:scale-[1.01] ${getNotificationColor(
+            className={`rounded-3xl border p-6 transition hover:shadow-md ${getNotificationColor(
               notification.type
             )}`}
           >
-            <div className="flex items-start justify-between gap-5">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-5">
               <div>
-                <span className="text-xs opacity-70">
+                <span className="text-xs font-bold opacity-70 uppercase">
                   {formatType(notification.type)}
                 </span>
 
-                <h2 className="text-2xl font-bold mt-2">
+                <h2 className="text-2xl font-black mt-2">
                   {notification.title}
                 </h2>
 
@@ -92,7 +99,9 @@ export function Notifications() {
               </div>
 
               <span className="text-sm opacity-70 whitespace-nowrap">
-                {new Date(notification.createdAt).toLocaleString("pt-BR")}
+                {new Date(
+                  notification.createdAt
+                ).toLocaleString("pt-BR")}
               </span>
             </div>
           </div>

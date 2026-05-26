@@ -1,32 +1,34 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { api } from "../services/api";
 
 export function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function handleLogin(
-    e: React.FormEvent
-  ) {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const from = location.state?.from?.pathname || "/dashboard";
+
+  async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
 
-    try {
-      const response = await api.post(
-        "/auth/login",
-        {
-          email,
-          password,
-        }
-      );
+    if (!email || !password) {
+      alert("Preencha e-mail e senha.");
+      return;
+    }
 
-      console.log(
-        "RESPOSTA LOGIN:",
-        response.data
-      );
+    try {
+      setIsLoading(true);
+
+      const response = await api.post("/auth/login", {
+        email,
+        password,
+      });
 
       const token =
         response.data.accessToken ||
@@ -36,47 +38,29 @@ export function Login() {
         response.data.data?.tokens?.accessToken ||
         response.data.tokens?.accessToken;
 
-      console.log("TOKEN:", token);
-
       if (!token) {
-        alert("Token não encontrado");
+        alert("Token não encontrado na resposta do servidor.");
         return;
       }
 
-      localStorage.setItem(
-        "@athlo:token",
-        token
-      );
+      localStorage.setItem("@athlo:token", token);
 
-      console.log(
-        "TOKEN SALVO:",
-        localStorage.getItem("@athlo:token")
-      );
-
-      alert("Login realizado!");
-
-      navigate("/dashboard");
-
+      navigate(from, { replace: true });
     } catch (error: any) {
-      console.log(
-        "ERRO LOGIN:",
-        error
-      );
-
-      alert(
-        error.response?.data?.message ||
-          "Erro no login"
-      );
+      alert(error.response?.data?.message || "Erro ao realizar login.");
+    } finally {
+      setIsLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen bg-[#070B17] flex items-center justify-center p-6">
-
+    <div className="min-h-screen bg-[#070B17] flex items-center justify-center p-6 relative overflow-hidden">
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10" />
 
-      <div className="relative w-full max-w-md bg-[#111827]/90 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 shadow-2xl">
+      <div className="absolute w-[420px] h-[420px] bg-cyan-500/10 rounded-full blur-3xl -top-32 -left-32" />
+      <div className="absolute w-[420px] h-[420px] bg-purple-500/10 rounded-full blur-3xl -bottom-32 -right-32" />
 
+      <div className="relative w-full max-w-md bg-[#111827]/90 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 shadow-2xl">
         <div className="mb-10">
           <h1 className="text-5xl font-black text-cyan-400 mb-3">
             ATHLO
@@ -88,50 +72,40 @@ export function Login() {
           </p>
         </div>
 
-        <form
-          onSubmit={handleLogin}
-          className="space-y-5"
-        >
-
+        <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block mb-2 text-white/70">
-              E-mail
-            </label>
+            <label className="block mb-2 text-white/70">E-mail</label>
 
             <input
               type="email"
               value={email}
-              onChange={(e) =>
-                setEmail(e.target.value)
-              }
-              className="w-full bg-[#0B1020] border border-white/10 rounded-2xl p-4 outline-none focus:border-cyan-400 transition"
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-[#0B1020] text-white border border-white/10 rounded-2xl p-4 outline-none focus:border-cyan-400 transition"
               placeholder="Digite seu e-mail"
+              autoComplete="email"
             />
           </div>
 
           <div>
-            <label className="block mb-2 text-white/70">
-              Senha
-            </label>
+            <label className="block mb-2 text-white/70">Senha</label>
 
             <input
               type="password"
               value={password}
-              onChange={(e) =>
-                setPassword(e.target.value)
-              }
-              className="w-full bg-[#0B1020] border border-white/10 rounded-2xl p-4 outline-none focus:border-cyan-400 transition"
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-[#0B1020] text-white border border-white/10 rounded-2xl p-4 outline-none focus:border-cyan-400 transition"
               placeholder="Digite sua senha"
+              autoComplete="current-password"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-cyan-400 hover:bg-cyan-300 transition text-[#07111f] font-black py-4 rounded-2xl mt-4"
+            disabled={isLoading}
+            className="w-full bg-cyan-400 hover:bg-cyan-300 disabled:opacity-60 disabled:cursor-not-allowed transition text-[#07111f] font-black py-4 rounded-2xl mt-4"
           >
-            Entrar na plataforma
+            {isLoading ? "Entrando..." : "Entrar na plataforma"}
           </button>
-
         </form>
 
         <div className="mt-8 pt-6 border-t border-white/5">
@@ -139,7 +113,6 @@ export function Login() {
             © 2026 ATHLO • ASDA Sorocaba
           </p>
         </div>
-
       </div>
     </div>
   );

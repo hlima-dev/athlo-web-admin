@@ -1,4 +1,14 @@
-import { Heart, Eye, ArrowRight, Users, Calendar, ShieldCheck, HandHeart, Medal, Cpu } from "lucide-react";
+import {
+  Heart,
+  Eye,
+  ArrowRight,
+  Users,
+  Calendar,
+  ShieldCheck,
+  HandHeart,
+  Medal,
+  Cpu,
+} from "lucide-react";
 
 const stats = [
   {
@@ -70,27 +80,27 @@ const benefits = [
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#F5FAFF] text-[#081B3A]">
+    <div className="min-h-screen bg-[#F5FAFF] text-[#081B3A] overflow-x-hidden">
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <img
               src="/asda/logoasda.jpeg"
-              className="w-16 h-16 rounded-full object-cover"
+              className="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
             />
 
             <div>
-              <h1 className="text-4xl font-black text-cyan-600 leading-none">
+              <h1 className="text-2xl sm:text-4xl font-black text-cyan-600 leading-none">
                 ATHLO
               </h1>
 
-              <p className="text-slate-500 font-medium">
+              <p className="text-slate-500 font-medium text-xs sm:text-base">
                 Plataforma oficial ASDA
               </p>
             </div>
           </div>
 
-          <nav className="hidden md:flex items-center gap-10 text-[#081B3A] font-semibold">
+          <nav className="hidden lg:flex items-center gap-10 text-[#081B3A] font-semibold">
             <a href="#impacto" className="hover:text-cyan-600 transition">
               Impacto
             </a>
@@ -114,7 +124,7 @@ export function LandingPage() {
 
           <a
             href="/login"
-            className="bg-cyan-600 hover:bg-cyan-500 text-white font-black px-8 py-4 rounded-2xl shadow-lg shadow-cyan-600/20 transition"
+            className="bg-cyan-600 hover:bg-cyan-500 text-white font-black px-5 sm:px-8 py-3 sm:py-4 rounded-2xl shadow-lg shadow-cyan-600/20 transition text-sm sm:text-base"
           >
             Entrar
           </a>
@@ -126,29 +136,29 @@ export function LandingPage() {
 
         <div className="absolute right-0 top-0 w-[60%] h-full bg-[radial-gradient(circle_at_center,rgba(6,182,212,0.18),transparent_55%)]" />
 
-        <div className="relative max-w-7xl mx-auto px-6 py-20 grid grid-cols-1 xl:grid-cols-2 gap-16 items-center">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 grid grid-cols-1 xl:grid-cols-2 gap-12 xl:gap-16 items-center">
           <div>
-            <span className="inline-flex border border-cyan-500 text-cyan-600 rounded-full px-5 py-2 text-sm font-black uppercase">
+            <span className="inline-flex border border-cyan-500 text-cyan-600 rounded-full px-4 py-2 text-xs sm:text-sm font-black uppercase">
               Associação Sorocabana Paradesporto de Amputados
             </span>
 
-            <h1 className="text-6xl xl:text-7xl font-black leading-[1.03] mt-8 text-[#071B3A]">
+            <h1 className="text-4xl sm:text-5xl xl:text-7xl font-black leading-tight mt-8 text-[#071B3A]">
               Transformando vidas através do{" "}
               <span className="text-cyan-600 italic font-black">
                 esporte adaptado
               </span>
             </h1>
 
-            <p className="text-slate-600 text-xl leading-relaxed mt-8 max-w-2xl">
+            <p className="text-slate-600 text-base sm:text-xl leading-relaxed mt-6 sm:mt-8 max-w-2xl">
               O ATHLO conecta atletas, voluntários, eventos e apoiadores em uma
               plataforma moderna criada para ampliar o impacto social da ASDA
               Sorocaba.
             </p>
 
-            <div className="flex flex-col md:flex-row gap-5 mt-10">
+            <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 mt-8 sm:mt-10">
               <a
                 href="#doar"
-                className="inline-flex items-center justify-center gap-3 bg-cyan-600 hover:bg-cyan-500 text-white font-black px-8 py-5 rounded-2xl shadow-lg shadow-cyan-600/25 transition"
+                className="inline-flex items-center justify-center gap-3 bg-cyan-600 hover:bg-cyan-500 text-white font-black px-6 sm:px-8 py-4 sm:py-5 rounded-2xl shadow-lg shadow-cyan-600/25 transition"
               >
                 <Heart size={20} />
                 Apoiar projeto
@@ -156,7 +166,7 @@ export function LandingPage() {
 
               <a
                 href="#impacto"
-                className="inline-flex items-center justify-center gap-3 bg-white hover:bg-slate-50 border border-slate-300 text-[#071B3A] font-black px-8 py-5 rounded-2xl transition"
+                className="inline-flex items-center justify-center gap-3 bg-white hover:bg-slate-50 border border-slate-300 text-[#071B3A] font-black px-6 sm:px-8 py-4 sm:py-5 rounded-2xl transition"
               >
                 <Eye size={20} />
                 Ver impacto
@@ -165,8 +175,8 @@ export function LandingPage() {
           </div>
 
           <div className="relative">
-            <div className="rounded-[36px] overflow-hidden bg-white shadow-2xl shadow-cyan-900/10 border border-slate-200">
-              <div className="relative h-[420px]">
+            <div className="rounded-[28px] sm:rounded-[36px] overflow-hidden bg-white shadow-2xl shadow-cyan-900/10 border border-slate-200">
+              <div className="relative h-[260px] sm:h-[420px]">
                 <img
                   src="/asda/timevolei.jpeg"
                   className="absolute inset-0 w-full h-full object-cover"
@@ -175,40 +185,40 @@ export function LandingPage() {
                 <div className="absolute inset-0 bg-gradient-to-r from-white/70 via-white/20 to-transparent" />
               </div>
 
-              <div className="bg-cyan-600 p-7 text-white flex items-center gap-5">
+              <div className="bg-cyan-600 p-5 sm:p-7 text-white flex items-center gap-4 sm:gap-5">
                 <img
                   src="/asda/logoasda.jpeg"
-                  className="w-20 h-20 rounded-full object-cover bg-white"
+                  className="w-14 h-14 sm:w-20 sm:h-20 rounded-full object-cover bg-white"
                 />
 
                 <div>
-                  <h2 className="text-3xl font-black">
+                  <h2 className="text-2xl sm:text-3xl font-black">
                     ASDA Sorocaba
                   </h2>
 
-                  <p className="text-white/80">
+                  <p className="text-white/80 text-sm sm:text-base">
                     Associação Sorocabana Paradesporto
                   </p>
                 </div>
               </div>
 
-              <div className="p-7 grid grid-cols-2 gap-5 bg-white">
+              <div className="p-4 sm:p-7 grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5 bg-white">
                 {stats.map((stat) => {
                   const Icon = stat.icon;
 
                   return (
                     <div
                       key={stat.label}
-                      className="rounded-3xl border border-slate-200 p-5 bg-white shadow-sm"
+                      className="rounded-3xl border border-slate-200 p-4 sm:p-5 bg-white shadow-sm"
                     >
-                      <p className="text-slate-500 font-semibold">
+                      <p className="text-slate-500 font-semibold text-sm sm:text-base">
                         {stat.label}
                       </p>
 
                       <div className="flex items-center gap-3 mt-4">
-                        <Icon className={stat.color} size={26} />
+                        <Icon className={stat.color} size={24} />
 
-                        <h3 className={`text-4xl font-black ${stat.color}`}>
+                        <h3 className={`text-2xl sm:text-4xl font-black ${stat.color}`}>
                           {stat.value}
                         </h3>
                       </div>
@@ -221,12 +231,12 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section id="eventos" className="max-w-7xl mx-auto px-6 py-10">
+      <section id="eventos" className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
           {cards.map((card) => (
             <div
               key={card.title}
-              className="relative overflow-hidden rounded-3xl min-h-[300px] shadow-xl group"
+              className="relative overflow-hidden rounded-3xl min-h-[240px] sm:min-h-[300px] shadow-xl group"
             >
               <img
                 src={card.image}
@@ -235,12 +245,12 @@ export function LandingPage() {
 
               <div className="absolute inset-0 bg-gradient-to-t from-[#071B3A]/90 via-[#071B3A]/35 to-transparent" />
 
-              <div className="absolute bottom-0 p-7 text-white">
-                <h2 className="text-3xl font-black mb-3">
+              <div className="absolute bottom-0 p-5 sm:p-7 text-white">
+                <h2 className="text-2xl sm:text-3xl font-black mb-3">
                   {card.title}
                 </h2>
 
-                <p className="text-white/85 leading-relaxed">
+                <p className="text-white/85 leading-relaxed text-sm sm:text-base">
                   {card.text}
                 </p>
 
@@ -252,19 +262,19 @@ export function LandingPage() {
             </div>
           ))}
 
-          <div className="rounded-3xl bg-cyan-700 p-7 text-white shadow-xl min-h-[300px] flex flex-col justify-between">
+          <div className="rounded-3xl bg-cyan-700 p-6 sm:p-7 text-white shadow-xl min-h-[240px] sm:min-h-[300px] flex flex-col justify-between">
             <div>
-              <h2 className="text-3xl font-black mb-4">
+              <h2 className="text-2xl sm:text-3xl font-black mb-4">
                 Impacto que transforma
               </h2>
 
-              <p className="text-white/85 leading-relaxed">
+              <p className="text-white/85 leading-relaxed text-sm sm:text-base">
                 Cada ação gera inclusão, autonomia e novas oportunidades através
                 do esporte.
               </p>
             </div>
 
-            <button className="inline-flex items-center gap-3 bg-cyan-500 hover:bg-cyan-400 text-white font-black px-5 py-3 rounded-2xl w-fit">
+            <button className="inline-flex items-center gap-3 bg-cyan-500 hover:bg-cyan-400 text-white font-black px-5 py-3 rounded-2xl w-fit mt-6">
               Conheça nosso impacto
               <ArrowRight size={18} />
             </button>
@@ -272,23 +282,23 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section id="impacto" className="max-w-7xl mx-auto px-6 py-10">
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
+      <section id="impacto" className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
+        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8">
           {benefits.map((benefit) => {
             const Icon = benefit.icon;
 
             return (
               <div key={benefit.title} className="flex gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-cyan-50 flex items-center justify-center text-cyan-600">
+                <div className="w-14 h-14 rounded-2xl bg-cyan-50 flex items-center justify-center text-cyan-600 shrink-0">
                   <Icon size={30} />
                 </div>
 
                 <div>
-                  <h3 className="text-xl font-black text-[#071B3A]">
+                  <h3 className="text-lg sm:text-xl font-black text-[#071B3A]">
                     {benefit.title}
                   </h3>
 
-                  <p className="text-slate-500 mt-2 leading-relaxed">
+                  <p className="text-slate-500 mt-2 leading-relaxed text-sm sm:text-base">
                     {benefit.text}
                   </p>
                 </div>
@@ -298,13 +308,13 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section id="missao" className="max-w-7xl mx-auto px-6 py-16">
-        <div className="rounded-[36px] bg-gradient-to-r from-cyan-600 to-blue-700 p-12 text-white shadow-xl">
-          <h2 className="text-5xl font-black max-w-4xl">
+      <section id="missao" className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+        <div className="rounded-[28px] sm:rounded-[36px] bg-gradient-to-r from-cyan-600 to-blue-700 p-6 sm:p-12 text-white shadow-xl">
+          <h2 className="text-3xl sm:text-5xl font-black max-w-4xl leading-tight">
             Mais que um sistema. Uma plataforma de transformação social.
           </h2>
 
-          <p className="text-white/85 text-xl mt-6 max-w-4xl leading-relaxed">
+          <p className="text-white/85 text-base sm:text-xl mt-6 max-w-4xl leading-relaxed">
             O ATHLO nasceu para unir tecnologia, inclusão e gestão inteligente,
             dando à ASDA uma estrutura moderna para organizar atletas, eventos,
             doações e impacto social.
@@ -312,50 +322,53 @@ export function LandingPage() {
         </div>
       </section>
 
-      <section id="doar" className="max-w-7xl mx-auto px-6 py-16">
-        <div className="bg-white rounded-[36px] border border-slate-200 shadow-xl p-12 text-center">
-          <span className="inline-flex px-5 py-2 rounded-full border border-cyan-500 text-cyan-600 font-black text-sm">
+      <section id="doar" className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+        <div className="bg-white rounded-[28px] sm:rounded-[36px] border border-slate-200 shadow-xl p-6 sm:p-12 text-center">
+          <span className="inline-flex px-5 py-2 rounded-full border border-cyan-500 text-cyan-600 font-black text-xs sm:text-sm">
             Próximo passo: PIX integrado
           </span>
 
-          <h2 className="text-5xl font-black mt-8 text-[#071B3A]">
+          <h2 className="text-3xl sm:text-5xl font-black mt-8 text-[#071B3A] leading-tight">
             Ajude a ampliar esse impacto
           </h2>
 
-          <p className="text-slate-600 text-xl max-w-3xl mx-auto mt-5 leading-relaxed">
+          <p className="text-slate-600 text-base sm:text-xl max-w-3xl mx-auto mt-5 leading-relaxed">
             Sua contribuição ajuda a financiar treinamentos, eventos, viagens,
             equipamentos e inclusão esportiva.
           </p>
 
-          <div className="flex flex-col md:flex-row justify-center gap-5 mt-10">
+          <div className="flex flex-col sm:flex-row justify-center gap-5 mt-10">
             <a
               href="/login"
-              className="bg-cyan-600 hover:bg-cyan-500 text-white font-black px-10 py-5 rounded-2xl"
+              className="bg-cyan-600 hover:bg-cyan-500 text-white font-black px-8 sm:px-10 py-4 sm:py-5 rounded-2xl"
             >
               Entrar na plataforma
             </a>
 
-            <button className="border border-slate-300 hover:bg-slate-50 text-[#071B3A] font-black px-10 py-5 rounded-2xl">
+            <button className="border border-slate-300 hover:bg-slate-50 text-[#071B3A] font-black px-8 sm:px-10 py-4 sm:py-5 rounded-2xl">
               Doar via PIX em breve
             </button>
           </div>
         </div>
       </section>
 
-      <footer id="contato" className="bg-white border-t border-slate-200 py-10 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5">
+      <footer
+        id="contato"
+        className="bg-white border-t border-slate-200 py-10 px-4 sm:px-6"
+      >
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-5 text-center md:text-left">
           <div className="flex items-center gap-4">
             <img
               src="/asda/logoasda.jpeg"
-              className="w-14 h-14 rounded-full object-cover"
+              className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover"
             />
 
             <div>
-              <h2 className="text-3xl font-black text-cyan-600">
+              <h2 className="text-2xl sm:text-3xl font-black text-cyan-600">
                 ATHLO
               </h2>
 
-              <p className="text-slate-500">
+              <p className="text-slate-500 text-sm sm:text-base">
                 Plataforma oficial ASDA Sorocaba
               </p>
             </div>
