@@ -23,9 +23,10 @@ body {
 
   background-image:
     linear-gradient(
-      rgba(245, 250, 255, 0.90),
-      rgba(245, 250, 255, 0.94)
+      rgba(245, 250, 255, 0.72),
+      rgba(245, 250, 255, 0.78)
     ),
+
     url("/asda/sorocaba-bg.jpg"),
 
     radial-gradient(
