@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import { api } from "../services/api";
+import { LoadingScreen } from "../components/LoadingScreen";
 
 export function Login() {
   const navigate = useNavigate();
@@ -40,17 +41,23 @@ export function Login() {
 
       if (!token) {
         alert("Token não encontrado na resposta do servidor.");
+        setIsLoading(false);
         return;
       }
 
       localStorage.setItem("@athlo:token", token);
 
-      navigate(from, { replace: true });
+      setTimeout(() => {
+        navigate(from, { replace: true });
+      }, 1800);
     } catch (error: any) {
       alert(error.response?.data?.message || "Erro ao realizar login.");
-    } finally {
       setIsLoading(false);
     }
+  }
+
+  if (isLoading) {
+    return <LoadingScreen />;
   }
 
   return (
@@ -74,7 +81,9 @@ export function Login() {
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
-            <label className="block mb-2 text-white/70">E-mail</label>
+            <label className="block mb-2 text-white/70">
+              E-mail
+            </label>
 
             <input
               type="email"
@@ -87,7 +96,9 @@ export function Login() {
           </div>
 
           <div>
-            <label className="block mb-2 text-white/70">Senha</label>
+            <label className="block mb-2 text-white/70">
+              Senha
+            </label>
 
             <input
               type="password"
@@ -104,7 +115,7 @@ export function Login() {
             disabled={isLoading}
             className="w-full bg-cyan-400 hover:bg-cyan-300 disabled:opacity-60 disabled:cursor-not-allowed transition text-[#07111f] font-black py-4 rounded-2xl mt-4"
           >
-            {isLoading ? "Entrando..." : "Entrar na plataforma"}
+            Entrar na plataforma
           </button>
         </form>
 
