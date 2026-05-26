@@ -6,7 +6,6 @@ interface Props {
 
 export function ProtectedRoute({ children }: Props) {
   const token = localStorage.getItem("@athlo:token");
-
   const location = useLocation();
 
   if (!token) {
