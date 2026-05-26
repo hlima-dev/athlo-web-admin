@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 * {
@@ -19,20 +19,34 @@ body,
 }
 
 body {
-  background:
+  background-color: #F5FAFF;
+
+  background-image:
+    linear-gradient(
+      rgba(245, 250, 255, 0.90),
+      rgba(245, 250, 255, 0.94)
+    ),
+    url("/asda/sorocaba-bg.jpg"),
+
     radial-gradient(
       circle at top left,
-      rgba(0, 212, 255, 0.12),
+      rgba(0, 212, 255, 0.08),
       transparent 30%
     ),
+
     radial-gradient(
       circle at bottom right,
-      rgba(168, 85, 247, 0.12),
+      rgba(168, 85, 247, 0.08),
       transparent 30%
-    ),
-    #070B17;
+    );
 
-  color: white;
+  background-size: cover;
+
+  background-position: center;
+
+  background-attachment: fixed;
+
+  color: #07111f;
 
   font-family: Inter, sans-serif;
 
@@ -54,36 +68,36 @@ button:hover {
 }
 
 ::-webkit-scrollbar-track {
-  background: #0B1020;
+  background: rgba(255, 255, 255, 0.4);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #1F2937;
+  background: rgba(15, 23, 42, 0.25);
   border-radius: 999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #374151;
+  background: rgba(15, 23, 42, 0.4);
 }
 
 .glass-card {
-  background: rgba(17, 24, 39, 0.75);
+  background: rgba(255, 255, 255, 0.7);
 
   backdrop-filter: blur(16px);
 
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
 .glow-cyan {
   box-shadow:
-    0 0 20px rgba(0, 212, 255, 0.2),
-    0 0 40px rgba(0, 212, 255, 0.08);
+    0 0 20px rgba(0, 212, 255, 0.15),
+    0 0 40px rgba(0, 212, 255, 0.06);
 }
 
 .glow-purple {
   box-shadow:
-    0 0 20px rgba(168, 85, 247, 0.2),
-    0 0 40px rgba(168, 85, 247, 0.08);
+    0 0 20px rgba(168, 85, 247, 0.15),
+    0 0 40px rgba(168, 85, 247, 0.06);
 }
 
 .fade-in {
