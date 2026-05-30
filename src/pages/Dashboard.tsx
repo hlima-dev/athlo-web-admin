@@ -1,249 +1,255 @@
-import { motion } from "framer-motion";
 import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import {
-  Users,
-  Calendar,
-  Heart,
-  UserRound,
+  BarChart3,
+  CalendarDays,
+  HeartHandshake,
+  HandHeart,
   TrendingUp,
-  Trophy,
-  ChevronDown,
+  Users,
+  Activity,
+  ArrowUpRight,
 } from "lucide-react";
 
-import { useDashboard } from "../hooks/useDashboard";
+import {
+  Area,
+  AreaChart,
+  Bar,
+  BarChart,
+  CartesianGrid,
+  Cell,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+} from "recharts";
+
+const stats = [
+  { title: "Atletas ativos", value: "127", change: "+12%", icon: Users },
+  { title: "Doações", value: "R$ 8,4 mil", change: "+24%", icon: HeartHandshake },
+  { title: "Voluntários", value: "32", change: "+8%", icon: HandHeart },
+  { title: "Eventos", value: "24", change: "+5%", icon: CalendarDays },
+];
+
+const donationData = [
+  { month: "Jan", valor: 1200 },
+  { month: "Fev", valor: 1800 },
+  { month: "Mar", valor: 2400 },
+  { month: "Abr", valor: 3100 },
+  { month: "Mai", valor: 4200 },
+  { month: "Jun", valor: 8400 },
+];
+
+const eventsData = [
+  { name: "Treinos", value: 12 },
+  { name: "Campanhas", value: 6 },
+  { name: "Campeonatos", value: 4 },
+  { name: "Palestras", value: 2 },
+];
+
+const impactData = [
+  { name: "Atletas", value: 127 },
+  { name: "Voluntários", value: 32 },
+  { name: "Eventos", value: 24 },
+];
+
+const activities = [
+  {
+    title: "Nova doação registrada",
+    description: "Campanha de apoio aos atletas recebeu nova contribuição.",
+    time: "há 12 min",
+  },
+  {
+    title: "Atleta cadastrado",
+    description: "Novo atleta adicionado ao acompanhamento da ASDA.",
+    time: "há 38 min",
+  },
+  {
+    title: "Evento atualizado",
+    description: "Treino coletivo teve informações revisadas.",
+    time: "há 1h",
+  },
+];
 
 export function Dashboard() {
-  const { data, isLoading } = useDashboard();
-
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center h-[70vh]">
-        <div className="bg-white border border-slate-200 rounded-3xl p-10 w-[400px] shadow-xl">
-          <div className="h-3 bg-cyan-50 rounded-full overflow-hidden">
-            <div className="h-full w-32 bg-cyan-500 animate-pulse rounded-full" />
-          </div>
-
-          <p className="text-slate-500 mt-5">Carregando painel...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const cards = [
-    {
-      title: "Atletas ativos",
-      value: data?.athletes || 0,
-      icon: Users,
-      color: "text-cyan-600",
-      bg: "bg-cyan-50",
-      info: "↑ 18% este mês",
-    },
-    {
-      title: "Eventos realizados",
-      value: data?.events || 0,
-      icon: Calendar,
-      color: "text-green-500",
-      bg: "bg-green-50",
-      info: "↑ 6 novos eventos",
-    },
-    {
-      title: "Doações arrecadadas",
-      value: `R$ ${data?.donations || 0}`,
-      icon: Heart,
-      color: "text-yellow-500",
-      bg: "bg-yellow-50",
-      info: "↑ Crescimento de 32%",
-    },
-    {
-      title: "Usuários ativos",
-      value: data?.users || 0,
-      icon: UserRound,
-      color: "text-purple-500",
-      bg: "bg-purple-50",
-      info: "↑ 14% este mês",
-    },
-  ];
-
   return (
-    <div className="relative fade-in text-[#071B3A]">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-cyan-100 rounded-full blur-3xl opacity-20 -z-10" />
-      <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-100 rounded-full blur-3xl opacity-20 -z-10" />
+    <div className="space-y-8">
+      <section className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 md:p-10 shadow-2xl">
+        <div className="relative z-10 max-w-3xl">
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
+            <Activity size={16} />
+            Visão geral da plataforma
+          </span>
 
-      <div className="flex items-center justify-between mb-10">
-        <div>
-          <h1 className="text-5xl font-black">Painel</h1>
+          <h1 className="mt-6 text-3xl font-black leading-tight text-white md:text-5xl">
+            Transformando dados em impacto social real.
+          </h1>
 
-          <p className="text-slate-500 mt-2 text-lg">
-            Plataforma ATHLO • ASDA Sorocaba
+          <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
+            Acompanhe atletas, doações, eventos, voluntários e resultados da
+            ASDA em um painel moderno e estratégico.
           </p>
+
+          <button className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 font-black text-slate-950">
+            Ver relatórios
+            <ArrowUpRight size={20} />
+          </button>
         </div>
+      </section>
 
-        <button className="bg-cyan-600 hover:bg-cyan-500 text-white px-6 py-4 rounded-2xl font-black shadow-lg shadow-cyan-600/20 flex items-center gap-3 transition">
-          <Calendar size={20} />
-          Maio de 2026
-          <ChevronDown size={18} />
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-        {cards.map((card, index) => {
-          const Icon = card.icon;
+      <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+        {stats.map((item) => {
+          const Icon = item.icon;
 
           return (
-            <motion.div
-              key={card.title}
-              initial={{ opacity: 0, y: 25 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
-              whileHover={{ y: -5, scale: 1.02 }}
-              className="relative overflow-hidden bg-white/90 backdrop-blur-xl border border-white/60 rounded-3xl p-6 shadow-[0_10px_40px_rgba(0,0,0,0.08)]"
+            <div
+              key={item.title}
+              className="rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-xl"
             >
-              <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-100 blur-3xl opacity-40 rounded-full" />
-
-              <div className="relative z-10">
-                <p className="text-[#071B3A] font-black">{card.title}</p>
-
-                <div className="flex items-center gap-5 mt-5">
-                  <div
-                    className={`w-20 h-20 rounded-3xl ${card.bg} flex items-center justify-center`}
-                  >
-                    <Icon className={card.color} size={36} />
-                  </div>
-
-                  <h2 className={`text-5xl font-black ${card.color}`}>
-                    {card.value}
-                  </h2>
+              <div className="flex items-center justify-between">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400">
+                  <Icon size={24} />
                 </div>
 
-                <p className="text-green-500 font-bold mt-6">{card.info}</p>
-
-                <div className="mt-4 flex items-center gap-2">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
-
-                  <span className="text-sm font-semibold text-slate-500">
-                    Atualizado em tempo real
-                  </span>
-                </div>
+                <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-sm font-bold text-emerald-400">
+                  <TrendingUp size={14} />
+                  {item.change}
+                </span>
               </div>
-            </motion.div>
+
+              <p className="mt-6 text-sm font-semibold text-slate-400">
+                {item.title}
+              </p>
+
+              <h2 className="mt-2 text-3xl font-black text-white">
+                {item.value}
+              </h2>
+            </div>
           );
         })}
-      </div>
+      </section>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="xl:col-span-2 bg-white/90 backdrop-blur-xl border border-white/60 rounded-3xl p-7 shadow-[0_10px_40px_rgba(0,0,0,0.08)]"
-        >
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-black">Crescimento de doações</h2>
+      <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 xl:col-span-2">
+          <div className="mb-6 flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-black text-white">
+                Crescimento de doações
+              </h2>
+              <p className="text-sm text-slate-400">
+                Arrecadação mensal registrada.
+              </p>
+            </div>
 
-            <button className="border border-slate-200 bg-white px-5 py-3 rounded-2xl font-bold text-slate-600">
-              Últimos 5 meses
-            </button>
+            <BarChart3 className="text-cyan-400" size={28} />
           </div>
 
-          <div className="h-80">
+          <div className="h-80 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={data?.donationData || []}>
-                <XAxis dataKey="month" stroke="#64748B" />
-                <YAxis stroke="#64748B" />
+              <AreaChart data={donationData}>
+                <defs>
+                  <linearGradient id="donationGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
 
-                <Tooltip
-                  contentStyle={{
-                    borderRadius: "18px",
-                    border: "none",
-                    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-                  }}
-                />
-
-                <Line
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                <XAxis dataKey="month" stroke="#94a3b8" />
+                <YAxis stroke="#94a3b8" />
+                <Tooltip />
+                <Area
                   type="monotone"
                   dataKey="valor"
-                  stroke="#06B6D4"
-                  strokeWidth={5}
-                  dot={{
-                    r: 5,
-                    fill: "#06B6D4",
-                  }}
-                  activeDot={{
-                    r: 8,
-                    fill: "#0891B2",
-                  }}
+                  stroke="#06b6d4"
+                  fill="url(#donationGradient)"
+                  strokeWidth={3}
                 />
-              </LineChart>
+              </AreaChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-2xl font-black text-white">
+            Impacto geral
+          </h2>
+
+          <div className="mt-6 h-72 w-full min-w-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={impactData}
+                  dataKey="value"
+                  nameKey="name"
+                  innerRadius={60}
+                  outerRadius={100}
+                  paddingAngle={4}
+                >
+                  <Cell fill="#06b6d4" />
+                  <Cell fill="#22c55e" />
+                  <Cell fill="#a855f7" />
+                </Pie>
+
+                <Tooltip />
+              </PieChart>
             </ResponsiveContainer>
           </div>
 
-          <div className="mt-6 bg-cyan-50 rounded-2xl p-5 flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-cyan-100 flex items-center justify-center text-cyan-600">
-              <TrendingUp size={24} />
-            </div>
-
-            <p className="text-slate-600">
-              Crescimento de <strong className="text-cyan-600">32%</strong> nas
-              doações em relação ao mês anterior.
-            </p>
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-white/90 backdrop-blur-xl border border-white/60 rounded-3xl p-7 shadow-[0_10px_40px_rgba(0,0,0,0.08)]"
-        >
-          <h2 className="text-3xl font-black mb-6">Atividade recente</h2>
-
-          <div className="space-y-5">
-            {[
-              ["Novo atleta cadastrado", "Sistema conectado ao backend", Users],
-              ["Nova doação recebida", "Painel em tempo real", Heart],
-              ["Evento agendado", "Campeonato regional", Calendar],
-            ].map(([title, desc, Icon]: any) => (
+          <div className="space-y-3">
+            {impactData.map((item) => (
               <div
-                key={title}
-                className="border border-slate-200 rounded-3xl p-5 flex items-center gap-4 hover:bg-cyan-50/40 transition"
+                key={item.name}
+                className="flex justify-between rounded-xl bg-slate-800 px-4 py-3"
               >
-                <div className="w-16 h-16 rounded-3xl bg-cyan-50 flex items-center justify-center text-cyan-600">
-                  <Icon size={28} />
-                </div>
-
-                <div>
-                  <p className="font-black text-cyan-600">{title}</p>
-                  <p className="text-slate-500 mt-1">{desc}</p>
-                </div>
+                <span className="text-slate-300">{item.name}</span>
+                <strong>{item.value}</strong>
               </div>
             ))}
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </section>
 
-      <div className="mt-8 bg-cyan-50/80 border border-cyan-100 rounded-3xl p-7 flex items-center justify-between shadow-[0_10px_40px_rgba(0,0,0,0.06)]">
-        <div className="flex items-center gap-5">
-          <div className="w-16 h-16 rounded-3xl bg-cyan-600 text-white flex items-center justify-center shadow-lg shadow-cyan-600/20">
-            <Trophy size={32} />
-          </div>
+      <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
+        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-2xl font-black text-white">
+            Tipos de eventos
+          </h2>
 
-          <div>
-            <h2 className="text-2xl font-black">Juntos somos mais fortes!</h2>
-            <p className="text-slate-500 mt-1">
-              Cada ação faz a diferença na vida de nossos atletas.
-            </p>
+          <div className="mt-6 h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={eventsData}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
+                <XAxis dataKey="name" stroke="#94a3b8" />
+                <YAxis stroke="#94a3b8" />
+                <Tooltip />
+                <Bar dataKey="value" fill="#06b6d4" radius={[12, 12, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
           </div>
         </div>
 
-        <button className="bg-cyan-600 hover:bg-cyan-500 text-white font-black px-6 py-4 rounded-2xl transition shadow-lg shadow-cyan-600/20">
-          Ver impacto completo
-        </button>
-      </div>
+        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-2xl font-black text-white">
+            Atividades recentes
+          </h2>
+
+          <div className="mt-6 space-y-4">
+            {activities.map((activity) => (
+              <div key={activity.title} className="rounded-2xl bg-slate-800 p-4">
+                <div className="mb-2 flex items-start justify-between gap-3">
+                  <h3 className="font-bold text-white">{activity.title}</h3>
+                  <span className="text-xs text-slate-500">{activity.time}</span>
+                </div>
+
+                <p className="text-sm leading-relaxed text-slate-400">
+                  {activity.description}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }

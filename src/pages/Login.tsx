@@ -1,130 +1,115 @@
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
 
-import { api } from "../services/api";
-import { LoadingScreen } from "../components/LoadingScreen";
+const API_URL = import.meta.env.VITE_API_URL;
 
 export function Login() {
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const [isLoading, setIsLoading] = useState(false);
-
-  const from = location.state?.from?.pathname || "/dashboard";
+  const [senha, setSenha] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
 
-    if (!email || !password) {
-      alert("Preencha e-mail e senha.");
-      return;
-    }
-
     try {
-      setIsLoading(true);
+      setLoading(true);
 
-      const response = await api.post("/auth/login", {
-        email,
-        password,
+      const response = await fetch(`${API_URL}/api/v1/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password: senha,
+        }),
       });
 
-      const token =
-        response.data.accessToken ||
-        response.data.token ||
-        response.data.data?.accessToken ||
-        response.data.data?.token ||
-        response.data.data?.tokens?.accessToken ||
-        response.data.tokens?.accessToken;
+      const result = await response.json();
 
-      if (!token) {
-        alert("Token não encontrado na resposta do servidor.");
-        setIsLoading(false);
+      if (!response.ok) {
+        alert(result.message || "E-mail ou senha inválidos.");
         return;
       }
 
-      localStorage.setItem("@athlo:token", token);
+      const authData = result.data;
 
-      setTimeout(() => {
-        navigate(from, { replace: true });
-      }, 1800);
-    } catch (error: any) {
-      alert(error.response?.data?.message || "Erro ao realizar login.");
-      setIsLoading(false);
+      localStorage.setItem("token", authData.accessToken);
+      localStorage.setItem("refreshToken", authData.refreshToken);
+      localStorage.setItem("user", JSON.stringify(authData.user));
+
+      navigate("/dashboard");
+    } catch (error) {
+      alert("Erro ao conectar com o servidor.");
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
 
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
-
   return (
-    <div className="min-h-screen bg-[#070B17] flex items-center justify-center p-6 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-purple-500/10" />
+    <main className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+      <form
+        onSubmit={handleLogin}
+        className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl"
+      >
+        <h1 className="text-3xl font-bold text-white">
+          Bem-vindo ao ATHLO
+        </h1>
 
-      <div className="absolute w-[420px] h-[420px] bg-cyan-500/10 rounded-full blur-3xl -top-32 -left-32" />
-      <div className="absolute w-[420px] h-[420px] bg-purple-500/10 rounded-full blur-3xl -bottom-32 -right-32" />
+        <p className="text-slate-400 mt-2 mb-6">
+          Acesse o painel administrativo da ONG ASDA.
+        </p>
 
-      <div className="relative w-full max-w-md bg-[#111827]/90 backdrop-blur-xl border border-white/10 rounded-[32px] p-8 shadow-2xl">
-        <div className="mb-10">
-          <h1 className="text-5xl font-black text-cyan-400 mb-3">
-            ATHLO
-          </h1>
+        <div className="space-y-4">
+          <input
+            type="email"
+            placeholder="E-mail"
+            className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
 
-          <p className="text-white/50 leading-relaxed">
-            Plataforma oficial da ASDA Sorocaba para gestão de atletas,
-            eventos, voluntários e impacto social.
-          </p>
+          <input
+            type="password"
+            placeholder="Senha"
+            className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
+            value={senha}
+            onChange={(e) => setSenha(e.target.value)}
+            required
+          />
         </div>
 
-        <form onSubmit={handleLogin} className="space-y-5">
-          <div>
-            <label className="block mb-2 text-white/70">
-              E-mail
-            </label>
-
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full bg-[#0B1020] text-white border border-white/10 rounded-2xl p-4 outline-none focus:border-cyan-400 transition"
-              placeholder="Digite seu e-mail"
-              autoComplete="email"
-            />
-          </div>
-
-          <div>
-            <label className="block mb-2 text-white/70">
-              Senha
-            </label>
-
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full bg-[#0B1020] text-white border border-white/10 rounded-2xl p-4 outline-none focus:border-cyan-400 transition"
-              placeholder="Digite sua senha"
-              autoComplete="current-password"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full bg-cyan-400 hover:bg-cyan-300 disabled:opacity-60 disabled:cursor-not-allowed transition text-[#07111f] font-black py-4 rounded-2xl mt-4"
+        <div className="flex justify-end mt-3">
+          <Link
+            to="/forgot-password"
+            className="text-sm text-cyan-400 hover:text-cyan-300"
           >
-            Entrar na plataforma
-          </button>
-        </form>
-
-        <div className="mt-8 pt-6 border-t border-white/5">
-          <p className="text-white/40 text-sm text-center">
-            © 2026 ATHLO • ASDA Sorocaba
-          </p>
+            Esqueci minha senha
+          </Link>
         </div>
-      </div>
-    </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="w-full mt-6 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-60 text-slate-950 font-bold py-3 rounded-xl transition"
+        >
+          {loading ? "Entrando..." : "Entrar"}
+        </button>
+
+        <p className="text-slate-400 text-sm mt-5 text-center">
+          Ainda não tem conta?{" "}
+          <Link
+            to="/cadastro"
+            className="text-cyan-400 font-semibold"
+          >
+            Criar cadastro
+          </Link>
+        </p>
+      </form>
+    </main>
   );
 }

@@ -1,307 +1,180 @@
-import { useState } from "react";
-import { api } from "../services/api";
-import { useDonations } from "../hooks/useDonations";
+import {
+  HeartHandshake,
+  TrendingUp,
+  QrCode,
+  Wallet,
+  Users,
+  CalendarDays,
+  ArrowUpRight,
+  CheckCircle2,
+} from "lucide-react";
 
-function formatMethod(method: string) {
-  const methods: Record<string, string> = {
-    PIX: "PIX",
-    CREDIT_CARD: "Cartão",
-    BANK_TRANSFER: "Transferência",
-    BOLETO: "Boleto",
-    CASH: "Dinheiro",
-    OTHER: "Outro",
-  };
+const campaigns = [
+  {
+    title: "Equipamentos esportivos",
+    goal: 5000,
+    raised: 3650,
+    status: "Em andamento",
+  },
+  {
+    title: "Viagem para campeonato",
+    goal: 8000,
+    raised: 4200,
+    status: "Prioridade",
+  },
+  {
+    title: "Treinos e estrutura",
+    goal: 3000,
+    raised: 2100,
+    status: "Ativa",
+  },
+];
 
-  return methods[method] || method;
-}
+const donations = [
+  { donor: "Ana Souza", amount: "R$ 150,00", date: "Hoje", method: "PIX" },
+  { donor: "Carlos Lima", amount: "R$ 300,00", date: "Ontem", method: "PIX" },
+  { donor: "Empresa parceira", amount: "R$ 1.200,00", date: "12/05", method: "Transferência" },
+];
 
 export function Donations() {
-  const {
-    data: donations = [],
-    isLoading,
-    refetch,
-  } = useDonations();
-
-  const [isModalOpen, setIsModalOpen] =
-    useState(false);
-
-  const [donorName, setDonorName] =
-    useState("");
-
-  const [donorEmail, setDonorEmail] =
-    useState("");
-
-  const [amount, setAmount] =
-    useState("");
-
-  const [method, setMethod] =
-    useState("PIX");
-
-  const [message, setMessage] =
-    useState("");
-
-  const total = donations.reduce(
-    (sum, donation) =>
-      sum + Number(donation.amount || 0),
-    0
-  );
-
-  async function handleCreateDonation(
-    e: React.FormEvent
-  ) {
-    e.preventDefault();
-
-    try {
-      await api.post("/donations", {
-        donorName,
-        donorEmail,
-        amount: Number(amount),
-        method,
-        status: "CONFIRMED",
-        message,
-      });
-
-      alert("Doação cadastrada com sucesso!");
-
-      setIsModalOpen(false);
-
-      setDonorName("");
-      setDonorEmail("");
-      setAmount("");
-      setMethod("PIX");
-      setMessage("");
-
-      refetch();
-    } catch (error: any) {
-      alert(
-        error.response?.data?.message ||
-          "Erro ao cadastrar doação"
-      );
-    }
-  }
-
   return (
     <div className="space-y-8">
-      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-5">
-        <div>
-          <h1 className="text-5xl font-black text-[#071B3A]">
-            Doações
-          </h1>
+      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 md:p-10 shadow-2xl">
+        <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
+          <HeartHandshake size={16} />
+          Gestão de doações
+        </span>
 
-          <p className="text-slate-500 mt-3 text-lg">
-            Gestão de apoiadores, arrecadações e
-            impacto social da ASDA.
-          </p>
+        <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
+          Controle campanhas, metas e contribuições da ASDA.
+        </h1>
+
+        <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
+          Acompanhe arrecadações, visualize campanhas ativas e mantenha a
+          transparência sobre o impacto de cada doação.
+        </p>
+      </section>
+
+      <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
+        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+          <Wallet className="text-cyan-400" />
+          <p className="mt-5 text-sm text-slate-400">Total arrecadado</p>
+          <h2 className="mt-2 text-3xl font-black">R$ 8.450</h2>
         </div>
 
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-cyan-600 hover:bg-cyan-500 transition text-white font-black px-6 py-4 rounded-2xl shadow-lg shadow-cyan-600/20"
-        >
-          + Nova doação
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
-          <p className="text-slate-500">
-            Total arrecadado
-          </p>
-
-          <h2 className="text-4xl font-black text-cyan-600 mt-3">
-            R${" "}
-            {total.toLocaleString("pt-BR")}
-          </h2>
+        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+          <TrendingUp className="text-emerald-400" />
+          <p className="mt-5 text-sm text-slate-400">Crescimento mensal</p>
+          <h2 className="mt-2 text-3xl font-black">+24%</h2>
         </div>
 
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
-          <p className="text-slate-500">
-            Apoiadores
-          </p>
-
-          <h2 className="text-4xl font-black text-green-500 mt-3">
-            {donations.length}
-          </h2>
+        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+          <Users className="text-purple-400" />
+          <p className="mt-5 text-sm text-slate-400">Doadores</p>
+          <h2 className="mt-2 text-3xl font-black">86</h2>
         </div>
 
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
-          <p className="text-slate-500">
-            Meta mensal
-          </p>
-
-          <h2 className="text-4xl font-black text-yellow-500 mt-3">
-            72%
-          </h2>
+        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+          <CalendarDays className="text-yellow-400" />
+          <p className="mt-5 text-sm text-slate-400">Campanhas ativas</p>
+          <h2 className="mt-2 text-3xl font-black">3</h2>
         </div>
-      </div>
+      </section>
 
-      {isLoading && (
-        <div className="bg-white rounded-3xl border border-slate-200 p-8 text-slate-500 shadow-sm">
-          Carregando doações...
-        </div>
-      )}
+      <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
+        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 xl:col-span-2">
+          <h2 className="text-2xl font-black">Campanhas de arrecadação</h2>
 
-      {!isLoading &&
-        donations.length === 0 && (
-          <div className="bg-white rounded-3xl border border-slate-200 p-8 text-slate-500 shadow-sm">
-            Nenhuma doação cadastrada ainda.
-          </div>
-        )}
+          <div className="mt-6 space-y-5">
+            {campaigns.map((campaign) => {
+              const progress = Math.round((campaign.raised / campaign.goal) * 100);
 
-      {!isLoading &&
-        donations.length > 0 && (
-          <div className="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm">
-            <div className="overflow-x-auto">
-              <div className="min-w-[700px]">
-                <div className="grid grid-cols-4 p-5 bg-slate-100 text-slate-600 font-bold">
-                  <span>Doador</span>
-                  <span>Método</span>
-                  <span>Data</span>
-                  <span>Valor</span>
-                </div>
+              return (
+                <div key={campaign.title} className="rounded-2xl bg-slate-800 p-5">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-lg font-black">{campaign.title}</h3>
+                      <p className="mt-1 text-sm text-slate-400">
+                        R$ {campaign.raised.toLocaleString("pt-BR")} de R${" "}
+                        {campaign.goal.toLocaleString("pt-BR")}
+                      </p>
+                    </div>
 
-                {donations.map((donation) => (
-                  <div
-                    key={donation.id}
-                    className="grid grid-cols-4 p-5 border-t border-slate-100 items-center hover:bg-slate-50 transition"
-                  >
-                    <span className="font-bold text-[#071B3A]">
-                      {donation.donorName ||
-                        "Doador anônimo"}
-                    </span>
-
-                    <span className="text-cyan-600 font-semibold">
-                      {formatMethod(
-                        donation.method
-                      )}
-                    </span>
-
-                    <span className="text-slate-500">
-                      {new Date(
-                        donation.createdAt
-                      ).toLocaleDateString(
-                        "pt-BR"
-                      )}
-                    </span>
-
-                    <span className="text-green-500 font-black">
-                      R${" "}
-                      {Number(
-                        donation.amount
-                      ).toLocaleString(
-                        "pt-BR"
-                      )}
+                    <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-sm font-bold text-cyan-400">
+                      {campaign.status}
                     </span>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
 
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-5">
-          <div className="w-full max-w-xl bg-white rounded-3xl p-8 shadow-2xl">
-            <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl font-black text-[#071B3A]">
-                Nova Doação
-              </h2>
+                  <div className="mt-5">
+                    <div className="mb-2 flex justify-between text-sm">
+                      <span className="text-slate-400">Progresso</span>
+                      <strong className="text-cyan-400">{progress}%</strong>
+                    </div>
 
-              <button
-                onClick={() =>
-                  setIsModalOpen(false)
-                }
-                className="text-slate-400 hover:text-slate-700 text-2xl"
-              >
-                ✕
-              </button>
-            </div>
-
-            <form
-              onSubmit={handleCreateDonation}
-              className="space-y-5"
-            >
-              <input
-                value={donorName}
-                onChange={(e) =>
-                  setDonorName(e.target.value)
-                }
-                placeholder="Nome do doador"
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 outline-none focus:border-cyan-500"
-              />
-
-              <input
-                type="email"
-                value={donorEmail}
-                onChange={(e) =>
-                  setDonorEmail(
-                    e.target.value
-                  )
-                }
-                placeholder="E-mail do doador"
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 outline-none focus:border-cyan-500"
-              />
-
-              <input
-                type="number"
-                value={amount}
-                onChange={(e) =>
-                  setAmount(e.target.value)
-                }
-                placeholder="Valor da doação"
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 outline-none focus:border-cyan-500"
-                required
-              />
-
-              <select
-                value={method}
-                onChange={(e) =>
-                  setMethod(e.target.value)
-                }
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 outline-none focus:border-cyan-500"
-              >
-                <option value="PIX">PIX</option>
-
-                <option value="CREDIT_CARD">
-                  Cartão
-                </option>
-
-                <option value="BANK_TRANSFER">
-                  Transferência
-                </option>
-
-                <option value="BOLETO">
-                  Boleto
-                </option>
-
-                <option value="CASH">
-                  Dinheiro
-                </option>
-
-                <option value="OTHER">
-                  Outro
-                </option>
-              </select>
-
-              <textarea
-                value={message}
-                onChange={(e) =>
-                  setMessage(e.target.value)
-                }
-                placeholder="Mensagem opcional"
-                className="w-full bg-slate-50 border border-slate-200 rounded-2xl p-4 outline-none focus:border-cyan-500 min-h-28"
-              />
-
-              <button
-                type="submit"
-                className="w-full bg-cyan-600 hover:bg-cyan-500 transition text-white font-black py-4 rounded-2xl"
-              >
-                Cadastrar Doação
-              </button>
-            </form>
+                    <div className="h-3 rounded-full bg-slate-700">
+                      <div
+                        className="h-3 rounded-full bg-cyan-500"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         </div>
-      )}
+
+        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-cyan-500/10 text-cyan-400">
+            <QrCode size={34} />
+          </div>
+
+          <h2 className="mt-6 text-2xl font-black">PIX da campanha</h2>
+
+          <p className="mt-3 text-sm leading-relaxed text-slate-400">
+            Espaço preparado para integrar QR Code PIX, chave de doação e
+            confirmação automática futuramente.
+          </p>
+
+          <div className="mt-6 rounded-2xl border border-dashed border-slate-700 bg-slate-800 p-6 text-center">
+            <QrCode className="mx-auto text-slate-500" size={96} />
+            <p className="mt-4 text-sm text-slate-400">QR Code em breve</p>
+          </div>
+
+          <button className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-4 font-black text-slate-950">
+            Configurar doação
+            <ArrowUpRight size={20} />
+          </button>
+        </div>
+      </section>
+
+      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+        <h2 className="text-2xl font-black">Histórico de doações</h2>
+
+        <div className="mt-6 space-y-4">
+          {donations.map((donation) => (
+            <div
+              key={`${donation.donor}-${donation.amount}`}
+              className="flex flex-col gap-4 rounded-2xl bg-slate-800 p-5 sm:flex-row sm:items-center sm:justify-between"
+            >
+              <div className="flex items-center gap-4">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-400">
+                  <CheckCircle2 />
+                </div>
+
+                <div>
+                  <h3 className="font-black">{donation.donor}</h3>
+                  <p className="text-sm text-slate-400">
+                    {donation.method} • {donation.date}
+                  </p>
+                </div>
+              </div>
+
+              <strong className="text-xl text-cyan-400">{donation.amount}</strong>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 }

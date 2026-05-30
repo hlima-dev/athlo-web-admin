@@ -12,7 +12,8 @@ import { Donations } from "../pages/Donations";
 import { Notifications } from "../pages/Notifications";
 import { Settings } from "../pages/Settings";
 import { Login } from "../pages/Login";
-import { CalendarPage } from "../pages/Calendar";
+import { ForgotPassword } from "../pages/ForgotPassword";
+import { Calendar } from "../pages/Calendar";
 import { Volunteers } from "../pages/Volunteers";
 import { Reports } from "../pages/Reports";
 import { Profile } from "../pages/Profile";
@@ -21,10 +22,14 @@ export function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
+
+        {/* PÚBLICAS */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/esqueci-senha" element={<ForgotPassword />} />
         <Route path="/" element={<LandingPage />} />
 
-        <Route path="/login" element={<Login />} />
-
+        {/* PRIVADAS */}
         <Route
           element={
             <ProtectedRoute>
@@ -36,7 +41,7 @@ export function AppRoutes() {
           <Route path="/home" element={<Home />} />
           <Route path="/atletas" element={<Athletes />} />
           <Route path="/eventos" element={<Events />} />
-          <Route path="/calendario" element={<CalendarPage />} />
+          <Route path="/calendario" element={<Calendar />} />
           <Route path="/doacoes" element={<Donations />} />
           <Route path="/voluntarios" element={<Volunteers />} />
           <Route path="/relatorios" element={<Reports />} />
