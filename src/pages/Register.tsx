@@ -26,11 +26,10 @@ export function Register() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name: form.nome,
-          email: form.email,
-          password: form.senha,
-          role: "ADMIN",
-        }),
+  name: form.nome,
+  email: form.email,
+  password: form.senha,
+}),
       });
 
       const result = await response.json();
