@@ -36,9 +36,10 @@ export function Login() {
 
       const authData = result.data;
 
-      localStorage.setItem("token", authData.accessToken);
-      localStorage.setItem("refreshToken", authData.refreshToken);
-      localStorage.setItem("user", JSON.stringify(authData.user));
+     localStorage.setItem("token", authData.accessToken);
+localStorage.setItem("@athlo:token", authData.accessToken);
+localStorage.setItem("refreshToken", authData.refreshToken);
+localStorage.setItem("user", JSON.stringify(authData.user));
 
       navigate("/dashboard");
     } catch (error) {
