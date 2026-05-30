@@ -88,7 +88,7 @@ export function Login() {
             to="/forgot-password"
             className="text-sm text-cyan-400 hover:text-cyan-300"
           >
-            🚨 TESTE ATHLO LUCAS 🚨
+            Esqueci minha senha
           </Link>
         </div>
 
