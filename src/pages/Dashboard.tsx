@@ -1,3 +1,6 @@
+import { useEffect, useState } from "react";
+import { getDashboard } from "../services/dashboard";
+
 import {
   BarChart3,
   CalendarDays,
@@ -24,21 +27,14 @@ import {
   YAxis,
 } from "recharts";
 
-const stats = [
-  { title: "Atletas ativos", value: "127", change: "+12%", icon: Users },
-  { title: "Doações", value: "R$ 8,4 mil", change: "+24%", icon: HeartHandshake },
-  { title: "Voluntários", value: "32", change: "+8%", icon: HandHeart },
-  { title: "Eventos", value: "24", change: "+5%", icon: CalendarDays },
-];
-
-const donationData = [
-  { month: "Jan", valor: 1200 },
-  { month: "Fev", valor: 1800 },
-  { month: "Mar", valor: 2400 },
-  { month: "Abr", valor: 3100 },
-  { month: "Mai", valor: 4200 },
-  { month: "Jun", valor: 8400 },
-];
+interface DashboardData {
+  athletes: number;
+  users: number;
+  events: number;
+  donations: number;
+  growthData: { month: string; atletas: number }[];
+  donationData: { month: string; valor: number }[];
+}
 
 const eventsData = [
   { name: "Treinos", value: 12 },
@@ -47,34 +43,96 @@ const eventsData = [
   { name: "Palestras", value: 2 },
 ];
 
-const impactData = [
-  { name: "Atletas", value: 127 },
-  { name: "Voluntários", value: 32 },
-  { name: "Eventos", value: 24 },
-];
-
 const activities = [
   {
-    title: "Nova doação registrada",
-    description: "Campanha de apoio aos atletas recebeu nova contribuição.",
-    time: "há 12 min",
+    title: "Dados sincronizados",
+    description: "Dashboard atualizado com informações reais do banco.",
+    time: "agora",
   },
   {
-    title: "Atleta cadastrado",
-    description: "Novo atleta adicionado ao acompanhamento da ASDA.",
-    time: "há 38 min",
+    title: "Sistema online",
+    description: "Frontend, backend e banco conectados com sucesso.",
+    time: "hoje",
   },
   {
-    title: "Evento atualizado",
-    description: "Treino coletivo teve informações revisadas.",
-    time: "há 1h",
+    title: "ATHLO em produção",
+    description: "Aplicação publicada e integrada ao Supabase.",
+    time: "hoje",
   },
 ];
 
 export function Dashboard() {
+  const [dashboard, setDashboard] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadDashboard() {
+      try {
+        const data = await getDashboard();
+        setDashboard(data);
+      } catch (error) {
+        console.error("Erro ao carregar dashboard:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadDashboard();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex h-[500px] items-center justify-center">
+        <p className="text-slate-400">Carregando dashboard...</p>
+      </div>
+    );
+  }
+
+  const stats = [
+    {
+      title: "Atletas ativos",
+      value: dashboard?.athletes ?? 0,
+      change: "+12%",
+      icon: Users,
+    },
+    {
+      title: "Doações",
+      value: `R$ ${dashboard?.donations ?? 0}`,
+      change: "+24%",
+      icon: HeartHandshake,
+    },
+    {
+      title: "Usuários",
+      value: dashboard?.users ?? 0,
+      change: "+8%",
+      icon: HandHeart,
+    },
+    {
+      title: "Eventos",
+      value: dashboard?.events ?? 0,
+      change: "+5%",
+      icon: CalendarDays,
+    },
+  ];
+
+  const impactData = [
+    {
+      name: "Atletas",
+      value: dashboard?.athletes ?? 0,
+    },
+    {
+      name: "Usuários",
+      value: dashboard?.users ?? 0,
+    },
+    {
+      name: "Eventos",
+      value: dashboard?.events ?? 0,
+    },
+  ];
+
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 md:p-10 shadow-2xl">
+      <section className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
         <div className="relative z-10 max-w-3xl">
           <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
             <Activity size={16} />
@@ -146,9 +204,15 @@ export function Dashboard() {
 
           <div className="h-80 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={donationData}>
+              <AreaChart data={dashboard?.donationData || []}>
                 <defs>
-                  <linearGradient id="donationGradient" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient
+                    id="donationGradient"
+                    x1="0"
+                    y1="0"
+                    x2="0"
+                    y2="1"
+                  >
                     <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.8} />
                     <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
                   </linearGradient>
@@ -171,9 +235,7 @@ export function Dashboard() {
         </div>
 
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">
-            Impacto geral
-          </h2>
+          <h2 className="text-2xl font-black text-white">Impacto geral</h2>
 
           <div className="mt-6 h-72 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
@@ -212,9 +274,7 @@ export function Dashboard() {
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">
-            Tipos de eventos
-          </h2>
+          <h2 className="text-2xl font-black text-white">Tipos de eventos</h2>
 
           <div className="mt-6 h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -236,10 +296,15 @@ export function Dashboard() {
 
           <div className="mt-6 space-y-4">
             {activities.map((activity) => (
-              <div key={activity.title} className="rounded-2xl bg-slate-800 p-4">
+              <div
+                key={activity.title}
+                className="rounded-2xl bg-slate-800 p-4"
+              >
                 <div className="mb-2 flex items-start justify-between gap-3">
                   <h3 className="font-bold text-white">{activity.title}</h3>
-                  <span className="text-xs text-slate-500">{activity.time}</span>
+                  <span className="text-xs text-slate-500">
+                    {activity.time}
+                  </span>
                 </div>
 
                 <p className="text-sm leading-relaxed text-slate-400">
