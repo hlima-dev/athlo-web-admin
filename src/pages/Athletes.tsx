@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   Users,
   Search,
@@ -10,37 +11,88 @@ import {
   MoreHorizontal,
 } from "lucide-react";
 
-const athletes = [
-  {
-    name: "Rafael Mendes",
-    sport: "Vôlei sentado",
-    status: "Ativo",
-    city: "Sorocaba/SP",
-    age: 28,
-    performance: "92%",
-  },
-  {
-    name: "Mariana Alves",
-    sport: "Atletismo adaptado",
-    status: "Em acompanhamento",
-    city: "Votorantim/SP",
-    age: 24,
-    performance: "84%",
-  },
-  {
-    name: "João Pedro",
-    sport: "Futebol amputados",
-    status: "Ativo",
-    city: "Sorocaba/SP",
-    age: 31,
-    performance: "88%",
-  },
-];
+import { getAthletes, type Athlete } from "../services/athletes";
 
 export function Athletes() {
+  const [athletes, setAthletes] = useState<Athlete[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadAthletes() {
+      try {
+        const response = await getAthletes();
+
+        const list =
+          response?.data?.items ||
+          response?.data ||
+          response?.items ||
+          response ||
+          [];
+
+        setAthletes(Array.isArray(list) ? list : []);
+      } catch (error) {
+        console.error("Erro ao carregar atletas:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadAthletes();
+  }, []);
+
+  const activeAthletes = athletes.filter(
+    (athlete) => athlete.status === "ACTIVE"
+  ).length;
+
+  const recoveringAthletes = athletes.filter(
+    (athlete) => athlete.status === "RECOVERING"
+  ).length;
+
+  const sportsCount = new Set(
+    athletes.map((athlete) => athlete.sport).filter(Boolean)
+  ).size;
+
+  function getInitials(name?: string) {
+    if (!name) return "AT";
+
+    return name
+      .split(" ")
+      .map((part) => part[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+  }
+
+  function formatStatus(status?: string) {
+    const statusMap: Record<string, string> = {
+      ACTIVE: "Ativo",
+      INACTIVE: "Inativo",
+      RECOVERING: "Em recuperação",
+      RETIRED: "Aposentado",
+    };
+
+    return status ? statusMap[status] || status : "Não informado";
+  }
+
+  function formatSport(sport?: string) {
+    const sportMap: Record<string, string> = {
+      ATHLETICS: "Atletismo",
+      SWIMMING: "Natação",
+      WHEELCHAIR_BASKETBALL: "Basquete em cadeira",
+      SITTING_VOLLEYBALL: "Vôlei sentado",
+      CYCLING: "Ciclismo",
+      POWERLIFTING: "Levantamento de peso",
+      FOOTBALL_5_SIDE: "Futebol de 5",
+      TABLE_TENNIS: "Tênis de mesa",
+      OTHER: "Outro",
+    };
+
+    return sport ? sportMap[sport] || sport : "Não informado";
+  }
+
   return (
     <div className="space-y-8">
-      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 md:p-10 shadow-2xl">
+      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
         <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
           <Users size={16} />
           Gestão de atletas
@@ -60,25 +112,25 @@ export function Athletes() {
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
           <Users className="text-cyan-400" />
           <p className="mt-5 text-sm text-slate-400">Atletas cadastrados</p>
-          <h2 className="mt-2 text-3xl font-black">127</h2>
+          <h2 className="mt-2 text-3xl font-black">{athletes.length}</h2>
         </div>
 
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
           <Activity className="text-emerald-400" />
           <p className="mt-5 text-sm text-slate-400">Ativos no mês</p>
-          <h2 className="mt-2 text-3xl font-black">94</h2>
+          <h2 className="mt-2 text-3xl font-black">{activeAthletes}</h2>
         </div>
 
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
           <Medal className="text-yellow-400" />
           <p className="mt-5 text-sm text-slate-400">Modalidades</p>
-          <h2 className="mt-2 text-3xl font-black">6</h2>
+          <h2 className="mt-2 text-3xl font-black">{sportsCount}</h2>
         </div>
 
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
           <HeartPulse className="text-red-400" />
           <p className="mt-5 text-sm text-slate-400">Em acompanhamento</p>
-          <h2 className="mt-2 text-3xl font-black">18</h2>
+          <h2 className="mt-2 text-3xl font-black">{recoveringAthletes}</h2>
         </div>
       </section>
 
@@ -89,7 +141,7 @@ export function Athletes() {
               Lista de atletas
             </h2>
             <p className="text-sm text-slate-400">
-              Gerencie cadastro, status e informações esportivas.
+              Dados carregados diretamente do backend e do Supabase.
             </p>
           </div>
 
@@ -108,70 +160,78 @@ export function Athletes() {
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-5">
-          {athletes.map((athlete) => (
-            <div
-              key={athlete.name}
-              className="rounded-3xl border border-slate-800 bg-slate-800 p-5"
-            >
-              <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-cyan-500/10 text-xl font-black text-cyan-400">
-                    {athlete.name
-                      .split(" ")
-                      .map((n) => n[0])
-                      .slice(0, 2)
-                      .join("")}
+          {loading ? (
+            <p className="text-slate-400">Carregando atletas...</p>
+          ) : athletes.length === 0 ? (
+            <p className="text-slate-400">Nenhum atleta encontrado.</p>
+          ) : (
+            athletes.map((athlete) => {
+              const name = athlete.user?.name || "Atleta sem nome";
+
+              return (
+                <div
+                  key={athlete.id}
+                  className="rounded-3xl border border-slate-800 bg-slate-800 p-5"
+                >
+                  <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-cyan-500/10 text-xl font-black text-cyan-400">
+                        {getInitials(name)}
+                      </div>
+
+                      <div>
+                        <h3 className="text-xl font-black text-white">
+                          {name}
+                        </h3>
+                        <p className="text-sm text-slate-400">
+                          {formatSport(athlete.sport)}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:items-center">
+                      <div>
+                        <p className="text-xs text-slate-500">Status</p>
+                        <span className="mt-1 inline-flex rounded-full bg-emerald-500/10 px-3 py-1 text-sm font-bold text-emerald-400">
+                          {formatStatus(athlete.status)}
+                        </span>
+                      </div>
+
+                      <div>
+                        <p className="text-xs text-slate-500">Estado</p>
+                        <p className="mt-1 font-bold text-white">
+                          {athlete.state || "N/I"}
+                        </p>
+                      </div>
+
+                      <div>
+                        <p className="text-xs text-slate-500">Modalidade</p>
+                        <p className="mt-1 font-bold text-cyan-400">
+                          {formatSport(athlete.sport)}
+                        </p>
+                      </div>
+
+                      <button className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-700 text-slate-300 hover:bg-slate-600">
+                        <MoreHorizontal />
+                      </button>
+                    </div>
                   </div>
 
-                  <div>
-                    <h3 className="text-xl font-black text-white">
-                      {athlete.name}
-                    </h3>
-                    <p className="text-sm text-slate-400">{athlete.sport}</p>
-                  </div>
-                </div>
+                  <div className="mt-5 grid grid-cols-1 gap-3 border-t border-slate-700 pt-5 text-sm text-slate-400 md:grid-cols-2">
+                    <p className="flex items-center gap-2">
+                      <MapPin size={16} />
+                      {athlete.city || "Cidade não informada"}
+                    </p>
 
-                <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:items-center">
-                  <div>
-                    <p className="text-xs text-slate-500">Status</p>
-                    <span className="mt-1 inline-flex rounded-full bg-emerald-500/10 px-3 py-1 text-sm font-bold text-emerald-400">
-                      {athlete.status}
-                    </span>
-                  </div>
-
-                  <div>
-                    <p className="text-xs text-slate-500">Idade</p>
-                    <p className="mt-1 font-bold text-white">
-                      {athlete.age} anos
+                    <p className="flex items-center gap-2">
+                      <CalendarDays size={16} />
+                      Dados sincronizados com o banco
                     </p>
                   </div>
-
-                  <div>
-                    <p className="text-xs text-slate-500">Desempenho</p>
-                    <p className="mt-1 font-bold text-cyan-400">
-                      {athlete.performance}
-                    </p>
-                  </div>
-
-                  <button className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-700 text-slate-300 hover:bg-slate-600">
-                    <MoreHorizontal />
-                  </button>
                 </div>
-              </div>
-
-              <div className="mt-5 grid grid-cols-1 gap-3 border-t border-slate-700 pt-5 text-sm text-slate-400 md:grid-cols-2">
-                <p className="flex items-center gap-2">
-                  <MapPin size={16} />
-                  {athlete.city}
-                </p>
-
-                <p className="flex items-center gap-2">
-                  <CalendarDays size={16} />
-                  Última atualização: Maio/2026
-                </p>
-              </div>
-            </div>
-          ))}
+              );
+            })
+          )}
         </div>
       </section>
     </div>
