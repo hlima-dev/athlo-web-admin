@@ -39,14 +39,9 @@ export function Donations() {
 
       const response = await getDonations();
 
-      const list =
-        response?.data?.data ||
-        response?.data ||
-        response?.items ||
-        response ||
-        [];
+      console.log("DOACOES =>", response);
 
-      setDonations(Array.isArray(list) ? list : []);
+      setDonations(Array.isArray(response) ? response : []);
     } catch (error) {
       console.error("Erro ao carregar doações:", error);
     } finally {
@@ -216,9 +211,7 @@ export function Donations() {
             <div className="rounded-2xl bg-slate-800 p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-black">
-                    Arrecadação geral
-                  </h3>
+                  <h3 className="text-lg font-black">Arrecadação geral</h3>
                   <p className="mt-1 text-sm text-slate-400">
                     Total registrado: {formatCurrency(totalRaised)}
                   </p>
