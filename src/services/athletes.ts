@@ -16,6 +16,8 @@ export interface Athlete {
 export async function getAthletes() {
   const response = await api.get("/athletes");
 
+  console.log("ATLETAS API =>", response.data);
+
   return response.data;
 }
 

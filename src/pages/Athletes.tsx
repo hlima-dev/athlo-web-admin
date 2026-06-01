@@ -40,11 +40,12 @@ export function Athletes() {
       const response = await getAthletes();
 
       const list =
-        response?.data?.items ||
-        response?.data ||
-        response?.items ||
-        response ||
-        [];
+  response?.data?.data ||
+  response?.data?.items ||
+  response?.data ||
+  response?.items ||
+  response ||
+  [];
 
       setAthletes(Array.isArray(list) ? list : []);
     } catch (error) {
