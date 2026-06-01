@@ -13,7 +13,7 @@ export interface Donation {
 }
 
 export async function getDonations() {
-  const response = await api.get("/donations");
+  const response = await api.get(`/donations?t=${Date.now()}`);
   return response.data;
 }
 
