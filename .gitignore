@@ -1,4 +1,7 @@
-# Logs
+npm run build
+git add .
+git commit -m "Integra doacoes com backend"
+git push# Logs
 logs
 *.log
 npm-debug.log*
