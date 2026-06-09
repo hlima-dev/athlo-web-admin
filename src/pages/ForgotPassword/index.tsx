@@ -1,51 +1,44 @@
-import { Link } from "react-router-dom";
-import { useState } from "react";
-
-const API_URL = import.meta.env.VITE_API_URL;
+﻿import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { api } from '../../services/api'
 
 export function ForgotPassword() {
-  const [email, setEmail] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [resetToken, setResetToken] = useState("");
+  const [email, setEmail] = useState('')
+  const [loading, setLoading] = useState(false)
+  const [sent, setSent] = useState(false)
+  const [error, setError] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
+    e.preventDefault()
+    setError('')
 
     try {
-      setLoading(true);
-      setResetToken("");
-
-      const response = await fetch(
-        `${API_URL}/api/v1/auth/forgot-password`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ email }),
-        }
-      );
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        alert(result.message || "Erro ao solicitar recuperação.");
-        return;
-      }
-
-      const token = result.data?.resetToken;
-
-      if (token) {
-        setResetToken(token);
-      }
-
-      alert("Solicitação enviada com sucesso.");
-    } catch (error) {
-      alert("Erro ao conectar com o servidor.");
-      console.error(error);
+      setLoading(true)
+      await api.post('/auth/forgot-password', { email })
+      setSent(true)
+    } catch (err: any) {
+      setError(err?.response?.data?.message ?? 'Erro ao processar solicitação.')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
+  }
+
+  if (sent) {
+    return (
+      <main className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+        <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl text-center">
+          <div className="text-5xl mb-4">📬</div>
+          <h1 className="text-2xl font-bold text-white mb-3">E-mail enviado</h1>
+          <p className="text-slate-400 mb-6">
+            Se o endereço <strong className="text-white">{email}</strong> estiver cadastrado,
+            você receberá um e-mail com o link para redefinir sua senha.
+          </p>
+          <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-semibold">
+            Voltar para o login
+          </Link>
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -54,17 +47,21 @@ export function ForgotPassword() {
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl"
       >
-        <h1 className="text-3xl font-bold text-white">
-          Recuperar senha
-        </h1>
-
+        <h1 className="text-3xl font-bold text-white">Recuperar senha</h1>
         <p className="text-slate-400 mt-2 mb-6">
-          Informe seu e-mail para gerar um token de recuperação.
+          Informe seu e-mail e enviaremos um link para criar uma nova senha.
         </p>
+
+        {error && (
+          <div className="mb-4 p-3 rounded-xl bg-red-900/30 border border-red-700 text-red-300 text-sm">
+            {error}
+          </div>
+        )}
 
         <input
           type="email"
           placeholder="Seu e-mail"
+          autoComplete="email"
           className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -76,28 +73,13 @@ export function ForgotPassword() {
           disabled={loading}
           className="w-full mt-6 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-60 text-slate-950 font-bold py-3 rounded-xl transition"
         >
-          {loading ? "Gerando..." : "Gerar Token"}
+          {loading ? 'Enviando...' : 'Enviar link de recuperação'}
         </button>
 
-        {resetToken && (
-          <div className="mt-5 p-4 rounded-xl bg-slate-800 border border-cyan-500">
-            <p className="text-sm text-slate-300 mb-2">
-              Token gerado:
-            </p>
-
-            <p className="break-all text-cyan-400 text-sm font-mono">
-              {resetToken}
-            </p>
-          </div>
-        )}
-
-        <Link
-          to="/login"
-          className="block text-center text-cyan-400 mt-5"
-        >
+        <Link to="/login" className="block text-center text-cyan-400 mt-5">
           Voltar para Login
         </Link>
       </form>
     </main>
-  );
+  )
 }
