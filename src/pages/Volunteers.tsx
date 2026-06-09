@@ -25,16 +25,8 @@ export function Volunteers() {
   const [search, setSearch] = useState("")
 
   useEffect(() => {
-    api.get("/auth/me").catch(() => {})
-    api.get("/athletes")
-      .then(() => {})
-      .catch(() => {})
-
     api.get("/dashboard")
-      .then((res) => {
-        const users = res.data?.data?.users ?? 0
-        setVolunteers([])
-      })
+      .then(() => { setVolunteers([]) })
       .catch(console.error)
       .finally(() => setLoading(false))
   }, [])
