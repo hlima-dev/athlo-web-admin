@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import {
   HeartHandshake,
   TrendingUp,
@@ -43,7 +43,7 @@ export function Donations() {
 
       setDonations(Array.isArray(response) ? response : []);
     } catch (error) {
-      console.error("Erro ao carregar doações:", error);
+      console.error("Erro ao carregar doaÃ§Ãµes:", error);
     } finally {
       setLoading(false);
     }
@@ -69,7 +69,7 @@ export function Donations() {
         status: form.status,
       });
 
-      alert("Doação cadastrada com sucesso!");
+      alert("DoaÃ§Ã£o cadastrada com sucesso!");
       setShowModal(false);
 
       setForm({
@@ -84,12 +84,12 @@ export function Donations() {
 
       await loadDonations();
     } catch (error: any) {
-      console.error("Erro ao cadastrar doação:", error);
+      console.error("Erro ao cadastrar doaÃ§Ã£o:", error);
 
       alert(
         error?.response?.data?.message ||
           error?.response?.data?.error ||
-          "Erro ao cadastrar doação."
+          "Erro ao cadastrar doaÃ§Ã£o."
       );
     } finally {
       setSaving(false);
@@ -119,7 +119,7 @@ export function Donations() {
   }
 
   function formatDate(date?: string) {
-    if (!date) return "Data não informada";
+    if (!date) return "Data nÃ£o informada";
 
     return new Date(date).toLocaleDateString("pt-BR");
   }
@@ -127,14 +127,14 @@ export function Donations() {
   function formatMethod(method?: string) {
     const methodMap: Record<string, string> = {
       PIX: "PIX",
-      CREDIT_CARD: "Cartão de crédito",
-      BANK_TRANSFER: "Transferência",
+      CREDIT_CARD: "CartÃ£o de crÃ©dito",
+      BANK_TRANSFER: "TransferÃªncia",
       BOLETO: "Boleto",
       CASH: "Dinheiro",
       OTHER: "Outro",
     };
 
-    return method ? methodMap[method] || method : "Não informado";
+    return method ? methodMap[method] || method : "NÃ£o informado";
   }
 
   return (
@@ -142,16 +142,16 @@ export function Donations() {
       <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
         <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
           <HeartHandshake size={16} />
-          Gestão de doações
+          GestÃ£o de doaÃ§Ãµes
         </span>
 
         <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
-          Controle campanhas, metas e contribuições da ASDA.
+          Controle campanhas, metas e contribuiÃ§Ãµes da ASDA.
         </h1>
 
         <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Acompanhe arrecadações, visualize campanhas ativas e mantenha a
-          transparência sobre o impacto de cada doação.
+          Acompanhe arrecadaÃ§Ãµes, visualize campanhas ativas e mantenha a
+          transparÃªncia sobre o impacto de cada doaÃ§Ã£o.
         </p>
       </section>
 
@@ -166,7 +166,7 @@ export function Donations() {
 
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
           <TrendingUp className="text-emerald-400" />
-          <p className="mt-5 text-sm text-slate-400">Doações confirmadas</p>
+          <p className="mt-5 text-sm text-slate-400">DoaÃ§Ãµes confirmadas</p>
           <h2 className="mt-2 text-3xl font-black">
             {confirmedDonations.length}
           </h2>
@@ -190,10 +190,10 @@ export function Donations() {
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
               <h2 className="text-2xl font-black">
-                Campanhas de arrecadação
+                Campanhas de arrecadaÃ§Ã£o
               </h2>
               <p className="text-sm text-slate-400">
-                Registro de contribuições reais salvas no banco.
+                Registro de contribuiÃ§Ãµes reais salvas no banco.
               </p>
             </div>
 
@@ -203,7 +203,7 @@ export function Donations() {
               className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400"
             >
               <Plus size={20} />
-              Nova doação
+              Nova doaÃ§Ã£o
             </button>
           </div>
 
@@ -211,7 +211,7 @@ export function Donations() {
             <div className="rounded-2xl bg-slate-800 p-5">
               <div className="flex items-start justify-between gap-4">
                 <div>
-                  <h3 className="text-lg font-black">Arrecadação geral</h3>
+                  <h3 className="text-lg font-black">ArrecadaÃ§Ã£o geral</h3>
                   <p className="mt-1 text-sm text-slate-400">
                     Total registrado: {formatCurrency(totalRaised)}
                   </p>
@@ -226,7 +226,7 @@ export function Donations() {
                 <div className="mb-2 flex justify-between text-sm">
                   <span className="text-slate-400">Registros</span>
                   <strong className="text-cyan-400">
-                    {donations.length} doações
+                    {donations.length} doaÃ§Ãµes
                   </strong>
                 </div>
 
@@ -248,11 +248,11 @@ export function Donations() {
             <QrCode size={34} />
           </div>
 
-          <h2 className="mt-6 text-2xl font-black">PIX da campanha</h2>
+          <h2 className="mt-6 text-2xl font-black">PIX ATHLO</h2>
 
           <p className="mt-3 text-sm leading-relaxed text-slate-400">
-            Espaço preparado para integrar QR Code PIX, chave de doação e
-            confirmação automática futuramente.
+            EspaÃ§o preparado para integrar QR Code PIX, chave de doaÃ§Ã£o e
+            confirmaÃ§Ã£o automÃ¡tica futuramente.
           </p>
 
           <div className="mt-6 rounded-2xl border border-dashed border-slate-700 bg-slate-800 p-6 text-center">
@@ -261,20 +261,20 @@ export function Donations() {
           </div>
 
           <button className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-4 font-black text-slate-950">
-            Configurar doação
+            Configurar doaÃ§Ã£o
             <ArrowUpRight size={20} />
           </button>
         </div>
       </section>
 
       <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-        <h2 className="text-2xl font-black">Histórico de doações</h2>
+        <h2 className="text-2xl font-black">HistÃ³rico de doaÃ§Ãµes</h2>
 
         <div className="mt-6 space-y-4">
           {loading ? (
-            <p className="text-slate-400">Carregando doações...</p>
+            <p className="text-slate-400">Carregando doaÃ§Ãµes...</p>
           ) : donations.length === 0 ? (
-            <p className="text-slate-400">Nenhuma doação encontrada.</p>
+            <p className="text-slate-400">Nenhuma doaÃ§Ã£o encontrada.</p>
           ) : (
             donations.map((donation) => (
               <div
@@ -288,10 +288,10 @@ export function Donations() {
 
                   <div>
                     <h3 className="font-black">
-                      {donation.donorName || "Doador não informado"}
+                      {donation.donorName || "Doador nÃ£o informado"}
                     </h3>
                     <p className="text-sm text-slate-400">
-                      {formatMethod(donation.method)} •{" "}
+                      {formatMethod(donation.method)} â€¢{" "}
                       {formatDate(donation.createdAt)}
                     </p>
                   </div>
@@ -315,10 +315,10 @@ export function Donations() {
             <div className="mb-6 flex items-center justify-between">
               <div>
                 <h2 className="text-2xl font-black text-white">
-                  Nova doação
+                  Nova doaÃ§Ã£o
                 </h2>
                 <p className="text-sm text-slate-400">
-                  Registre uma contribuição no banco de dados.
+                  Registre uma contribuiÃ§Ã£o no banco de dados.
                 </p>
               </div>
 
@@ -336,7 +336,7 @@ export function Donations() {
                 type="number"
                 min="1"
                 step="0.01"
-                placeholder="Valor da doação"
+                placeholder="Valor da doaÃ§Ã£o"
                 className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
                 value={form.amount}
                 onChange={(e) =>
@@ -353,8 +353,8 @@ export function Donations() {
                 }
               >
                 <option value="PIX">PIX</option>
-                <option value="CREDIT_CARD">Cartão de crédito</option>
-                <option value="BANK_TRANSFER">Transferência</option>
+                <option value="CREDIT_CARD">CartÃ£o de crÃ©dito</option>
+                <option value="BANK_TRANSFER">TransferÃªncia</option>
                 <option value="BOLETO">Boleto</option>
                 <option value="CASH">Dinheiro</option>
                 <option value="OTHER">Outro</option>
@@ -416,7 +416,7 @@ export function Donations() {
               disabled={saving}
               className="mt-6 w-full rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
             >
-              {saving ? "Salvando..." : "Cadastrar doação"}
+              {saving ? "Salvando..." : "Cadastrar doaÃ§Ã£o"}
             </button>
           </form>
         </div>

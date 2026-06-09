@@ -1,4 +1,4 @@
-import { api } from "./api";
+﻿import { api } from "./api";
 
 export interface Donation {
   id: string;
@@ -13,8 +13,12 @@ export interface Donation {
 }
 
 export async function getDonations() {
-  const response = await api.get(`/donations?t=${Date.now()}`);
-  return response.data;
+  const response = await api.get("/donations");
+  const data = response.data;
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.data)) return data.data;
+  if (Array.isArray(data?.data?.items)) return data.data.items;
+  return [];
 }
 
 export async function createDonation(data: any) {
