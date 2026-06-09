@@ -1,31 +1,55 @@
-import { useQuery } from "@tanstack/react-query";
-import { api } from "../services/api";
+﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '../services/api'
 
 export interface EventItem {
-  id: string;
-  title: string;
-  description?: string;
-  type: string;
-  status: string;
-  location?: string;
-  city?: string;
-  state?: string;
-  startDate: string;
-  endDate: string;
+  id: string
+  title: string
+  type: string
+  status: string
+  startDate: string
+  endDate: string
+  location?: string
+  maxParticipants?: number
 }
 
-export function useEvents() {
+function extractList(data: any): EventItem[] {
+  if (Array.isArray(data)) return data
+  if (Array.isArray(data?.data)) return data.data
+  if (Array.isArray(data?.data?.items)) return data.data.items
+  return []
+}
+
+export function useEvents(params?: Record<string, string>) {
   return useQuery<EventItem[]>({
-    queryKey: ["events"],
+    queryKey: ['events', params],
     queryFn: async () => {
-      const response = await api.get("/events");
-
-      if (Array.isArray(response.data)) return response.data;
-      if (Array.isArray(response.data.data)) return response.data.data;
-      if (Array.isArray(response.data.data?.items)) return response.data.data.items;
-      if (Array.isArray(response.data.data?.data)) return response.data.data.data;
-
-      return [];
+      const response = await api.get('/events', { params })
+      return extractList(response.data)
     },
-  });
+  })
+}
+
+export function useCreateEvent() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (data: Record<string, any>) => api.post('/events', data),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['events'] }) },
+  })
+}
+
+export function useUpdateEvent() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Record<string, any> }) =>
+      api.patch(`/events/${id}`, data),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['events'] }) },
+  })
+}
+
+export function useDeleteEvent() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/events/${id}`),
+    onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['events'] }) },
+  })
 }
