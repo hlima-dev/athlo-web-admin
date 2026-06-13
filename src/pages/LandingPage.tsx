@@ -350,7 +350,7 @@ export function LandingPage() {
             </a>
 
             <button className="border border-slate-300 hover:bg-slate-50 text-[#071B3A] font-black px-8 sm:px-10 py-4 sm:py-5 rounded-2xl">
-              Doar via PIX em breve
+              Doar via PIX 
             </button>
           </div>
         </div>
@@ -387,7 +387,7 @@ export function LandingPage() {
     <div className="border-t border-slate-200 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
       <div>
         <h3 className="text-lg font-black text-[#071B3A]">
-          Desenvolvido por PRIMECODE
+          Desenvolvido por Lucas Lima Santos
         </h3>
 
         <p className="text-slate-500 text-sm">

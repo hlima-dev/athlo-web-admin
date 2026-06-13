@@ -45,7 +45,7 @@ export function ForgotPassword() {
 
       if (!token) {
         alert(
-          "Token não encontrado na resposta. Abra F12 → Console e me envie o resultado."
+          "Em alguns segundos o e-mail será enviado"
         );
         return;
       }
@@ -70,7 +70,7 @@ export function ForgotPassword() {
         </h1>
 
         <p className="text-slate-400 mt-2 mb-6">
-          Informe seu e-mail para gerar um token de recuperação.
+          Informe seu e-mail para envio do token de recuperação.
         </p>
 
         <input
