@@ -66,13 +66,13 @@ export function Donations() {
     <div className="space-y-8">
       <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
         <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
-          <HeartHandshake size={16} /> Gestao de doacoes
+          <HeartHandshake size={16} /> Gestão de doações
         </span>
         <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
-          Controle campanhas, metas e contribuicoes da ASDA.
+          Controle campanhas, metas e contribuições da ASDA.
         </h1>
         <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Acompanhe arrecadacoes e mantenha a transparencia sobre o impacto de cada doacao.
+          Acompanhe arrecadações e mantenha a transparência sobre o impacto de cada doação.
         </p>
       </section>
 
@@ -98,18 +98,18 @@ export function Donations() {
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 xl:col-span-2">
           <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="text-2xl font-black">Campanhas de arrecadacao</h2>
-              <p className="text-sm text-slate-400">Contribuicoes reais salvas no banco.</p>
+              <h2 className="text-2xl font-black">Campanhas de arrecadação</h2>
+              <p className="text-sm text-slate-400">Contribuições reais salvas no banco.</p>
             </div>
             <button type="button" onClick={() => setShowModal(true)}
               className="inline-flex items-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400">
-              <Plus size={20} /> Nova doacao
+              <Plus size={20} /> Nova doação
             </button>
           </div>
           <div className="mt-6 rounded-2xl bg-slate-800 p-5">
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h3 className="text-lg font-black">Arrecadacao geral</h3>
+                <h3 className="text-lg font-black">Arrecadação geral</h3>
                 <p className="mt-1 text-sm text-slate-400">
                   Total: {loading ? "..." : fmt(totalRaised)}
                 </p>
@@ -119,7 +119,7 @@ export function Donations() {
             <div className="mt-5">
               <div className="mb-2 flex justify-between text-sm">
                 <span className="text-slate-400">Registros</span>
-                <strong className="text-cyan-400">{donations.length} doacoes</strong>
+                <strong className="text-cyan-400">{donations.length} Doações</strong>
               </div>
               <div className="h-3 rounded-full bg-slate-700">
                 <div className="h-3 rounded-full bg-cyan-500" style={{ width: `${Math.min(donations.length * 10, 100)}%` }} />
@@ -134,11 +134,11 @@ export function Donations() {
           </div>
           <h2 className="mt-6 text-2xl font-black">PIX ATHLO</h2>
           <p className="mt-3 text-sm text-slate-400">
-            Espaco para integrar QR Code PIX e confirmacao automatica futuramente.
+            Espaço para integrar QR Code PIX e confirmação automatica futuramente.
           </p>
           <div className="mt-6 rounded-2xl border border-dashed border-slate-700 bg-slate-800 p-6 text-center">
             <QrCode className="mx-auto text-slate-500" size={96} />
-            <p className="mt-4 text-sm text-slate-400">QR Code em breve</p>
+            <p className="mt-4 text-sm text-slate-400">QR Code</p>
           </div>
           <button className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-4 font-black text-slate-950">
             Configurar doacao <ArrowUpRight size={20} />
@@ -147,12 +147,12 @@ export function Donations() {
       </section>
 
       <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-        <h2 className="text-2xl font-black">Historico de doacoes</h2>
+        <h2 className="text-2xl font-black">Historico de doações</h2>
         <div className="mt-6 space-y-4">
           {loading ? (
             <p className="text-slate-400">Carregando...</p>
           ) : donations.length === 0 ? (
-            <p className="text-slate-400">Nenhuma doacao encontrada.</p>
+            <p className="text-slate-400">Nenhuma doação encontrada.</p>
           ) : (
             donations.map((d) => (
               <div key={d.id} className="flex flex-col gap-4 rounded-2xl bg-slate-800 p-5 sm:flex-row sm:items-center sm:justify-between">
@@ -179,8 +179,8 @@ export function Donations() {
           <form onSubmit={handleCreate} className="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl">
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">Nova doacao</h2>
-                <p className="text-sm text-slate-400">Registre uma contribuicao no banco.</p>
+                <h2 className="text-2xl font-black text-white">Nova doação</h2>
+                <p className="text-sm text-slate-400">Registre uma contribuição no banco.</p>
               </div>
               <button type="button" onClick={() => setShowModal(false)}
                 className="rounded-xl bg-slate-800 px-4 py-2 text-slate-300 hover:bg-slate-700">Fechar</button>
@@ -192,8 +192,8 @@ export function Donations() {
               <select className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
                 value={form.method} onChange={(e) => setForm({ ...form, method: e.target.value })}>
                 <option value="PIX">PIX</option>
-                <option value="CREDIT_CARD">Cartao de credito</option>
-                <option value="BANK_TRANSFER">Transferencia</option>
+                <option value="CREDIT_CARD">Cartão de crédito</option>
+                <option value="BANK_TRANSFER">Transferência</option>
                 <option value="BOLETO">Boleto</option>
                 <option value="CASH">Dinheiro</option>
                 <option value="OTHER">Outro</option>
@@ -228,3 +228,4 @@ export function Donations() {
     </div>
   );
 }
+
