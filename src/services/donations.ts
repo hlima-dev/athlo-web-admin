@@ -15,9 +15,12 @@ export interface Donation {
 export async function getDonations() {
   const response = await api.get("/donations");
   const body = response.data;
+
   if (Array.isArray(body)) return body;
   if (Array.isArray(body?.data)) return body.data;
   if (Array.isArray(body?.data?.data)) return body.data.data;
+  if (Array.isArray(body?.data?.items)) return body.data.items;
+
   return [];
 }
 
