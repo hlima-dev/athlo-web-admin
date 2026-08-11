@@ -1,32 +1,40 @@
-import { api } from "./api";
+import { api, extractList } from "./api";
 
 export interface Event {
   id: string;
   title: string;
   description?: string | null;
-  type: string;
-  status: string;
+  type: "MEETING" | "TASK" | "DEADLINE" | "OTHER";
+  status: "SCHEDULED" | "COMPLETED" | "CANCELED";
   location?: string | null;
-  city?: string | null;
-  state?: string | null;
+  isOnline?: boolean;
+  onlineUrl?: string | null;
   startDate: string;
   endDate: string;
-  maxParticipants?: number | null;
-  createdBy?: {
-    id: string;
-    name: string;
-  };
-  _count?: {
-    athletes: number;
-  };
+  allDay?: boolean;
+  contact?: { id: string; name: string } | null;
+  createdBy?: { id: string; name: string };
+  assignedTo?: { id: string; name: string } | null;
 }
 
-export async function getEvents() {
-  const response = await api.get("/events");
+export async function getEvents(params?: Record<string, string>) {
+  const response = await api.get("/events", { params });
+  return extractList<Event>(response.data);
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function createEvent(data: any) {
+  const response = await api.post("/events", data);
   return response.data;
 }
 
-export async function createEvent(data: any) {
-  const response = await api.post("/events", data);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function updateEvent(id: string, data: any) {
+  const response = await api.patch(`/events/${id}`, data);
+  return response.data;
+}
+
+export async function deleteEvent(id: string) {
+  const response = await api.delete(`/events/${id}`);
   return response.data;
 }

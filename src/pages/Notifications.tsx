@@ -3,7 +3,7 @@ import {
   Bell,
   CheckCircle2,
   CalendarDays,
-  HeartHandshake,
+  Wallet,
   Users,
   AlertCircle,
   Clock3,
@@ -121,10 +121,10 @@ export function Notifications() {
       WARNING: "Alerta",
       SUCCESS: "Sucesso",
       ERROR: "Erro",
-      EVENT_REMINDER: "Evento",
-      TRAINING_ASSIGNED: "Treino",
-      DONATION_RECEIVED: "Doação",
-      ACHIEVEMENT_UNLOCKED: "Conquista",
+      EVENT_REMINDER: "Agenda",
+      INVOICE_DUE: "Fatura a vencer",
+      INVOICE_PAID: "Fatura paga",
+      TEAM_INVITE: "Convite de equipe",
       SYSTEM: "Sistema",
     };
 
@@ -132,13 +132,11 @@ export function Notifications() {
   }
 
   function getIcon(type: string) {
-    if (type === "DONATION_RECEIVED") return HeartHandshake;
+    if (type === "INVOICE_DUE" || type === "INVOICE_PAID") return Wallet;
     if (type === "EVENT_REMINDER") return CalendarDays;
-    if (type === "TRAINING_ASSIGNED") return Users;
+    if (type === "TEAM_INVITE") return Users;
     if (type === "WARNING" || type === "ERROR") return AlertCircle;
-    if (type === "SUCCESS" || type === "ACHIEVEMENT_UNLOCKED") {
-      return CheckCircle2;
-    }
+    if (type === "SUCCESS") return CheckCircle2;
 
     return Bell;
   }
@@ -150,9 +148,9 @@ export function Notifications() {
       SUCCESS: "text-emerald-400",
       ERROR: "text-red-400",
       EVENT_REMINDER: "text-cyan-400",
-      TRAINING_ASSIGNED: "text-purple-400",
-      DONATION_RECEIVED: "text-emerald-400",
-      ACHIEVEMENT_UNLOCKED: "text-yellow-400",
+      TEAM_INVITE: "text-purple-400",
+      INVOICE_DUE: "text-yellow-400",
+      INVOICE_PAID: "text-emerald-400",
       SYSTEM: "text-slate-400",
     };
 
@@ -181,8 +179,8 @@ export function Notifications() {
         </h1>
 
         <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Receba alertas sobre doações, eventos, atletas, campanhas, metas e
-          atividades importantes da ASDA.
+          Receba alertas sobre faturas, agenda, equipe e atividades
+          importantes da sua empresa.
         </p>
       </section>
 

@@ -1,11 +1,10 @@
-﻿import { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
   Clock3,
   MapPin,
-  Users,
 } from "lucide-react"
 import { getEvents, type Event } from "../services/events"
 
@@ -15,6 +14,13 @@ const MONTHS = [
 ]
 
 const WEEKDAYS = ["DOM","SEG","TER","QUA","QUI","SEX","SAB"]
+
+const typeLabels: Record<string, string> = {
+  MEETING: "Reunião",
+  TASK: "Tarefa",
+  DEADLINE: "Prazo",
+  OTHER: "Outro",
+}
 
 function getDaysInMonth(year: number, month: number) {
   return new Date(year, month + 1, 0).getDate()
@@ -35,17 +41,10 @@ export function Calendar() {
     async function load() {
       try {
         setLoading(true)
-        const response = await getEvents()
-        const list =
-          response?.data?.data ||
-          response?.data?.items ||
-          response?.data ||
-          response?.items ||
-          response ||
-          []
-        setEvents(Array.isArray(list) ? list : [])
+        const list = await getEvents()
+        setEvents(list)
       } catch (err) {
-        console.error("Erro ao carregar eventos:", err)
+        console.error("Erro ao carregar agenda:", err)
       } finally {
         setLoading(false)
       }
@@ -83,15 +82,6 @@ export function Calendar() {
     return new Date(date).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })
   }
 
-  function formatType(type?: string) {
-    const map: Record<string, string> = {
-      COMPETITION: "Campeonato", TRAINING_SESSION: "Treino",
-      WORKSHOP: "Oficina", MEDICAL_EVALUATION: "Avaliação médica",
-      FUNDRAISING: "Campanha", COMMUNITY: "Comunidade", OTHER: "Outro",
-    }
-    return type ? map[type] || type : "Evento"
-  }
-
   return (
     <div className="space-y-8">
       <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
@@ -100,10 +90,10 @@ export function Calendar() {
           Agenda inteligente
         </span>
         <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
-          Organize eventos, treinos e compromissos da ASDA.
+          Visualize compromissos da sua empresa.
         </h1>
         <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Visualize rapidamente as atividades do mês com dados reais do banco.
+          Acompanhe rapidamente as atividades do mês com dados reais do banco.
         </p>
       </section>
 
@@ -114,7 +104,7 @@ export function Calendar() {
               <h2 className="text-2xl font-black text-white">
                 {MONTHS[currentMonth]} {currentYear}
               </h2>
-              <p className="text-sm text-slate-400">Agenda oficial da organização</p>
+              <p className="text-sm text-slate-400">Agenda da sua empresa</p>
             </div>
             <div className="flex items-center gap-3">
               <button onClick={prevMonth} className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700">
@@ -167,19 +157,19 @@ export function Calendar() {
         </div>
 
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">Eventos do mês</h2>
+          <h2 className="text-2xl font-black text-white">Compromissos do mês</h2>
 
           <div className="mt-6 space-y-4">
             {loading ? (
-              <p className="text-slate-400">Carregando eventos...</p>
+              <p className="text-slate-400">Carregando agenda...</p>
             ) : monthEvents.length === 0 ? (
-              <p className="text-slate-400">Nenhum evento neste mês.</p>
+              <p className="text-slate-400">Nenhum item neste mês.</p>
             ) : (
               monthEvents.map((event) => (
                 <div key={event.id} className="rounded-2xl bg-slate-800 p-5">
                   <div className="flex items-center justify-between">
                     <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-sm font-bold text-cyan-400">
-                      {formatType(event.type)}
+                      {typeLabels[event.type] || event.type}
                     </span>
                     <CalendarDays size={18} className="text-cyan-400" />
                   </div>
@@ -193,11 +183,7 @@ export function Calendar() {
                     </p>
                     <p className="flex items-center gap-2">
                       <MapPin size={16} />
-                      {event.location || event.city || "Local não informado"}
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <Users size={16} />
-                      {event._count?.athletes || 0} participantes
+                      {event.location || (event.isOnline ? "Online" : "Local não informado")}
                     </p>
                   </div>
                 </div>

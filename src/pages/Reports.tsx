@@ -1,7 +1,7 @@
-﻿import { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import {
-  BarChart3, TrendingUp, Users, HeartHandshake,
-  CalendarDays, Trophy, Target, Download,
+  BarChart3, TrendingUp, Users, Wallet,
+  CalendarDays, Clock3, Target, Download,
 } from "lucide-react"
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell,
@@ -17,23 +17,23 @@ export function Reports() {
     getDashboard().then(setData).catch(console.error).finally(() => setLoading(false))
   }, [])
 
-  const athletes = data?.athletes ?? 0
-  const donations = Number(data?.donations ?? 0)
+  const contacts = data?.contacts ?? 0
+  const revenue = Number(data?.revenue ?? 0)
   const events = data?.events ?? 0
-  const users = data?.users ?? 0
+  const pendingInvoices = data?.pendingInvoices ?? 0
   const growthData = data?.growthData ?? []
-  const donationData = data?.donationData ?? []
+  const revenueData = data?.revenueData ?? []
 
   const categoryData = [
-    { name: "Atletas", value: athletes },
-    { name: "Usuários", value: users },
-    { name: "Eventos", value: events },
+    { name: "Contatos", value: contacts },
+    { name: "Compromissos", value: events },
+    { name: "Faturas pendentes", value: pendingInvoices },
   ]
 
   const goals = [
-    { title: "Atletas vs meta (20)", value: Math.min(Math.round((athletes / 20) * 100), 100) },
-    { title: "Eventos vs meta (10)", value: Math.min(Math.round((events / 10) * 100), 100) },
-    { title: "Arrecadação vs meta (R$ 5.000)", value: Math.min(Math.round((donations / 5000) * 100), 100) },
+    { title: "Contatos vs meta (50)", value: Math.min(Math.round((contacts / 50) * 100), 100) },
+    { title: "Compromissos vs meta (10)", value: Math.min(Math.round((events / 10) * 100), 100) },
+    { title: "Receita vs meta (R$ 5.000)", value: Math.min(Math.round((revenue / 5000) * 100), 100) },
   ]
 
   function formatCurrency(value: number) {
@@ -48,33 +48,33 @@ export function Reports() {
           Relatórios e indicadores
         </span>
         <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
-          Dados claros para medir impacto e evolução.
+          Dados claros para medir a evolução da sua empresa.
         </h1>
         <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Acompanhe crescimento, campanhas, doações, eventos e resultados da ASDA com relatórios visuais e estratégicos.
+          Acompanhe crescimento, receita, contatos e resultados com relatórios visuais e estratégicos.
         </p>
       </section>
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
           <Users className="text-cyan-400" />
-          <p className="mt-5 text-sm text-slate-400">Atletas cadastrados</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : athletes}</h2>
+          <p className="mt-5 text-sm text-slate-400">Contatos cadastrados</p>
+          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : contacts}</h2>
         </div>
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <HeartHandshake className="text-emerald-400" />
-          <p className="mt-5 text-sm text-slate-400">Doações confirmadas</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : formatCurrency(donations)}</h2>
+          <Wallet className="text-emerald-400" />
+          <p className="mt-5 text-sm text-slate-400">Receita do mês</p>
+          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : formatCurrency(revenue)}</h2>
         </div>
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
           <CalendarDays className="text-purple-400" />
-          <p className="mt-5 text-sm text-slate-400">Eventos cadastrados</p>
+          <p className="mt-5 text-sm text-slate-400">Compromissos</p>
           <h2 className="mt-2 text-3xl font-black">{loading ? "..." : events}</h2>
         </div>
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Trophy className="text-yellow-400" />
-          <p className="mt-5 text-sm text-slate-400">Usuários</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : users}</h2>
+          <Clock3 className="text-yellow-400" />
+          <p className="mt-5 text-sm text-slate-400">Faturas pendentes</p>
+          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : pendingInvoices}</h2>
         </div>
       </section>
 
@@ -82,8 +82,8 @@ export function Reports() {
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 xl:col-span-2">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-black text-white">Crescimento de atletas</h2>
-              <p className="text-sm text-slate-400">Novos atletas cadastrados por mês.</p>
+              <h2 className="text-2xl font-black text-white">Crescimento de contatos</h2>
+              <p className="text-sm text-slate-400">Novos contatos cadastrados por mês.</p>
             </div>
             <TrendingUp className="text-cyan-400" />
           </div>
@@ -91,7 +91,7 @@ export function Reports() {
             <ResponsiveContainer width="100%" height="100%">
               <AreaChart data={growthData}>
                 <defs>
-                  <linearGradient id="athletesGradient" x1="0" y1="0" x2="0" y2="1">
+                  <linearGradient id="contactsGradient" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#06b6d4" stopOpacity={0.8} />
                     <stop offset="95%" stopColor="#06b6d4" stopOpacity={0} />
                   </linearGradient>
@@ -100,7 +100,7 @@ export function Reports() {
                 <XAxis dataKey="month" stroke="#94a3b8" />
                 <YAxis stroke="#94a3b8" />
                 <Tooltip />
-                <Area type="monotone" dataKey="atletas" stroke="#06b6d4" fill="url(#athletesGradient)" strokeWidth={3} />
+                <Area type="monotone" dataKey="contatos" stroke="#06b6d4" fill="url(#contactsGradient)" strokeWidth={3} />
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -113,8 +113,8 @@ export function Reports() {
               <PieChart>
                 <Pie data={categoryData} dataKey="value" nameKey="name" innerRadius={60} outerRadius={100} paddingAngle={4}>
                   <Cell fill="#06b6d4" />
-                  <Cell fill="#22c55e" />
                   <Cell fill="#a855f7" />
+                  <Cell fill="#eab308" />
                 </Pie>
                 <Tooltip />
               </PieChart>
@@ -133,10 +133,10 @@ export function Reports() {
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">Doações por mês</h2>
+          <h2 className="text-2xl font-black text-white">Receita por mês</h2>
           <div className="mt-6 h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={donationData}>
+              <BarChart data={revenueData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
                 <XAxis dataKey="month" stroke="#94a3b8" />
                 <YAxis stroke="#94a3b8" />
@@ -172,10 +172,10 @@ export function Reports() {
       <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
         <div className="flex items-center gap-3">
           <Target className="text-cyan-400" />
-          <h2 className="text-2xl font-black text-white">Análise de impacto</h2>
+          <h2 className="text-2xl font-black text-white">Análise de desempenho</h2>
         </div>
         <p className="mt-4 max-w-4xl text-slate-400 leading-relaxed">
-          {loading ? "Carregando análise..." : `O sistema registra ${athletes} atleta${athletes !== 1 ? "s" : ""}, ${events} evento${events !== 1 ? "s" : ""} e ${formatCurrency(donations)} em doações confirmadas. Esses indicadores demonstram a evolução da estrutura da ASDA e ajudam a orientar decisões futuras sobre campanhas, treinos, voluntariado e captação de recursos.`}
+          {loading ? "Carregando análise..." : `O sistema registra ${contacts} contato${contacts !== 1 ? "s" : ""}, ${events} compromisso${events !== 1 ? "s" : ""} e ${formatCurrency(revenue)} em receita neste mês. Esses indicadores ajudam a orientar decisões sobre vendas, cobrança e planejamento da equipe.`}
         </p>
       </section>
     </div>

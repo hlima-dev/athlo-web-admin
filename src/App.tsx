@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 
 import { LandingPage } from "./pages/LandingPage";
 import { Login } from "./pages/Login";
@@ -8,12 +8,13 @@ import { ResetPassword } from "./pages/ResetPassword";
 
 import { Home } from "./pages/Home";
 import { Dashboard } from "./pages/Dashboard";
-import { Donations } from "./pages/Donations";
-import { Athletes } from "./pages/Athletes";
+import { Financeiro } from "./pages/Financeiro";
+import { Contacts } from "./pages/Contacts";
+import { Products } from "./pages/Products";
 import { Events } from "./pages/Events";
 import { Calendar } from "./pages/Calendar";
 import { Reports } from "./pages/Reports";
-import { Volunteers } from "./pages/Volunteers";
+import { Team } from "./pages/Team";
 import { Notifications } from "./pages/Notifications";
 import { Profile } from "./pages/Profile";
 import { Settings } from "./pages/Settings";
@@ -29,6 +30,7 @@ export default function App() {
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Register />} />
+        <Route path="/registrar" element={<Register />} />
 
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/esqueci-senha" element={<ForgotPassword />} />
@@ -46,15 +48,18 @@ export default function App() {
         >
           <Route path="/home" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/doacoes" element={<Donations />} />
-          <Route path="/atletas" element={<Athletes />} />
+          <Route path="/financeiro" element={<Financeiro />} />
+          <Route path="/contatos" element={<Contacts />} />
+          <Route path="/produtos" element={<Products />} />
           <Route path="/eventos" element={<Events />} />
           <Route path="/calendario" element={<Calendar />} />
           <Route path="/relatorios" element={<Reports />} />
-          <Route path="/voluntarios" element={<Volunteers />} />
+          <Route path="/equipe" element={<Team />} />
           <Route path="/notificacoes" element={<Notifications />} />
           <Route path="/perfil" element={<Profile />} />
           <Route path="/configuracoes" element={<Settings />} />
+
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>
       </Routes>
     </BrowserRouter>

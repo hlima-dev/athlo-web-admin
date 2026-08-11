@@ -36,7 +36,7 @@ export function Login() {
         className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl"
       >
         <h1 className="text-3xl font-bold text-white">Bem-vindo ao ATHLO</h1>
-        <p className="text-slate-400 mt-2 mb-6">Acesse o painel administrativo da ONG ASDA.</p>
+        <p className="text-slate-400 mt-2 mb-6">Acesse o painel de gestão da sua empresa.</p>
 
         {error && (
           <div className="mb-4 p-3 rounded-xl bg-red-900/30 border border-red-700 text-red-300 text-sm">

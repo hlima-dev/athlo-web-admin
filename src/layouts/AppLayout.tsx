@@ -4,8 +4,8 @@ import {
   LayoutDashboard,
   Home,
   Calendar,
-  HeartHandshake,
-  HandHeart,
+  Wallet,
+  Package,
   Users,
   BarChart3,
   Bell,
@@ -15,15 +15,16 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { clearSession, getStoredOrganization, getStoredUser } from "../services/auth";
 
 const menuItems = [
   { label: "Painel", path: "/dashboard", icon: LayoutDashboard },
-  { label: "Lar", path: "/home", icon: Home },
-  { label: "Eventos", path: "/eventos", icon: Calendar },
-  { label: "Calendário", path: "/calendario", icon: Calendar },
-  { label: "Doações", path: "/doacoes", icon: HeartHandshake },
-  { label: "Voluntários", path: "/voluntarios", icon: HandHeart },
-  { label: "Atletas", path: "/atletas", icon: Users },
+  { label: "Início", path: "/home", icon: Home },
+  { label: "Contatos", path: "/contatos", icon: Users },
+  { label: "Financeiro", path: "/financeiro", icon: Wallet },
+  { label: "Produtos", path: "/produtos", icon: Package },
+  { label: "Agenda", path: "/calendario", icon: Calendar },
+  { label: "Equipe", path: "/equipe", icon: Users },
   { label: "Relatórios", path: "/relatorios", icon: BarChart3 },
   { label: "Notificações", path: "/notificacoes", icon: Bell },
 ];
@@ -32,7 +33,8 @@ export function AppLayout() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const user = getStoredUser();
+  const organization = getStoredOrganization();
 
   useEffect(() => {
     if (menuOpen) {
@@ -47,10 +49,9 @@ export function AppLayout() {
   }, [menuOpen]);
 
   function logout() {
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-  navigate("/login");
-}
+    clearSession();
+    navigate("/login");
+  }
 
   function Sidebar() {
     return (
@@ -58,8 +59,8 @@ export function AppLayout() {
         <div className="p-6 border-b border-slate-800 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-black text-cyan-400">ATHLO</h1>
-            <p className="text-sm text-slate-400">
-              Gestão social e esportiva
+            <p className="text-sm text-slate-400 truncate max-w-[160px]">
+              {organization?.name || "Gestão para PMEs"}
             </p>
           </div>
 
@@ -160,11 +161,11 @@ export function AppLayout() {
 
             <div>
               <h2 className="text-lg md:text-xl font-bold">
-                Painel Administrativo
+                {organization?.name || "Painel Administrativo"}
               </h2>
 
               <p className="text-sm text-slate-400">
-                Bem-vindo{user?.nome ? `, ${user.nome}` : ""}!
+                Bem-vindo{user?.name ? `, ${user.name}` : ""}!
               </p>
             </div>
           </div>

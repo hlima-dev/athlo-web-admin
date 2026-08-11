@@ -1,8 +1,8 @@
-﻿import { useEffect, useState } from "react"
+import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import {
-  Home as HomeIcon, HeartHandshake, Users, CalendarDays,
-  Trophy, ArrowUpRight, Activity, Bell, Target,
+  Home as HomeIcon, Wallet, Users, CalendarDays,
+  Clock3, ArrowUpRight, Activity, Bell, Target,
 } from "lucide-react"
 import { getDashboard } from "../services/dashboard"
 
@@ -18,9 +18,10 @@ export function Home() {
       .finally(() => setLoading(false))
   }, [])
 
-  const athletes = data?.athletes ?? 0
-  const donations = Number(data?.donations ?? 0)
+  const contacts = data?.contacts ?? 0
+  const revenue = Number(data?.revenue ?? 0)
   const events = data?.events ?? 0
+  const pendingInvoices = data?.pendingInvoices ?? 0
 
   function formatCurrency(value: number) {
     if (value >= 1000) return `R$ ${(value / 1000).toFixed(1)}k`
@@ -28,9 +29,9 @@ export function Home() {
   }
 
   const quickActions = [
-    { label: "Cadastrar atleta", path: "/atletas" },
-    { label: "Criar evento", path: "/eventos" },
-    { label: "Registrar doação", path: "/doacoes" },
+    { label: "Cadastrar contato", path: "/contatos" },
+    { label: "Nova fatura", path: "/financeiro" },
+    { label: "Agendar compromisso", path: "/calendario" },
     { label: "Ver relatórios", path: "/relatorios" },
   ]
 
@@ -39,36 +40,36 @@ export function Home() {
       <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 md:p-10 shadow-2xl">
         <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
           <HomeIcon size={16} />
-          Lar
+          Início
         </span>
         <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
           Bem-vindo ao centro operacional do ATHLO.
         </h1>
         <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Acompanhe rapidamente o impacto da ASDA, veja ações importantes e acesse os principais módulos da plataforma.
+          Acompanhe rapidamente a saúde da sua empresa e acesse os principais módulos da plataforma.
         </p>
       </section>
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
           <Users className="text-cyan-400" />
-          <p className="mt-5 text-sm text-slate-400">Atletas acompanhados</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : athletes}</h2>
+          <p className="mt-5 text-sm text-slate-400">Contatos</p>
+          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : contacts}</h2>
         </div>
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <HeartHandshake className="text-emerald-400" />
-          <p className="mt-5 text-sm text-slate-400">Doações recebidas</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : formatCurrency(donations)}</h2>
+          <Wallet className="text-emerald-400" />
+          <p className="mt-5 text-sm text-slate-400">Receita do mês</p>
+          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : formatCurrency(revenue)}</h2>
         </div>
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
           <CalendarDays className="text-purple-400" />
-          <p className="mt-5 text-sm text-slate-400">Eventos cadastrados</p>
+          <p className="mt-5 text-sm text-slate-400">Compromissos</p>
           <h2 className="mt-2 text-3xl font-black">{loading ? "..." : events}</h2>
         </div>
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Trophy className="text-yellow-400" />
-          <p className="mt-5 text-sm text-slate-400">Usuários</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : data?.users ?? 0}</h2>
+          <Clock3 className="text-yellow-400" />
+          <p className="mt-5 text-sm text-slate-400">Faturas pendentes</p>
+          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : pendingInvoices}</h2>
         </div>
       </section>
 
@@ -80,9 +81,9 @@ export function Home() {
           </div>
           <div className="mt-6 space-y-5">
             {[
-              { label: "Atletas cadastrados vs meta (20)", value: Math.min(Math.round((athletes / 20) * 100), 100) },
-              { label: "Eventos realizados vs meta (10)", value: Math.min(Math.round((events / 10) * 100), 100) },
-              { label: "Arrecadação vs meta (R$ 5.000)", value: Math.min(Math.round((donations / 5000) * 100), 100) },
+              { label: "Contatos cadastrados vs meta (50)", value: Math.min(Math.round((contacts / 50) * 100), 100) },
+              { label: "Compromissos vs meta (10)", value: Math.min(Math.round((events / 10) * 100), 100) },
+              { label: "Receita vs meta (R$ 5.000)", value: Math.min(Math.round((revenue / 5000) * 100), 100) },
             ].map((item) => (
               <div key={item.label}>
                 <div className="mb-2 flex justify-between text-sm">
@@ -124,21 +125,21 @@ export function Home() {
         </div>
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="rounded-2xl bg-slate-800 p-5">
-            <h3 className="font-black text-white">Atletas</h3>
+            <h3 className="font-black text-white">Contatos</h3>
             <p className="mt-2 text-sm text-slate-400">
-              {loading ? "Carregando..." : `${athletes} atleta${athletes !== 1 ? "s" : ""} cadastrado${athletes !== 1 ? "s" : ""} no sistema.`}
+              {loading ? "Carregando..." : `${contacts} contato${contacts !== 1 ? "s" : ""} cadastrado${contacts !== 1 ? "s" : ""} no sistema.`}
             </p>
           </div>
           <div className="rounded-2xl bg-slate-800 p-5">
-            <h3 className="font-black text-white">Arrecadação</h3>
+            <h3 className="font-black text-white">Financeiro</h3>
             <p className="mt-2 text-sm text-slate-400">
-              {loading ? "Carregando..." : `${formatCurrency(donations)} em doações confirmadas.`}
+              {loading ? "Carregando..." : `${formatCurrency(revenue)} recebidos este mês.`}
             </p>
           </div>
           <div className="rounded-2xl bg-slate-800 p-5">
-            <h3 className="font-black text-white">Eventos</h3>
+            <h3 className="font-black text-white">Agenda</h3>
             <p className="mt-2 text-sm text-slate-400">
-              {loading ? "Carregando..." : `${events} evento${events !== 1 ? "s" : ""} registrado${events !== 1 ? "s" : ""}.`}
+              {loading ? "Carregando..." : `${events} compromisso${events !== 1 ? "s" : ""} registrado${events !== 1 ? "s" : ""}.`}
             </p>
           </div>
         </div>

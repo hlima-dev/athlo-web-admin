@@ -3,21 +3,29 @@ import {
   Mail,
   ShieldCheck,
   CalendarDays,
-  MapPin,
+  Building2,
   Edit,
   Lock,
   Activity,
   CheckCircle2,
 } from "lucide-react";
+import { getStoredOrganization, getStoredUser } from "../services/auth";
+
+const roleLabels: Record<string, string> = {
+  OWNER: "Dono da empresa",
+  ADMIN: "Administrador",
+  MEMBER: "Membro",
+};
 
 const activities = [
-  "Atualizou informações do dashboard",
-  "Registrou nova doação",
-  "Cadastrou evento de treino coletivo",
+  "Atualizou informações do perfil",
+  "Acessou o painel administrativo",
+  "Consultou relatórios da empresa",
 ];
 
 export function Profile() {
-  const user = JSON.parse(localStorage.getItem("user") || "{}");
+  const user = getStoredUser();
+  const organization = getStoredOrganization();
 
   return (
     <div className="space-y-8">
@@ -32,7 +40,7 @@ export function Profile() {
         </h1>
 
         <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Visualize dados da conta, função administrativa, segurança e histórico
+          Visualize dados da conta, função na empresa, segurança e histórico
           recente de atividades na plataforma.
         </p>
       </section>
@@ -41,7 +49,7 @@ export function Profile() {
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 xl:col-span-1">
           <div className="flex flex-col items-center text-center">
             <div className="flex h-28 w-28 items-center justify-center rounded-[32px] bg-cyan-500/10 text-4xl font-black text-cyan-400">
-              {(user?.nome || "Administrador")
+              {(user?.name || "Usuário")
                 .split(" ")
                 .map((n: string) => n[0])
                 .slice(0, 2)
@@ -49,15 +57,15 @@ export function Profile() {
             </div>
 
             <h2 className="mt-5 text-2xl font-black text-white">
-              {user?.nome || "Administrador"}
+              {user?.name || "Usuário"}
             </h2>
 
             <p className="mt-1 text-slate-400">
-              {user?.email || "admin@athlo.com"}
+              {user?.email || ""}
             </p>
 
             <span className="mt-5 rounded-full bg-emerald-500/10 px-4 py-2 text-sm font-bold text-emerald-400">
-              Administrador ativo
+              {roleLabels[user?.orgRole] || "Membro"} ativo
             </span>
           </div>
 
@@ -78,26 +86,32 @@ export function Profile() {
                 <Mail className="text-cyan-400" />
                 <p className="mt-4 text-sm text-slate-400">E-mail</p>
                 <h3 className="mt-1 font-bold text-white">
-                  {user?.email || "admin@athlo.com"}
+                  {user?.email || "-"}
                 </h3>
               </div>
 
               <div className="rounded-2xl bg-slate-800 p-5">
                 <ShieldCheck className="text-emerald-400" />
                 <p className="mt-4 text-sm text-slate-400">Permissão</p>
-                <h3 className="mt-1 font-bold text-white">Administrador</h3>
+                <h3 className="mt-1 font-bold text-white">
+                  {roleLabels[user?.orgRole] || "Membro"}
+                </h3>
               </div>
 
               <div className="rounded-2xl bg-slate-800 p-5">
-                <MapPin className="text-purple-400" />
-                <p className="mt-4 text-sm text-slate-400">Unidade</p>
-                <h3 className="mt-1 font-bold text-white">ASDA Sorocaba</h3>
+                <Building2 className="text-purple-400" />
+                <p className="mt-4 text-sm text-slate-400">Empresa</p>
+                <h3 className="mt-1 font-bold text-white">
+                  {organization?.name || "-"}
+                </h3>
               </div>
 
               <div className="rounded-2xl bg-slate-800 p-5">
                 <CalendarDays className="text-yellow-400" />
-                <p className="mt-4 text-sm text-slate-400">Membro desde</p>
-                <h3 className="mt-1 font-bold text-white">Maio de 2026</h3>
+                <p className="mt-4 text-sm text-slate-400">Status da conta</p>
+                <h3 className="mt-1 font-bold text-white">
+                  {user?.status === "ACTIVE" ? "Ativa" : user?.status || "-"}
+                </h3>
               </div>
             </div>
           </div>

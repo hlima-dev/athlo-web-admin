@@ -1,4 +1,4 @@
-# ATHLO — Plataforma Social e Esportiva da ASDA
+# ATHLO — SaaS de Gestão para Pequenas e Médias Empresas
 
 ![React](https://img.shields.io/badge/React-19-blue?logo=react)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
@@ -9,61 +9,65 @@
 
 # 📌 Sobre o projeto
 
-O **ATHLO** é uma plataforma SaaS desenvolvida para a **ASDA Sorocaba (Associação Sorocabana Paradesporto de Amputados)** com o objetivo de modernizar a gestão esportiva, social e administrativa da organização.
+O **ATHLO** é uma plataforma **SaaS multi-tenant** para pequenas e médias
+empresas gerenciarem seu negócio em um só lugar: contatos (CRM), financeiro,
+agenda, produtos/serviços e equipe.
 
-A plataforma conecta:
+Cada empresa que se cadastra (tenant) tem seus dados completamente isolados,
+usuários próprios com papéis de acesso (dono, administrador, membro) e um
+plano de assinatura (Free, Starter, Pro).
 
-- atletas
-- voluntários
-- eventos
-- doações
-- relatórios
-- impacto social
-
-Tudo através de uma interface moderna, responsiva e focada em acessibilidade e experiência do usuário.
+Tudo através de uma interface moderna, responsiva e focada em acessibilidade
+e experiência do usuário.
 
 ---
 
 # 🚀 Funcionalidades
 
-## 🔐 Autenticação
-- Login administrativo
-- Proteção de rotas
-- JWT Authentication
+## 🔐 Autenticação e multi-tenant
+- Cadastro self-service (cria uma nova empresa)
+- Convite de membros da equipe por e-mail
+- Proteção de rotas e JWT Authentication
+- Papéis por empresa: Dono, Administrador, Membro
 
 ## 📊 Dashboard
-- Estatísticas em tempo real
-- Indicadores da ONG
+- Estatísticas em tempo real da empresa
+- Indicadores de contatos, receita, faturas e agenda
 - Gráficos interativos
 
-## 🏃 Gestão de atletas
-- Cadastro de atletas
-- Status esportivo
-- Modalidades
-- Controle administrativo
+## 👥 Contatos (CRM)
+- Cadastro de leads, clientes e fornecedores
+- Busca e filtros
+- Histórico de faturas e agenda por contato
 
-## 📅 Eventos e calendário
-- Gestão de eventos
-- Calendário esportivo
-- Organização de atividades
+## 💰 Financeiro
+- Contas a pagar e a receber
+- Marcar faturas como pagas
+- Indicadores de fluxo de caixa
 
-## ❤️ Doações
-- Controle de arrecadações
-- Gestão de impacto social
+## 📦 Produtos e serviços
+- Catálogo de produtos e serviços
+- Preço, SKU e status
 
-## 🤝 Voluntários
-- Cadastro de voluntários
-- Controle de horas
-- Participação em ações
+## 📅 Agenda
+- Reuniões, tarefas e prazos
+- Calendário mensal
+
+## 🤝 Equipe
+- Convite de membros
+- Papéis de acesso por empresa
+
+## 💳 Planos e assinatura
+- Planos Free / Starter / Pro
+- Troca de plano pela própria empresa
+- Estrutura pronta para integração de cobrança (Stripe)
 
 ## 🔔 Notificações
-- Alertas administrativos
-- Atualizações da plataforma
+- Alertas administrativos, de financeiro, agenda e equipe
 
 ## 📈 Relatórios
 - Indicadores de desempenho
 - Gráficos analíticos
-- Relatórios visuais
 
 ---
 
@@ -85,8 +89,9 @@ Tudo através de uma interface moderna, responsiva e focada em acessibilidade e 
 - Node.js
 - Express
 - TypeScript
+- Prisma ORM
+- PostgreSQL
 - JWT
-- MySQL
 
 ---
 
@@ -99,7 +104,6 @@ A interface foi desenvolvida com foco em:
 - responsividade
 - acessibilidade
 - UI estilo SaaS
-- identidade social/esportiva
 
 ---
 
@@ -152,31 +156,21 @@ src/
 
 ---
 
-# 🎯 Objetivo acadêmico
+# 🗺️ Roadmap
 
-Projeto desenvolvido com foco em:
-
-- tecnologia para impacto social
-- inclusão através do esporte
-- experiência full stack
-- arquitetura moderna
-- práticas atuais de desenvolvimento web
+- Integração de cobrança real (Stripe Checkout)
+- Enforcement automático de limites de plano
+- Pipeline de vendas / Kanban de oportunidades
 
 ---
 
 # 👨‍💻 Desenvolvido por
 
 - Lucas Lima Santos
-- Equipe ATHLO / ASDA
-
----
-
-# ❤️ ASDA Sorocaba
-
-Associação voltada ao esporte adaptado e inclusão de atletas amputados através do esporte e ações sociais.
 
 ---
 
 # 📄 Licença
 
-Projeto acadêmico desenvolvido para fins educacionais e sociais.
+Projeto acadêmico desenvolvido para fins educacionais, evoluído para um
+produto SaaS.

@@ -4,9 +4,8 @@ import { getDashboard } from "../services/dashboard";
 import {
   BarChart3,
   CalendarDays,
-  HeartHandshake,
-  HandHeart,
-  TrendingUp,
+  Wallet,
+  Clock3,
   Users,
   Activity,
   ArrowUpRight,
@@ -15,8 +14,6 @@ import {
 import {
   Area,
   AreaChart,
-  Bar,
-  BarChart,
   CartesianGrid,
   Cell,
   Pie,
@@ -28,38 +25,22 @@ import {
 } from "recharts";
 
 interface DashboardData {
-  athletes: number;
+  contacts: number;
   users: number;
   events: number;
-  donations: number;
-  growthData: { month: string; atletas: number }[];
-  donationData: { month: string; valor: number }[];
+  pendingInvoices: number;
+  revenue: number | string;
+  growthData: { month: string; contatos: number }[];
+  revenueData: { month: string; valor: number }[];
+  upcomingEvents: { id: string; title: string; type: string; startDate: string }[];
 }
 
-const eventsData = [
-  { name: "Treinos", value: 12 },
-  { name: "Campanhas", value: 6 },
-  { name: "Campeonatos", value: 4 },
-  { name: "Palestras", value: 2 },
-];
-
-const activities = [
-  {
-    title: "Dados sincronizados",
-    description: "Dashboard atualizado com informações reais do banco.",
-    time: "agora",
-  },
-  {
-    title: "Sistema online",
-    description: "Frontend, backend e banco conectados com sucesso.",
-    time: "hoje",
-  },
-  {
-    title: "ATHLO em produção",
-    description: "Aplicação publicada e integrada ao Supabase.",
-    time: "hoje",
-  },
-];
+const typeLabels: Record<string, string> = {
+  MEETING: "Reunião",
+  TASK: "Tarefa",
+  DEADLINE: "Prazo",
+  OTHER: "Outro",
+};
 
 export function Dashboard() {
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
@@ -90,44 +71,31 @@ export function Dashboard() {
 
   const stats = [
     {
-      title: "Atletas ativos",
-      value: dashboard?.athletes ?? 0,
-      change: "+12%",
+      title: "Contatos",
+      value: dashboard?.contacts ?? 0,
       icon: Users,
     },
     {
-      title: "Doações",
-      value: `R$ ${dashboard?.donations ?? 0}`,
-      change: "+24%",
-      icon: HeartHandshake,
+      title: "Receita do mês",
+      value: `R$ ${dashboard?.revenue ?? 0}`,
+      icon: Wallet,
     },
     {
-      title: "Usuários",
-      value: dashboard?.users ?? 0,
-      change: "+8%",
-      icon: HandHeart,
+      title: "Faturas pendentes",
+      value: dashboard?.pendingInvoices ?? 0,
+      icon: Clock3,
     },
     {
-      title: "Eventos",
+      title: "Compromissos",
       value: dashboard?.events ?? 0,
-      change: "+5%",
       icon: CalendarDays,
     },
   ];
 
   const impactData = [
-    {
-      name: "Atletas",
-      value: dashboard?.athletes ?? 0,
-    },
-    {
-      name: "Usuários",
-      value: dashboard?.users ?? 0,
-    },
-    {
-      name: "Eventos",
-      value: dashboard?.events ?? 0,
-    },
+    { name: "Contatos", value: dashboard?.contacts ?? 0 },
+    { name: "Usuários", value: dashboard?.users ?? 0 },
+    { name: "Compromissos", value: dashboard?.events ?? 0 },
   ];
 
   return (
@@ -136,22 +104,25 @@ export function Dashboard() {
         <div className="relative z-10 max-w-3xl">
           <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
             <Activity size={16} />
-            Visão geral da plataforma
+            Visão geral da empresa
           </span>
 
           <h1 className="mt-6 text-3xl font-black leading-tight text-white md:text-5xl">
-            Transformando dados em impacto social real.
+            Sua empresa organizada em um painel só.
           </h1>
 
           <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-            Acompanhe atletas, doações, eventos, voluntários e resultados da
-            ASDA em um painel moderno e estratégico.
+            Acompanhe contatos, financeiro, agenda e equipe em um painel
+            moderno e estratégico.
           </p>
 
-          <button className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 font-black text-slate-950">
+          <a
+            href="/relatorios"
+            className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 font-black text-slate-950"
+          >
             Ver relatórios
             <ArrowUpRight size={20} />
-          </button>
+          </a>
         </div>
       </section>
 
@@ -164,15 +135,8 @@ export function Dashboard() {
               key={item.title}
               className="rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-xl"
             >
-              <div className="flex items-center justify-between">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400">
-                  <Icon size={24} />
-                </div>
-
-                <span className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-sm font-bold text-emerald-400">
-                  <TrendingUp size={14} />
-                  {item.change}
-                </span>
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400">
+                <Icon size={24} />
               </div>
 
               <p className="mt-6 text-sm font-semibold text-slate-400">
@@ -192,10 +156,10 @@ export function Dashboard() {
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-2xl font-black text-white">
-                Crescimento de doações
+                Receita mensal
               </h2>
               <p className="text-sm text-slate-400">
-                Arrecadação mensal registrada.
+                Faturas recebidas por mês.
               </p>
             </div>
 
@@ -204,10 +168,10 @@ export function Dashboard() {
 
           <div className="h-80 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={dashboard?.donationData || []}>
+              <AreaChart data={dashboard?.revenueData || []}>
                 <defs>
                   <linearGradient
-                    id="donationGradient"
+                    id="revenueGradient"
                     x1="0"
                     y1="0"
                     x2="0"
@@ -226,7 +190,7 @@ export function Dashboard() {
                   type="monotone"
                   dataKey="valor"
                   stroke="#06b6d4"
-                  fill="url(#donationGradient)"
+                  fill="url(#revenueGradient)"
                   strokeWidth={3}
                 />
               </AreaChart>
@@ -235,7 +199,7 @@ export function Dashboard() {
         </div>
 
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">Impacto geral</h2>
+          <h2 className="text-2xl font-black text-white">Visão geral</h2>
 
           <div className="mt-6 h-72 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
@@ -274,44 +238,54 @@ export function Dashboard() {
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">Tipos de eventos</h2>
+          <h2 className="text-2xl font-black text-white">
+            Crescimento de contatos
+          </h2>
+          <p className="text-sm text-slate-400">Novos contatos por mês.</p>
 
           <div className="mt-6 h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={eventsData}>
+              <AreaChart data={dashboard?.growthData || []}>
+                <defs>
+                  <linearGradient id="contactsGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#22c55e" stopOpacity={0.8} />
+                    <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
                 <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis dataKey="name" stroke="#94a3b8" />
+                <XAxis dataKey="month" stroke="#94a3b8" />
                 <YAxis stroke="#94a3b8" />
                 <Tooltip />
-                <Bar dataKey="value" fill="#06b6d4" radius={[12, 12, 0, 0]} />
-              </BarChart>
+                <Area type="monotone" dataKey="contatos" stroke="#22c55e" fill="url(#contactsGradient)" strokeWidth={3} />
+              </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
           <h2 className="text-2xl font-black text-white">
-            Atividades recentes
+            Próximos compromissos
           </h2>
 
           <div className="mt-6 space-y-4">
-            {activities.map((activity) => (
-              <div
-                key={activity.title}
-                className="rounded-2xl bg-slate-800 p-4"
-              >
-                <div className="mb-2 flex items-start justify-between gap-3">
-                  <h3 className="font-bold text-white">{activity.title}</h3>
-                  <span className="text-xs text-slate-500">
-                    {activity.time}
-                  </span>
-                </div>
+            {(dashboard?.upcomingEvents ?? []).length === 0 ? (
+              <p className="text-slate-400">Nenhum compromisso agendado.</p>
+            ) : (
+              dashboard?.upcomingEvents.map((event) => (
+                <div key={event.id} className="rounded-2xl bg-slate-800 p-4">
+                  <div className="mb-2 flex items-start justify-between gap-3">
+                    <h3 className="font-bold text-white">{event.title}</h3>
+                    <span className="text-xs text-slate-500">
+                      {new Date(event.startDate).toLocaleDateString("pt-BR")}
+                    </span>
+                  </div>
 
-                <p className="text-sm leading-relaxed text-slate-400">
-                  {activity.description}
-                </p>
-              </div>
-            ))}
+                  <p className="text-sm leading-relaxed text-slate-400">
+                    {typeLabels[event.type] || event.type}
+                  </p>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </section>

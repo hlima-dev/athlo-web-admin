@@ -15,7 +15,7 @@ export function LoadingScreen() {
       </h2>
 
       <p className="text-white/40 mt-3">
-        Plataforma ASDA Sorocaba
+        Gestão para pequenas e médias empresas
       </p>
 
       <div className="w-52 h-2 bg-[#111827] rounded-full overflow-hidden mt-10">
