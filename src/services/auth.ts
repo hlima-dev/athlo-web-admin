@@ -44,6 +44,11 @@ export async function register(data: RegisterData): Promise<AuthResponse> {
   return response.data.data
 }
 
+export async function changePassword(currentPassword: string, newPassword: string) {
+  const response = await api.post('/auth/change-password', { currentPassword, newPassword })
+  return response.data
+}
+
 export function saveSession(auth: AuthResponse): void {
   localStorage.setItem('@athlo:token', auth.accessToken)
   localStorage.setItem('@athlo:refreshToken', auth.refreshToken)
