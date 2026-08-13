@@ -18,6 +18,8 @@ import {
 } from "../services/contacts";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { PageHeader } from "../components/PageHeader";
+import { ConfirmDialog } from "../components/ConfirmDialog";
+import { useToast } from "../components/Toast";
 
 const emptyForm = {
   name: "",
@@ -41,6 +43,7 @@ const statusLabels: Record<string, string> = {
 };
 
 export function Contacts() {
+  const toast = useToast();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -48,6 +51,8 @@ export function Contacts() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Contact | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [form, setForm] = useState(emptyForm);
 
@@ -111,6 +116,7 @@ export function Contacts() {
       setForm(emptyForm);
       setEditingId(null);
       await loadContacts();
+      toast.success(editingId ? "Contato atualizado com sucesso." : "Contato cadastrado com sucesso.");
     } catch (err: any) {
       setError(
         err?.response?.data?.message || err?.response?.data?.error || "Erro ao salvar contato."
@@ -120,16 +126,19 @@ export function Contacts() {
     }
   }
 
-  async function handleDeleteContact(contact: Contact) {
-    if (!window.confirm(`Excluir o contato "${contact.name}"? Essa ação não pode ser desfeita.`)) {
-      return;
-    }
+  async function confirmDeleteContact() {
+    if (!deleteTarget) return;
 
     try {
-      await deleteContact(contact.id);
+      setDeleting(true);
+      await deleteContact(deleteTarget.id);
+      setDeleteTarget(null);
       await loadContacts();
+      toast.success("Contato excluído com sucesso.");
     } catch (err: any) {
-      alert(err?.response?.data?.message || "Erro ao excluir contato.");
+      toast.error(err?.response?.data?.message || "Erro ao excluir contato.");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -244,7 +253,7 @@ export function Contacts() {
 
                     <RowActionsMenu
                       onEdit={() => openEditModal(contact)}
-                      onDelete={() => handleDeleteContact(contact)}
+                      onDelete={() => setDeleteTarget(contact)}
                     />
                   </div>
                 </div>
@@ -364,6 +373,16 @@ export function Contacts() {
           </form>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Excluir contato"
+        description={`Tem certeza que deseja excluir "${deleteTarget?.name}"? Essa ação não pode ser desfeita.`}
+        confirmLabel="Excluir"
+        loading={deleting}
+        onConfirm={confirmDeleteContact}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

@@ -9,6 +9,8 @@ import {
 } from "../services/products";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { PageHeader } from "../components/PageHeader";
+import { ConfirmDialog } from "../components/ConfirmDialog";
+import { useToast } from "../components/Toast";
 
 function toCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -24,6 +26,7 @@ const emptyForm = {
 };
 
 export function Products() {
+  const toast = useToast();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -31,6 +34,8 @@ export function Products() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [form, setForm] = useState(emptyForm);
 
@@ -94,6 +99,7 @@ export function Products() {
       setForm(emptyForm);
       setEditingId(null);
       await loadProducts();
+      toast.success(editingId ? "Item atualizado com sucesso." : "Item cadastrado com sucesso.");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Erro ao salvar produto.");
     } finally {
@@ -101,16 +107,19 @@ export function Products() {
     }
   }
 
-  async function handleDeleteProduct(product: Product) {
-    if (!window.confirm(`Excluir "${product.name}"? Essa ação não pode ser desfeita.`)) {
-      return;
-    }
+  async function confirmDeleteProduct() {
+    if (!deleteTarget) return;
 
     try {
-      await deleteProduct(product.id);
+      setDeleting(true);
+      await deleteProduct(deleteTarget.id);
+      setDeleteTarget(null);
       await loadProducts();
+      toast.success("Item excluído com sucesso.");
     } catch (err: any) {
-      alert(err?.response?.data?.message || "Erro ao excluir produto.");
+      toast.error(err?.response?.data?.message || "Erro ao excluir produto.");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -194,7 +203,7 @@ export function Products() {
                     )}
                     <RowActionsMenu
                       onEdit={() => openEditModal(product)}
-                      onDelete={() => handleDeleteProduct(product)}
+                      onDelete={() => setDeleteTarget(product)}
                     />
                   </div>
                 </div>
@@ -309,6 +318,16 @@ export function Products() {
           </form>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Excluir item"
+        description={`Tem certeza que deseja excluir "${deleteTarget?.name}"? Essa ação não pode ser desfeita.`}
+        confirmLabel="Excluir"
+        loading={deleting}
+        onConfirm={confirmDeleteProduct}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

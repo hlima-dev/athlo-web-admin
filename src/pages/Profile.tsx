@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { changePassword, getStoredOrganization, getStoredUser, updateProfile } from "../services/auth";
 import { PageHeader } from "../components/PageHeader";
+import { useToast } from "../components/Toast";
 
 const roleLabels: Record<string, string> = {
   OWNER: "Dono da empresa",
@@ -28,6 +29,7 @@ const activities = [
 const emptyPasswordForm = { currentPassword: "", newPassword: "", confirmPassword: "" };
 
 export function Profile() {
+  const toast = useToast();
   const organization = getStoredOrganization();
   const [user, setUser] = useState(getStoredUser());
 
@@ -67,6 +69,7 @@ export function Profile() {
       localStorage.setItem("@athlo:user", JSON.stringify(merged));
       setShowProfileModal(false);
       setSuccess("Perfil atualizado com sucesso.");
+      toast.success("Perfil atualizado com sucesso.");
     } catch (err: any) {
       const fieldErrors = err?.response?.data?.errors as Record<string, string[]> | undefined;
       const firstFieldError = fieldErrors && Object.values(fieldErrors).flat()[0];
@@ -90,6 +93,7 @@ export function Profile() {
       await changePassword(passwordForm.currentPassword, passwordForm.newPassword);
       setShowPasswordModal(false);
       setSuccess("Senha alterada com sucesso.");
+      toast.success("Senha alterada com sucesso.");
     } catch (err: any) {
       const fieldErrors = err?.response?.data?.errors as Record<string, string[]> | undefined;
       const firstFieldError = fieldErrors && Object.values(fieldErrors).flat()[0];

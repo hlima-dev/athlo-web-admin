@@ -13,6 +13,7 @@ import {
 import { getMyOrganization, updateOrganization, type OrganizationDetails } from "../services/organization";
 import { getPlans, changePlan, type Plan } from "../services/plans";
 import { PageHeader } from "../components/PageHeader";
+import { useToast } from "../components/Toast";
 
 function formatPrice(value: string | number) {
   const n = Number(value);
@@ -21,6 +22,7 @@ function formatPrice(value: string | number) {
 }
 
 export function Settings() {
+  const toast = useToast();
   const [organization, setOrganization] = useState<OrganizationDetails | null>(null);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,8 +75,9 @@ export function Settings() {
       setChangingPlan(true);
       await changePlan(slug);
       await load();
+      toast.success("Plano alterado com sucesso.");
     } catch (err: any) {
-      alert(err?.response?.data?.message || "Erro ao trocar de plano.");
+      toast.error(err?.response?.data?.message || "Erro ao trocar de plano.");
     } finally {
       setChangingPlan(false);
     }

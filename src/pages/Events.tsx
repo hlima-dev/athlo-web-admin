@@ -13,6 +13,8 @@ import {
 import { getEvents, createEvent, updateEvent, deleteEvent, type Event } from "../services/events";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { PageHeader } from "../components/PageHeader";
+import { ConfirmDialog } from "../components/ConfirmDialog";
+import { useToast } from "../components/Toast";
 
 const typeLabels: Record<string, string> = {
   MEETING: "Reunião",
@@ -47,12 +49,15 @@ function toDatetimeLocal(iso?: string) {
 }
 
 export function Events() {
+  const toast = useToast();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Event | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [form, setForm] = useState(emptyForm);
 
@@ -121,6 +126,7 @@ export function Events() {
       setForm(emptyForm);
       setEditingId(null);
       await loadEvents();
+      toast.success(editingId ? "Item atualizado com sucesso." : "Item cadastrado com sucesso.");
     } catch (error: any) {
       setError(
         error?.response?.data?.message ||
@@ -132,16 +138,19 @@ export function Events() {
     }
   }
 
-  async function handleDeleteEvent(event: Event) {
-    if (!window.confirm(`Excluir "${event.title}"? Essa ação não pode ser desfeita.`)) {
-      return;
-    }
+  async function confirmDeleteEvent() {
+    if (!deleteTarget) return;
 
     try {
-      await deleteEvent(event.id);
+      setDeleting(true);
+      await deleteEvent(deleteTarget.id);
+      setDeleteTarget(null);
       await loadEvents();
+      toast.success("Item excluído com sucesso.");
     } catch (err: any) {
-      alert(err?.response?.data?.message || "Erro ao excluir item da agenda.");
+      toast.error(err?.response?.data?.message || "Erro ao excluir item da agenda.");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -258,7 +267,7 @@ export function Events() {
 
                   <RowActionsMenu
                     onEdit={() => openEditModal(event)}
-                    onDelete={() => handleDeleteEvent(event)}
+                    onDelete={() => setDeleteTarget(event)}
                   />
                 </div>
               </div>
@@ -371,6 +380,16 @@ export function Events() {
           </form>
         </div>
       )}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Excluir item da agenda"
+        description={`Tem certeza que deseja excluir "${deleteTarget?.title}"? Essa ação não pode ser desfeita.`}
+        confirmLabel="Excluir"
+        loading={deleting}
+        onConfirm={confirmDeleteEvent}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

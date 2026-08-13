@@ -17,6 +17,8 @@ import {
 } from "../services/invoices";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { PageHeader } from "../components/PageHeader";
+import { ConfirmDialog } from "../components/ConfirmDialog";
+import { useToast } from "../components/Toast";
 
 function toCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -54,12 +56,15 @@ const emptyForm = {
 };
 
 export function Financeiro() {
+  const toast = useToast();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<Invoice | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const [form, setForm] = useState(emptyForm);
 
@@ -125,6 +130,7 @@ export function Financeiro() {
       setForm(emptyForm);
       setEditingId(null);
       await loadInvoices();
+      toast.success(editingId ? "Fatura atualizada com sucesso." : "Fatura cadastrada com sucesso.");
     } catch (err: any) {
       setError(err?.response?.data?.message || "Erro ao salvar fatura.");
     } finally {
@@ -136,21 +142,25 @@ export function Financeiro() {
     try {
       await markInvoicePaid(id);
       await loadInvoices();
-    } catch (err) {
-      console.error("Erro ao marcar fatura como paga:", err);
+      toast.success("Fatura marcada como paga.");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Erro ao marcar fatura como paga.");
     }
   }
 
-  async function handleDeleteInvoice(invoice: Invoice) {
-    if (!window.confirm(`Excluir a fatura "${invoice.description}"? Essa ação não pode ser desfeita.`)) {
-      return;
-    }
+  async function confirmDeleteInvoice() {
+    if (!deleteTarget) return;
 
     try {
-      await deleteInvoice(invoice.id);
+      setDeleting(true);
+      await deleteInvoice(deleteTarget.id);
+      setDeleteTarget(null);
       await loadInvoices();
+      toast.success("Fatura excluída com sucesso.");
     } catch (err: any) {
-      alert(err?.response?.data?.message || "Erro ao excluir fatura.");
+      toast.error(err?.response?.data?.message || "Erro ao excluir fatura.");
+    } finally {
+      setDeleting(false);
     }
   }
 
@@ -270,7 +280,7 @@ export function Financeiro() {
 
                   <RowActionsMenu
                     onEdit={() => openEditModal(invoice)}
-                    onDelete={() => handleDeleteInvoice(invoice)}
+                    onDelete={() => setDeleteTarget(invoice)}
                   />
                 </div>
               </div>
@@ -370,6 +380,16 @@ export function Financeiro() {
           </form>
         </div>
       ) : null}
+
+      <ConfirmDialog
+        open={!!deleteTarget}
+        title="Excluir fatura"
+        description={`Tem certeza que deseja excluir "${deleteTarget?.description}"? Essa ação não pode ser desfeita.`}
+        confirmLabel="Excluir"
+        loading={deleting}
+        onConfirm={confirmDeleteInvoice}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </div>
   );
 }

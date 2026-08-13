@@ -9,6 +9,7 @@ import {
 
 import App from "./App";
 import { LoadingScreen } from "./components/LoadingScreen";
+import { ToastProvider } from "./components/Toast";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,7 +38,9 @@ function Root() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <App />
+      <ToastProvider>
+        <App />
+      </ToastProvider>
     </QueryClientProvider>
   );
 }
