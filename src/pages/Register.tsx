@@ -27,7 +27,9 @@ export function Register() {
       saveSession(auth)
       navigate('/dashboard', { replace: true })
     } catch (err: any) {
-      const msg = err?.response?.data?.message ?? 'Erro ao criar cadastro.'
+      const fieldErrors = err?.response?.data?.errors as Record<string, string[]> | undefined
+      const firstFieldError = fieldErrors && Object.values(fieldErrors).flat()[0]
+      const msg = firstFieldError ?? err?.response?.data?.message ?? 'Erro ao criar cadastro.'
       setError(msg)
     } finally {
       setLoading(false)
@@ -87,14 +89,19 @@ export function Register() {
           />
           <input
             type="password"
-            placeholder="Senha — mín. 8 caracteres"
+            placeholder="Senha"
             autoComplete="new-password"
             className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
             value={form.senha}
             onChange={(e) => setForm({ ...form, senha: e.target.value })}
             minLength={8}
+            pattern="(?=.*[A-Z])(?=.*[0-9]).{8,}"
+            title="Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número"
             required
           />
+          <p className="text-xs text-slate-500 -mt-2">
+            Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número.
+          </p>
         </div>
 
         <button
