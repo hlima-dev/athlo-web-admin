@@ -49,6 +49,11 @@ export async function changePassword(currentPassword: string, newPassword: strin
   return response.data
 }
 
+export async function updateProfile(data: { name?: string; phone?: string }) {
+  const response = await api.patch('/auth/me', data)
+  return response.data.data
+}
+
 export function saveSession(auth: AuthResponse): void {
   localStorage.setItem('@athlo:token', auth.accessToken)
   localStorage.setItem('@athlo:refreshToken', auth.refreshToken)

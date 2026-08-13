@@ -10,7 +10,7 @@ import {
   Activity,
   CheckCircle2,
 } from "lucide-react";
-import { changePassword, getStoredOrganization, getStoredUser } from "../services/auth";
+import { changePassword, getStoredOrganization, getStoredUser, updateProfile } from "../services/auth";
 
 const roleLabels: Record<string, string> = {
   OWNER: "Dono da empresa",
@@ -27,8 +27,8 @@ const activities = [
 const emptyPasswordForm = { currentPassword: "", newPassword: "", confirmPassword: "" };
 
 export function Profile() {
-  const user = getStoredUser();
   const organization = getStoredOrganization();
+  const [user, setUser] = useState(getStoredUser());
 
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [passwordForm, setPasswordForm] = useState(emptyPasswordForm);
@@ -36,11 +36,43 @@ export function Profile() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [profileForm, setProfileForm] = useState({ name: "", phone: "" });
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileError, setProfileError] = useState("");
+
   function openPasswordModal() {
     setPasswordForm(emptyPasswordForm);
     setError("");
     setSuccess("");
     setShowPasswordModal(true);
+  }
+
+  function openProfileModal() {
+    setProfileForm({ name: user?.name || "", phone: user?.phone || "" });
+    setProfileError("");
+    setShowProfileModal(true);
+  }
+
+  async function handleSaveProfile(e: React.FormEvent) {
+    e.preventDefault();
+    setProfileError("");
+
+    try {
+      setSavingProfile(true);
+      const updated = await updateProfile(profileForm);
+      const merged = { ...user, ...updated };
+      setUser(merged);
+      localStorage.setItem("@athlo:user", JSON.stringify(merged));
+      setShowProfileModal(false);
+      setSuccess("Perfil atualizado com sucesso.");
+    } catch (err: any) {
+      const fieldErrors = err?.response?.data?.errors as Record<string, string[]> | undefined;
+      const firstFieldError = fieldErrors && Object.values(fieldErrors).flat()[0];
+      setProfileError(firstFieldError || err?.response?.data?.message || "Erro ao atualizar perfil.");
+    } finally {
+      setSavingProfile(false);
+    }
   }
 
   async function handleChangePassword(e: React.FormEvent) {
@@ -115,12 +147,11 @@ export function Profile() {
           </div>
 
           <button
-            disabled
-            title="Em breve"
-            className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-800 px-5 py-4 font-black text-slate-500 cursor-not-allowed"
+            onClick={openProfileModal}
+            className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-4 font-black text-slate-950 hover:bg-cyan-400"
           >
             <Edit size={20} />
-            Editar perfil (em breve)
+            Editar perfil
           </button>
         </div>
 
@@ -284,6 +315,60 @@ export function Profile() {
               className="mt-6 w-full rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
             >
               {saving ? "Salvando..." : "Salvar nova senha"}
+            </button>
+          </form>
+        </div>
+      )}
+
+      {showProfileModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
+          <form
+            onSubmit={handleSaveProfile}
+            className="w-full max-w-md rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
+          >
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-2xl font-black text-white">Editar perfil</h2>
+              <button
+                type="button"
+                onClick={() => setShowProfileModal(false)}
+                className="rounded-xl bg-slate-800 px-4 py-2 text-slate-300 hover:bg-slate-700"
+              >
+                Fechar
+              </button>
+            </div>
+
+            {profileError && (
+              <div className="mb-4 rounded-xl border border-red-700 bg-red-900/30 p-3 text-sm text-red-300">
+                {profileError}
+              </div>
+            )}
+
+            <div className="space-y-4">
+              <input
+                placeholder="Nome completo"
+                autoComplete="name"
+                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                value={profileForm.name}
+                onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+                minLength={2}
+                required
+              />
+
+              <input
+                placeholder="Telefone"
+                autoComplete="tel"
+                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                value={profileForm.phone}
+                onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+              />
+            </div>
+
+            <button
+              type="submit"
+              disabled={savingProfile}
+              className="mt-6 w-full rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
+            >
+              {savingProfile ? "Salvando..." : "Salvar alterações"}
             </button>
           </form>
         </div>
