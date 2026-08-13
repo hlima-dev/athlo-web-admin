@@ -7,7 +7,15 @@ import {
   Clock3,
   Plus,
 } from "lucide-react";
-import { getInvoices, createInvoice, markInvoicePaid, type Invoice } from "../services/invoices";
+import {
+  getInvoices,
+  createInvoice,
+  updateInvoice,
+  markInvoicePaid,
+  deleteInvoice,
+  type Invoice,
+} from "../services/invoices";
+import { RowActionsMenu } from "../components/RowActionsMenu";
 
 function toCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -36,20 +44,23 @@ const methodLabels: Record<string, string> = {
   OTHER: "Outro",
 };
 
+const emptyForm = {
+  type: "RECEIVABLE",
+  description: "",
+  amount: "",
+  dueDate: "",
+  method: "PIX",
+};
+
 export function Financeiro() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const [form, setForm] = useState({
-    type: "RECEIVABLE",
-    description: "",
-    amount: "",
-    dueDate: "",
-    method: "PIX",
-  });
+  const [form, setForm] = useState(emptyForm);
 
   async function loadInvoices() {
     try {
@@ -69,25 +80,52 @@ export function Financeiro() {
     loadInvoices();
   }, []);
 
-  async function handleCreateInvoice(e: React.FormEvent) {
+  function openCreateModal() {
+    setEditingId(null);
+    setForm(emptyForm);
+    setError("");
+    setShowModal(true);
+  }
+
+  function openEditModal(invoice: Invoice) {
+    setEditingId(invoice.id);
+    setForm({
+      type: invoice.type,
+      description: invoice.description,
+      amount: String(invoice.amount ?? ""),
+      dueDate: invoice.dueDate ? invoice.dueDate.slice(0, 10) : "",
+      method: invoice.method || "PIX",
+    });
+    setError("");
+    setShowModal(true);
+  }
+
+  async function handleSaveInvoice(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
     try {
       setSaving(true);
-      await createInvoice({
+      const payload = {
         type: form.type,
         description: form.description,
         amount: Number(form.amount),
         dueDate: form.dueDate,
         method: form.method,
-      });
+      };
+
+      if (editingId) {
+        await updateInvoice(editingId, payload);
+      } else {
+        await createInvoice(payload);
+      }
 
       setShowModal(false);
-      setForm({ type: "RECEIVABLE", description: "", amount: "", dueDate: "", method: "PIX" });
+      setForm(emptyForm);
+      setEditingId(null);
       await loadInvoices();
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Erro ao cadastrar fatura.");
+      setError(err?.response?.data?.message || "Erro ao salvar fatura.");
     } finally {
       setSaving(false);
     }
@@ -99,6 +137,19 @@ export function Financeiro() {
       await loadInvoices();
     } catch (err) {
       console.error("Erro ao marcar fatura como paga:", err);
+    }
+  }
+
+  async function handleDeleteInvoice(invoice: Invoice) {
+    if (!window.confirm(`Excluir a fatura "${invoice.description}"? Essa ação não pode ser desfeita.`)) {
+      return;
+    }
+
+    try {
+      await deleteInvoice(invoice.id);
+      await loadInvoices();
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Erro ao excluir fatura.");
     }
   }
 
@@ -166,7 +217,7 @@ export function Financeiro() {
           </div>
           <button
             type="button"
-            onClick={() => setShowModal(true)}
+            onClick={openCreateModal}
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400"
           >
             <Plus size={20} /> Nova fatura
@@ -204,7 +255,7 @@ export function Financeiro() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   <strong
                     className={`text-xl ${
                       invoice.type === "RECEIVABLE" ? "text-emerald-400" : "text-red-400"
@@ -221,6 +272,11 @@ export function Financeiro() {
                       Marcar paga
                     </button>
                   )}
+
+                  <RowActionsMenu
+                    onEdit={() => openEditModal(invoice)}
+                    onDelete={() => handleDeleteInvoice(invoice)}
+                  />
                 </div>
               </div>
             ))
@@ -231,13 +287,17 @@ export function Financeiro() {
       {showModal ? (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <form
-            onSubmit={handleCreateInvoice}
+            onSubmit={handleSaveInvoice}
             className="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
           >
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">Nova fatura</h2>
-                <p className="text-sm text-slate-400">Registre uma conta a pagar ou a receber.</p>
+                <h2 className="text-2xl font-black text-white">
+                  {editingId ? "Editar fatura" : "Nova fatura"}
+                </h2>
+                <p className="text-sm text-slate-400">
+                  {editingId ? "Atualize os dados da fatura." : "Registre uma conta a pagar ou a receber."}
+                </p>
               </div>
               <button
                 type="button"
@@ -247,6 +307,12 @@ export function Financeiro() {
                 Fechar
               </button>
             </div>
+
+            {error && (
+              <div className="mb-4 rounded-xl border border-red-700 bg-red-900/30 p-3 text-sm text-red-300">
+                {error}
+              </div>
+            )}
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <select
@@ -304,7 +370,7 @@ export function Financeiro() {
               disabled={saving}
               className="mt-6 w-full rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
             >
-              {saving ? "Salvando..." : "Cadastrar fatura"}
+              {saving ? "Salvando..." : editingId ? "Salvar alterações" : "Cadastrar fatura"}
             </button>
           </form>
         </div>

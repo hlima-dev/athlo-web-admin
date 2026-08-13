@@ -7,14 +7,26 @@ import {
   Building2,
   Mail,
   Phone,
-  MoreHorizontal,
 } from "lucide-react";
 
 import {
   getContacts,
   createContact,
+  updateContact,
+  deleteContact,
   type Contact,
 } from "../services/contacts";
+import { RowActionsMenu } from "../components/RowActionsMenu";
+
+const emptyForm = {
+  name: "",
+  email: "",
+  phone: "",
+  company: "",
+  type: "LEAD",
+  city: "",
+  state: "SP",
+};
 
 const typeLabels: Record<string, string> = {
   LEAD: "Lead",
@@ -34,16 +46,9 @@ export function Contacts() {
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const [form, setForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    company: "",
-    type: "LEAD",
-    city: "",
-    state: "SP",
-  });
+  const [form, setForm] = useState(emptyForm);
 
   async function loadContacts() {
     try {
@@ -68,22 +73,62 @@ export function Contacts() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
-  async function handleCreateContact(e: React.FormEvent) {
+  function openCreateModal() {
+    setEditingId(null);
+    setForm(emptyForm);
+    setError("");
+    setShowModal(true);
+  }
+
+  function openEditModal(contact: Contact) {
+    setEditingId(contact.id);
+    setForm({
+      name: contact.name,
+      email: contact.email || "",
+      phone: contact.phone || "",
+      company: contact.company || "",
+      type: contact.type,
+      city: contact.city || "",
+      state: contact.state || "SP",
+    });
+    setError("");
+    setShowModal(true);
+  }
+
+  async function handleSaveContact(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
     try {
       setSaving(true);
-      await createContact(form);
+      if (editingId) {
+        await updateContact(editingId, form);
+      } else {
+        await createContact(form);
+      }
       setShowModal(false);
-      setForm({ name: "", email: "", phone: "", company: "", type: "LEAD", city: "", state: "SP" });
+      setForm(emptyForm);
+      setEditingId(null);
       await loadContacts();
     } catch (err: any) {
       setError(
-        err?.response?.data?.message || err?.response?.data?.error || "Erro ao cadastrar contato."
+        err?.response?.data?.message || err?.response?.data?.error || "Erro ao salvar contato."
       );
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleDeleteContact(contact: Contact) {
+    if (!window.confirm(`Excluir o contato "${contact.name}"? Essa ação não pode ser desfeita.`)) {
+      return;
+    }
+
+    try {
+      await deleteContact(contact.id);
+      await loadContacts();
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Erro ao excluir contato.");
     }
   }
 
@@ -149,7 +194,7 @@ export function Contacts() {
 
           <button
             type="button"
-            onClick={() => setShowModal(true)}
+            onClick={openCreateModal}
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400"
           >
             <Plus size={20} />
@@ -207,9 +252,10 @@ export function Contacts() {
                       <p className="mt-1 font-bold text-white">{contact.city || "N/I"}</p>
                     </div>
 
-                    <button className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-700 text-slate-300 hover:bg-slate-600">
-                      <MoreHorizontal />
-                    </button>
+                    <RowActionsMenu
+                      onEdit={() => openEditModal(contact)}
+                      onDelete={() => handleDeleteContact(contact)}
+                    />
                   </div>
                 </div>
 
@@ -233,13 +279,17 @@ export function Contacts() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <form
-            onSubmit={handleCreateContact}
+            onSubmit={handleSaveContact}
             className="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
           >
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">Novo contato</h2>
-                <p className="text-sm text-slate-400">Cadastre um contato no banco de dados.</p>
+                <h2 className="text-2xl font-black text-white">
+                  {editingId ? "Editar contato" : "Novo contato"}
+                </h2>
+                <p className="text-sm text-slate-400">
+                  {editingId ? "Atualize os dados do contato." : "Cadastre um contato no banco de dados."}
+                </p>
               </div>
 
               <button
@@ -319,7 +369,7 @@ export function Contacts() {
               disabled={saving}
               className="mt-6 w-full rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
             >
-              {saving ? "Salvando..." : "Cadastrar contato"}
+              {saving ? "Salvando..." : editingId ? "Salvar alterações" : "Cadastrar contato"}
             </button>
           </form>
         </div>

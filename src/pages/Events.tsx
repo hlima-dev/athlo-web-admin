@@ -7,11 +7,11 @@ import {
   Clock,
   ListChecks,
   Flag,
-  MoreHorizontal,
   CheckCircle2,
 } from "lucide-react";
 
-import { getEvents, createEvent, type Event } from "../services/events";
+import { getEvents, createEvent, updateEvent, deleteEvent, type Event } from "../services/events";
+import { RowActionsMenu } from "../components/RowActionsMenu";
 
 const typeLabels: Record<string, string> = {
   MEETING: "Reunião",
@@ -26,20 +26,34 @@ const statusLabels: Record<string, string> = {
   CANCELED: "Cancelado",
 };
 
+const emptyForm = {
+  title: "",
+  description: "",
+  type: "MEETING",
+  status: "SCHEDULED",
+  location: "",
+  startDate: "",
+  endDate: "",
+};
+
+// Converte um ISO do backend para o formato aceito por <input type="datetime-local">
+function toDatetimeLocal(iso?: string) {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
 export function Events() {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const [form, setForm] = useState({
-    title: "",
-    description: "",
-    type: "MEETING",
-    location: "",
-    startDate: "",
-    endDate: "",
-  });
+  const [form, setForm] = useState(emptyForm);
 
   async function loadEvents() {
     try {
@@ -57,42 +71,76 @@ export function Events() {
     loadEvents();
   }, []);
 
-  async function handleCreateEvent(e: React.FormEvent) {
+  function openCreateModal() {
+    setEditingId(null);
+    setForm(emptyForm);
+    setError("");
+    setShowModal(true);
+  }
+
+  function openEditModal(event: Event) {
+    setEditingId(event.id);
+    setForm({
+      title: event.title,
+      description: event.description || "",
+      type: event.type,
+      status: event.status,
+      location: event.location || "",
+      startDate: toDatetimeLocal(event.startDate),
+      endDate: toDatetimeLocal(event.endDate),
+    });
+    setError("");
+    setShowModal(true);
+  }
+
+  async function handleSaveEvent(e: React.FormEvent) {
     e.preventDefault();
+    setError("");
 
     try {
       setSaving(true);
 
-      await createEvent({
+      const payload = {
         title: form.title,
         description: form.description,
         type: form.type,
+        status: form.status,
         location: form.location,
         startDate: form.startDate,
         endDate: form.endDate,
-      });
+      };
+
+      if (editingId) {
+        await updateEvent(editingId, payload);
+      } else {
+        await createEvent(payload);
+      }
 
       setShowModal(false);
-
-      setForm({
-        title: "",
-        description: "",
-        type: "MEETING",
-        location: "",
-        startDate: "",
-        endDate: "",
-      });
-
+      setForm(emptyForm);
+      setEditingId(null);
       await loadEvents();
     } catch (error: any) {
-      console.error("Erro ao criar evento:", error);
-      alert(
+      setError(
         error?.response?.data?.message ||
           error?.response?.data?.error ||
-          "Erro ao criar evento."
+          "Erro ao salvar item da agenda."
       );
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleDeleteEvent(event: Event) {
+    if (!window.confirm(`Excluir "${event.title}"? Essa ação não pode ser desfeita.`)) {
+      return;
+    }
+
+    try {
+      await deleteEvent(event.id);
+      await loadEvents();
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Erro ao excluir item da agenda.");
     }
   }
 
@@ -161,7 +209,7 @@ export function Events() {
 
           <button
             type="button"
-            onClick={() => setShowModal(true)}
+            onClick={openCreateModal}
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400"
           >
             <Plus size={20} />
@@ -218,9 +266,10 @@ export function Events() {
                     </div>
                   </div>
 
-                  <button className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-700 text-slate-300 hover:bg-slate-600">
-                    <MoreHorizontal />
-                  </button>
+                  <RowActionsMenu
+                    onEdit={() => openEditModal(event)}
+                    onDelete={() => handleDeleteEvent(event)}
+                  />
                 </div>
               </div>
             ))
@@ -231,13 +280,17 @@ export function Events() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <form
-            onSubmit={handleCreateEvent}
+            onSubmit={handleSaveEvent}
             className="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
           >
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">Novo item da agenda</h2>
-                <p className="text-sm text-slate-400">Cadastre um compromisso no banco de dados.</p>
+                <h2 className="text-2xl font-black text-white">
+                  {editingId ? "Editar item da agenda" : "Novo item da agenda"}
+                </h2>
+                <p className="text-sm text-slate-400">
+                  {editingId ? "Atualize os dados do compromisso." : "Cadastre um compromisso no banco de dados."}
+                </p>
               </div>
 
               <button
@@ -248,6 +301,12 @@ export function Events() {
                 Fechar
               </button>
             </div>
+
+            {error && (
+              <div className="mb-4 rounded-xl border border-red-700 bg-red-900/30 p-3 text-sm text-red-300">
+                {error}
+              </div>
+            )}
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <input
@@ -268,6 +327,18 @@ export function Events() {
                 <option value="DEADLINE">Prazo</option>
                 <option value="OTHER">Outro</option>
               </select>
+
+              {editingId && (
+                <select
+                  className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                  value={form.status}
+                  onChange={(e) => setForm({ ...form, status: e.target.value })}
+                >
+                  <option value="SCHEDULED">Agendado</option>
+                  <option value="COMPLETED">Concluído</option>
+                  <option value="CANCELED">Cancelado</option>
+                </select>
+              )}
 
               <input
                 placeholder="Local"
@@ -305,7 +376,7 @@ export function Events() {
               disabled={saving}
               className="mt-6 w-full rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
             >
-              {saving ? "Salvando..." : "Cadastrar item"}
+              {saving ? "Salvando..." : editingId ? "Salvar alterações" : "Cadastrar item"}
             </button>
           </form>
         </div>

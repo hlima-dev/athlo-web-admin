@@ -1,10 +1,26 @@
 import { useEffect, useState } from "react";
 import { Package, Plus, Search, Tag, CheckCircle2, XCircle } from "lucide-react";
-import { getProducts, createProduct, type Product } from "../services/products";
+import {
+  getProducts,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  type Product,
+} from "../services/products";
+import { RowActionsMenu } from "../components/RowActionsMenu";
 
 function toCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
+
+const emptyForm = {
+  name: "",
+  description: "",
+  sku: "",
+  type: "PRODUCT",
+  price: "",
+  active: true,
+};
 
 export function Products() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -13,14 +29,9 @@ export function Products() {
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [editingId, setEditingId] = useState<string | null>(null);
 
-  const [form, setForm] = useState({
-    name: "",
-    description: "",
-    sku: "",
-    type: "PRODUCT",
-    price: "",
-  });
+  const [form, setForm] = useState(emptyForm);
 
   async function loadProducts() {
     try {
@@ -45,20 +56,60 @@ export function Products() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
-  async function handleCreateProduct(e: React.FormEvent) {
+  function openCreateModal() {
+    setEditingId(null);
+    setForm(emptyForm);
+    setError("");
+    setShowModal(true);
+  }
+
+  function openEditModal(product: Product) {
+    setEditingId(product.id);
+    setForm({
+      name: product.name,
+      description: product.description || "",
+      sku: product.sku || "",
+      type: product.type,
+      price: String(product.price ?? ""),
+      active: product.active,
+    });
+    setError("");
+    setShowModal(true);
+  }
+
+  async function handleSaveProduct(e: React.FormEvent) {
     e.preventDefault();
     setError("");
 
     try {
       setSaving(true);
-      await createProduct({ ...form, price: Number(form.price) });
+      const payload = { ...form, price: Number(form.price) };
+      if (editingId) {
+        await updateProduct(editingId, payload);
+      } else {
+        await createProduct(payload);
+      }
       setShowModal(false);
-      setForm({ name: "", description: "", sku: "", type: "PRODUCT", price: "" });
+      setForm(emptyForm);
+      setEditingId(null);
       await loadProducts();
     } catch (err: any) {
-      setError(err?.response?.data?.message || "Erro ao cadastrar produto.");
+      setError(err?.response?.data?.message || "Erro ao salvar produto.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleDeleteProduct(product: Product) {
+    if (!window.confirm(`Excluir "${product.name}"? Essa ação não pode ser desfeita.`)) {
+      return;
+    }
+
+    try {
+      await deleteProduct(product.id);
+      await loadProducts();
+    } catch (err: any) {
+      alert(err?.response?.data?.message || "Erro ao excluir produto.");
     }
   }
 
@@ -109,7 +160,7 @@ export function Products() {
 
           <button
             type="button"
-            onClick={() => setShowModal(true)}
+            onClick={openCreateModal}
             className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400"
           >
             <Plus size={20} />
@@ -144,11 +195,17 @@ export function Products() {
                     {product.sku && <p className="text-xs text-slate-500">SKU: {product.sku}</p>}
                   </div>
 
-                  {product.active ? (
-                    <CheckCircle2 className="text-emerald-400 shrink-0" size={20} />
-                  ) : (
-                    <XCircle className="text-slate-600 shrink-0" size={20} />
-                  )}
+                  <div className="flex items-center gap-2 shrink-0">
+                    {product.active ? (
+                      <CheckCircle2 className="text-emerald-400" size={20} />
+                    ) : (
+                      <XCircle className="text-slate-600" size={20} />
+                    )}
+                    <RowActionsMenu
+                      onEdit={() => openEditModal(product)}
+                      onDelete={() => handleDeleteProduct(product)}
+                    />
+                  </div>
                 </div>
 
                 {product.description && (
@@ -167,13 +224,17 @@ export function Products() {
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <form
-            onSubmit={handleCreateProduct}
+            onSubmit={handleSaveProduct}
             className="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
           >
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">Novo item</h2>
-                <p className="text-sm text-slate-400">Cadastre um produto ou serviço.</p>
+                <h2 className="text-2xl font-black text-white">
+                  {editingId ? "Editar item" : "Novo item"}
+                </h2>
+                <p className="text-sm text-slate-400">
+                  {editingId ? "Atualize os dados do produto ou serviço." : "Cadastre um produto ou serviço."}
+                </p>
               </div>
 
               <button
@@ -233,6 +294,18 @@ export function Products() {
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
               />
+
+              {editingId && (
+                <label className="flex items-center gap-3 rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white md:col-span-2">
+                  <input
+                    type="checkbox"
+                    checked={form.active}
+                    onChange={(e) => setForm({ ...form, active: e.target.checked })}
+                    className="h-4 w-4 accent-cyan-500"
+                  />
+                  Item ativo
+                </label>
+              )}
             </div>
 
             <button
@@ -240,7 +313,7 @@ export function Products() {
               disabled={saving}
               className="mt-6 w-full rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
             >
-              {saving ? "Salvando..." : "Cadastrar item"}
+              {saving ? "Salvando..." : editingId ? "Salvar alterações" : "Cadastrar item"}
             </button>
           </form>
         </div>
