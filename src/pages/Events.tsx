@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   CalendarDays,
   Plus,
@@ -224,14 +225,23 @@ export function Events() {
         title="Agenda"
         description="Organize reuniões, tarefas e prazos da equipe."
         action={
-          <button
-            type="button"
-            onClick={openCreateModal}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 hover:bg-cyan-400"
-          >
-            <Plus size={20} />
-            Novo item
-          </button>
+          <div className="flex flex-wrap items-center gap-3">
+            <Link
+              to="/calendario"
+              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 dark:border-slate-700 px-5 py-3 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              <CalendarDays size={20} />
+              Ver calendário
+            </Link>
+            <button
+              type="button"
+              onClick={openCreateModal}
+              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 hover:bg-cyan-400"
+            >
+              <Plus size={20} />
+              Novo item
+            </button>
+          </div>
         }
       />
 

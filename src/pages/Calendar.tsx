@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react"
+import { Link } from "react-router-dom"
 import {
   CalendarDays,
   ChevronLeft,
   ChevronRight,
   Clock3,
   MapPin,
+  Plus,
 } from "lucide-react"
 import { getEvents, type Event } from "../services/events"
 
@@ -95,6 +97,14 @@ export function Calendar() {
         <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
           Acompanhe rapidamente as atividades do mês com dados reais do banco.
         </p>
+
+        <Link
+          to="/eventos"
+          className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-bold text-slate-950 hover:bg-slate-100"
+        >
+          <Plus size={18} />
+          Novo compromisso
+        </Link>
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
