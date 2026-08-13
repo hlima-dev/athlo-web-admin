@@ -8,7 +8,7 @@ import {
   ListChecks,
   Flag,
   CheckCircle2,
-  Sparkles,
+  Wand2,
 } from "lucide-react";
 
 import {
@@ -16,7 +16,7 @@ import {
   createEvent,
   updateEvent,
   deleteEvent,
-  parseEventWithAi,
+  parseEventFromText,
   type Event,
 } from "../services/events";
 import { RowActionsMenu } from "../components/RowActionsMenu";
@@ -67,8 +67,8 @@ export function Events() {
   const [deleteTarget, setDeleteTarget] = useState<Event | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  const [aiPrompt, setAiPrompt] = useState("");
-  const [aiLoading, setAiLoading] = useState(false);
+  const [quickPrompt, setQuickPrompt] = useState("");
+  const [quickLoading, setQuickLoading] = useState(false);
 
   const [form, setForm] = useState(emptyForm);
 
@@ -110,13 +110,13 @@ export function Events() {
     setShowModal(true);
   }
 
-  async function handleAiParse(e: React.FormEvent) {
+  async function handleQuickParse(e: React.FormEvent) {
     e.preventDefault();
-    if (!aiPrompt.trim()) return;
+    if (!quickPrompt.trim()) return;
 
     try {
-      setAiLoading(true);
-      const draft = await parseEventWithAi(aiPrompt.trim());
+      setQuickLoading(true);
+      const draft = await parseEventFromText(quickPrompt.trim());
       setEditingId(null);
       setForm({
         title: draft.title,
@@ -129,12 +129,12 @@ export function Events() {
       });
       setError("");
       setShowModal(true);
-      setAiPrompt("");
+      setQuickPrompt("");
       toast.success("Sugestão pronta! Revise os dados e salve.");
     } catch (err: any) {
       toast.error(err?.response?.data?.message || "Não foi possível interpretar o texto.");
     } finally {
-      setAiLoading(false);
+      setQuickLoading(false);
     }
   }
 
@@ -238,30 +238,30 @@ export function Events() {
       <section className="rounded-2xl border border-cyan-800/60 bg-gradient-to-br from-cyan-950/40 to-slate-900 p-6">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400">
-            <Sparkles size={20} />
+            <Wand2 size={20} />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Cadastro rápido com IA</h2>
+            <h2 className="text-lg font-bold text-white">Cadastro rápido por texto</h2>
             <p className="text-sm text-slate-400">
-              Descreva o compromisso em uma frase e a IA preenche o formulário para você revisar.
+              Descreva o compromisso em uma frase (data, horário e local) e preenchemos o formulário para você revisar.
             </p>
           </div>
         </div>
 
-        <form onSubmit={handleAiParse} className="mt-4 flex flex-col gap-3 sm:flex-row">
+        <form onSubmit={handleQuickParse} className="mt-4 flex flex-col gap-3 sm:flex-row">
           <input
             placeholder='Ex: "Reunião com o cliente Ana amanhã às 15h no escritório" ou "Entrega para a Padaria Central sexta-feira de manhã"'
             className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-cyan-400"
-            value={aiPrompt}
-            onChange={(e) => setAiPrompt(e.target.value)}
+            value={quickPrompt}
+            onChange={(e) => setQuickPrompt(e.target.value)}
           />
           <button
             type="submit"
-            disabled={aiLoading || !aiPrompt.trim()}
+            disabled={quickLoading || !quickPrompt.trim()}
             className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
           >
-            <Sparkles size={18} />
-            {aiLoading ? "Interpretando..." : "Preencher com IA"}
+            <Wand2 size={18} />
+            {quickLoading ? "Interpretando..." : "Preencher automaticamente"}
           </button>
         </form>
       </section>

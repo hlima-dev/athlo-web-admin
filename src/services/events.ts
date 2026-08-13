@@ -39,7 +39,7 @@ export async function deleteEvent(id: string) {
   return response.data;
 }
 
-export interface AiEventDraft {
+export interface QuickEventDraft {
   title: string;
   description: string;
   type: "MEETING" | "TASK" | "DEADLINE" | "OTHER";
@@ -49,7 +49,7 @@ export interface AiEventDraft {
   isOnline: boolean;
 }
 
-export async function parseEventWithAi(prompt: string) {
-  const response = await api.post("/events/ai-parse", { prompt });
-  return response.data?.data as AiEventDraft;
+export async function parseEventFromText(prompt: string) {
+  const response = await api.post("/events/quick-parse", { prompt });
+  return response.data?.data as QuickEventDraft;
 }
