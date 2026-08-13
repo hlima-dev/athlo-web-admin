@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getDashboard } from "../services/dashboard";
 import { useTheme } from "../components/Theme";
 
@@ -11,6 +12,7 @@ import {
   Activity,
   ArrowUpRight,
   ClipboardList,
+  Target,
 } from "lucide-react";
 
 import {
@@ -45,7 +47,15 @@ const typeLabels: Record<string, string> = {
   OTHER: "Outro",
 };
 
+const quickActions = [
+  { label: "Cadastrar contato", path: "/contatos" },
+  { label: "Nova fatura", path: "/financeiro" },
+  { label: "Agendar compromisso", path: "/eventos" },
+  { label: "Ver relatórios", path: "/relatorios" },
+];
+
 export function Dashboard() {
+  const navigate = useNavigate();
   const { theme } = useTheme();
   const gridColor = theme === "dark" ? "#1e293b" : "#e2e8f0";
   const axisColor = theme === "dark" ? "#94a3b8" : "#64748b";
@@ -160,6 +170,27 @@ export function Dashboard() {
             </div>
           );
         })}
+      </section>
+
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <div className="flex items-center gap-3">
+          <Target className="text-cyan-400" />
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Ações rápidas</h2>
+        </div>
+
+        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {quickActions.map((action) => (
+            <button
+              key={action.label}
+              type="button"
+              onClick={() => navigate(action.path)}
+              className="flex items-center justify-between rounded-2xl bg-slate-100 dark:bg-slate-800 p-4 font-bold text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700"
+            >
+              {action.label}
+              <ArrowUpRight size={18} />
+            </button>
+          ))}
+        </div>
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">

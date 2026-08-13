@@ -6,7 +6,6 @@ import { Register } from "./pages/Register";
 import { ForgotPassword } from "./pages/ForgotPassword";
 import { ResetPassword } from "./pages/ResetPassword";
 
-import { Home } from "./pages/Home";
 import { Dashboard } from "./pages/Dashboard";
 import { Financeiro } from "./pages/Financeiro";
 import { Contacts } from "./pages/Contacts";
@@ -47,8 +46,8 @@ export default function App() {
             </PrivateRoute>
           }
         >
-          <Route path="/home" element={<Home />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/home" element={<Navigate to="/dashboard" replace />} />
           <Route path="/financeiro" element={<Financeiro />} />
           <Route path="/contatos" element={<Contacts />} />
           <Route path="/produtos" element={<Products />} />

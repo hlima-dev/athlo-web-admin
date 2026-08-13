@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import {
   LayoutDashboard,
-  Home,
   Calendar,
   CalendarDays,
   Wallet,
@@ -21,7 +20,6 @@ import { clearSession, getStoredOrganization, getStoredUser } from "../services/
 
 const menuItems = [
   { label: "Painel", path: "/dashboard", icon: LayoutDashboard },
-  { label: "Início", path: "/home", icon: Home },
   { label: "Contatos", path: "/contatos", icon: Users },
   { label: "Pedidos", path: "/pedidos", icon: ClipboardList },
   { label: "Financeiro", path: "/financeiro", icon: Wallet },
