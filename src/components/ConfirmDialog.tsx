@@ -31,7 +31,7 @@ export function ConfirmDialog({
       onClick={onCancel}
     >
       <div
-        className="w-full max-w-sm rounded-2xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
+        className="w-full max-w-sm rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-start gap-4">
@@ -44,8 +44,8 @@ export function ConfirmDialog({
           </div>
 
           <div>
-            <h2 className="font-bold text-white">{title}</h2>
-            <p className="mt-1 text-sm text-slate-400">{description}</p>
+            <h2 className="font-bold text-slate-900 dark:text-white">{title}</h2>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{description}</p>
           </div>
         </div>
 
@@ -54,7 +54,7 @@ export function ConfirmDialog({
             type="button"
             onClick={onCancel}
             disabled={loading}
-            className="rounded-xl border border-slate-700 px-4 py-2 text-sm font-bold text-slate-300 hover:bg-slate-800 disabled:opacity-60"
+            className="rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-60"
           >
             {cancelLabel}
           </button>
@@ -62,8 +62,10 @@ export function ConfirmDialog({
             type="button"
             onClick={onConfirm}
             disabled={loading}
-            className={`rounded-xl px-4 py-2 text-sm font-bold text-white disabled:opacity-60 ${
-              danger ? "bg-red-600 hover:bg-red-500" : "bg-cyan-500 text-slate-950 hover:bg-cyan-400"
+            className={`rounded-xl px-4 py-2 text-sm font-bold disabled:opacity-60 ${
+              danger
+                ? "bg-red-600 text-white hover:bg-red-500"
+                : "bg-cyan-500 text-slate-950 hover:bg-cyan-400"
             }`}
           >
             {loading ? "Aguarde..." : confirmLabel}

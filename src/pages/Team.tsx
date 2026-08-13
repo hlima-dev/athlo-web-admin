@@ -97,34 +97,34 @@ export function Team() {
       />
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <Users className="text-cyan-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Membros ativos</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : members.length}</h2>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Membros ativos</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{loading ? "..." : members.length}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <ShieldCheck className="text-emerald-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Administradores</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : admins}</h2>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Administradores</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{loading ? "..." : admins}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <Clock3 className="text-yellow-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Convites pendentes</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : invites.length}</h2>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Convites pendentes</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{loading ? "..." : invites.length}</h2>
         </div>
       </section>
 
       {invites.length > 0 && (
-        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-lg font-bold text-white">Convites pendentes</h2>
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Convites pendentes</h2>
           <div className="mt-4 space-y-3">
             {invites.map((invite) => (
-              <div key={invite.id} className="flex items-center justify-between rounded-2xl bg-slate-800 p-4">
+              <div key={invite.id} className="flex items-center justify-between rounded-2xl bg-slate-100 dark:bg-slate-800 p-4">
                 <div className="flex items-center gap-3">
                   <Mail className="text-cyan-400" size={18} />
                   <div>
-                    <p className="font-bold text-white">{invite.email}</p>
-                    <p className="text-xs text-slate-400">
+                    <p className="font-bold text-slate-900 dark:text-white">{invite.email}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
                       {roleLabels[invite.role] || invite.role} · expira em{" "}
                       {new Date(invite.expiresAt).toLocaleDateString("pt-BR")}
                     </p>
@@ -132,7 +132,7 @@ export function Team() {
                 </div>
                 <button
                   onClick={() => handleRevoke(invite.id)}
-                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-700 text-slate-300 hover:bg-red-500/20 hover:text-red-400"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-red-500/20 hover:text-red-400"
                 >
                   <X size={16} />
                 </button>
@@ -142,17 +142,17 @@ export function Team() {
         </section>
       )}
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
         <div>
-          <h2 className="text-lg font-bold text-white">Membros da equipe</h2>
-          <p className="text-sm text-slate-400">Gerencie os usuários da sua empresa.</p>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Membros da equipe</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Gerencie os usuários da sua empresa.</p>
         </div>
 
-        <div className="mt-6 flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-800 px-4">
-          <Search className="text-slate-500" size={20} />
+        <div className="mt-6 flex items-center gap-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4">
+          <Search className="text-slate-400 dark:text-slate-500" size={20} />
           <input
             placeholder="Buscar membro..."
-            className="w-full bg-transparent py-4 text-white outline-none placeholder:text-slate-500"
+            className="w-full bg-transparent py-4 text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -160,43 +160,43 @@ export function Team() {
 
         <div className="mt-6">
           {loading ? (
-            <p className="text-slate-400">Carregando...</p>
+            <p className="text-slate-500 dark:text-slate-400">Carregando...</p>
           ) : filtered.length === 0 ? (
-            <div className="rounded-2xl border border-dashed border-slate-700 bg-slate-800 p-10 text-center">
-              <Users className="mx-auto text-slate-500" size={40} />
-              <p className="mt-4 text-slate-400">Nenhum membro encontrado.</p>
+            <div className="rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 p-10 text-center">
+              <Users className="mx-auto text-slate-400 dark:text-slate-500" size={40} />
+              <p className="mt-4 text-slate-500 dark:text-slate-400">Nenhum membro encontrado.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-5">
               {filtered.map((member) => (
-                <div key={member.id} className="rounded-2xl border border-slate-800 bg-slate-800/60 p-5">
+                <div key={member.id} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-800/60 p-5">
                   <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                     <div className="flex items-center gap-4">
                       <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/10 text-sm font-bold text-cyan-400">
                         {getInitials(member.name)}
                       </div>
                       <div>
-                        <h3 className="text-base font-bold text-white">{member.name}</h3>
-                        <p className="text-sm text-slate-400">{member.email}</p>
+                        <h3 className="text-base font-bold text-slate-900 dark:text-white">{member.name}</h3>
+                        <p className="text-sm text-slate-500 dark:text-slate-400">{member.email}</p>
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4 md:grid-cols-3 md:items-center">
                       <div>
-                        <p className="text-xs text-slate-500">Papel</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500">Papel</p>
                         <span className="mt-1 inline-flex rounded-full bg-cyan-500/10 px-3 py-1 text-sm font-bold text-cyan-400">
                           {roleLabels[member.orgRole] || member.orgRole}
                         </span>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500">Status</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500">Status</p>
                         <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-sm font-bold text-emerald-400">
                           <CheckCircle2 size={14} />
                           {member.status === "ACTIVE" ? "Ativo" : member.status}
                         </span>
                       </div>
                       <div>
-                        <p className="text-xs text-slate-500">Desde</p>
-                        <p className="mt-1 text-sm text-white">
+                        <p className="text-xs text-slate-400 dark:text-slate-500">Desde</p>
+                        <p className="mt-1 text-sm text-slate-900 dark:text-white">
                           {new Date(member.createdAt).toLocaleDateString("pt-BR")}
                         </p>
                       </div>
@@ -213,14 +213,14 @@ export function Team() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <form
             onSubmit={handleInvite}
-            className="w-full max-w-md rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
+            className="w-full max-w-md rounded-3xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
           >
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-black text-white">Convidar membro</h2>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white">Convidar membro</h2>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="rounded-xl bg-slate-800 px-4 py-2 text-slate-300 hover:bg-slate-700"
+                className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
               >
                 Fechar
               </button>
@@ -236,14 +236,14 @@ export function Team() {
               <input
                 type="email"
                 placeholder="E-mail do convidado"
-                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
                 required
               />
 
               <select
-                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.role}
                 onChange={(e) => setForm({ ...form, role: e.target.value })}
               >

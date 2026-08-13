@@ -37,15 +37,15 @@ export function Register() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+    <main className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl"
+        className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl"
       >
-        <h1 className="text-3xl font-bold text-white">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
           {inviteToken ? 'Aceitar convite' : 'Criar sua empresa no ATHLO'}
         </h1>
-        <p className="text-slate-400 mt-2 mb-6">
+        <p className="text-slate-500 dark:text-slate-400 mt-2 mb-6">
           {inviteToken
             ? 'Complete seu cadastro para entrar na equipe.'
             : 'Comece grátis e gerencie contatos, financeiro e agenda em um só lugar.'}
@@ -63,7 +63,7 @@ export function Register() {
               type="text"
               placeholder="Nome da empresa"
               autoComplete="organization"
-              className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
+              className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
               value={form.empresa}
               onChange={(e) => setForm({ ...form, empresa: e.target.value })}
               required
@@ -73,7 +73,7 @@ export function Register() {
             type="text"
             placeholder="Seu nome completo"
             autoComplete="name"
-            className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
+            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
             value={form.nome}
             onChange={(e) => setForm({ ...form, nome: e.target.value })}
             required
@@ -82,7 +82,7 @@ export function Register() {
             type="email"
             placeholder="E-mail"
             autoComplete="email"
-            className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
+            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             required
@@ -91,7 +91,7 @@ export function Register() {
             type="password"
             placeholder="Senha"
             autoComplete="new-password"
-            className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
+            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
             value={form.senha}
             onChange={(e) => setForm({ ...form, senha: e.target.value })}
             minLength={8}
@@ -99,7 +99,7 @@ export function Register() {
             title="Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número"
             required
           />
-          <p className="text-xs text-slate-500 -mt-2">
+          <p className="text-xs text-slate-400 dark:text-slate-500 -mt-2">
             Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número.
           </p>
         </div>
@@ -112,7 +112,7 @@ export function Register() {
           {loading ? 'Cadastrando...' : inviteToken ? 'Entrar na equipe' : 'Criar minha empresa'}
         </button>
 
-        <p className="text-slate-400 text-sm mt-5 text-center">
+        <p className="text-slate-500 dark:text-slate-400 text-sm mt-5 text-center">
           Já tem conta?{' '}
           <Link to="/login" className="text-cyan-400 font-semibold">
             Entrar

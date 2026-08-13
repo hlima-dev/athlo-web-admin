@@ -98,25 +98,25 @@ export function Calendar() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 xl:col-span-2">
+        <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 xl:col-span-2">
           <div className="mb-8 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-black text-white">
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white">
                 {MONTHS[currentMonth]} {currentYear}
               </h2>
-              <p className="text-sm text-slate-400">Agenda da sua empresa</p>
+              <p className="text-sm text-slate-500 dark:text-slate-400">Agenda da sua empresa</p>
             </div>
             <div className="flex items-center gap-3">
-              <button onClick={prevMonth} className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700">
+              <button onClick={prevMonth} className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
                 <ChevronLeft />
               </button>
-              <button onClick={nextMonth} className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-800 text-slate-300 hover:bg-slate-700">
+              <button onClick={nextMonth} className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
                 <ChevronRight />
               </button>
             </div>
           </div>
 
-          <div className="grid grid-cols-7 gap-3 text-center text-sm font-bold text-slate-400">
+          <div className="grid grid-cols-7 gap-3 text-center text-sm font-bold text-slate-500 dark:text-slate-400">
             {WEEKDAYS.map((d) => <div key={d}>{d}</div>)}
           </div>
 
@@ -135,17 +135,17 @@ export function Calendar() {
                   className={`min-h-[90px] rounded-2xl border p-3 transition ${
                     isToday ? "border-cyan-400 bg-cyan-500/20" :
                     hasEvent ? "border-cyan-500 bg-cyan-500/10" :
-                    "border-slate-800 bg-slate-800"
+                    "border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800"
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className={`text-sm font-bold ${isToday ? "text-cyan-300" : hasEvent ? "text-cyan-400" : "text-slate-300"}`}>
+                    <span className={`text-sm font-bold ${isToday ? "text-cyan-300" : hasEvent ? "text-cyan-400" : "text-slate-600 dark:text-slate-300"}`}>
                       {day}
                     </span>
                     {hasEvent && <div className="h-2 w-2 rounded-full bg-cyan-400" />}
                   </div>
                   {hasEvent && (
-                    <p className="mt-2 text-xs font-semibold text-white leading-tight">
+                    <p className="mt-2 text-xs font-semibold text-slate-900 dark:text-white leading-tight">
                       {dayEvents[0].title}
                       {dayEvents.length > 1 && <span className="text-cyan-400"> +{dayEvents.length - 1}</span>}
                     </p>
@@ -156,17 +156,17 @@ export function Calendar() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">Compromissos do mês</h2>
+        <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white">Compromissos do mês</h2>
 
           <div className="mt-6 space-y-4">
             {loading ? (
-              <p className="text-slate-400">Carregando agenda...</p>
+              <p className="text-slate-500 dark:text-slate-400">Carregando agenda...</p>
             ) : monthEvents.length === 0 ? (
-              <p className="text-slate-400">Nenhum item neste mês.</p>
+              <p className="text-slate-500 dark:text-slate-400">Nenhum item neste mês.</p>
             ) : (
               monthEvents.map((event) => (
-                <div key={event.id} className="rounded-2xl bg-slate-800 p-5">
+                <div key={event.id} className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
                   <div className="flex items-center justify-between">
                     <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-sm font-bold text-cyan-400">
                       {typeLabels[event.type] || event.type}
@@ -174,9 +174,9 @@ export function Calendar() {
                     <CalendarDays size={18} className="text-cyan-400" />
                   </div>
 
-                  <h3 className="mt-4 text-lg font-black text-white">{event.title}</h3>
+                  <h3 className="mt-4 text-lg font-black text-slate-900 dark:text-white">{event.title}</h3>
 
-                  <div className="mt-4 space-y-3 text-sm text-slate-400">
+                  <div className="mt-4 space-y-3 text-sm text-slate-500 dark:text-slate-400">
                     <p className="flex items-center gap-2">
                       <Clock3 size={16} />
                       {formatTime(event.startDate)}

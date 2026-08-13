@@ -152,7 +152,7 @@ export function Notifications() {
       TEAM_INVITE: "text-purple-400",
       INVOICE_DUE: "text-yellow-400",
       INVOICE_PAID: "text-emerald-400",
-      SYSTEM: "text-slate-400",
+      SYSTEM: "text-slate-500 dark:text-slate-400",
     };
 
     return colorMap[type] || "text-cyan-400";
@@ -177,7 +177,7 @@ export function Notifications() {
           <button
             type="button"
             onClick={handleMarkAllRead}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-800 px-5 py-3 font-bold text-slate-300 hover:bg-slate-700"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 px-5 py-3 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
           >
             <Filter size={20} />
             Marcar todas como lidas
@@ -192,32 +192,32 @@ export function Notifications() {
           return (
             <div
               key={item.title}
-              className="rounded-2xl border border-slate-800 bg-slate-900 p-5"
+              className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5"
             >
               <Icon className={item.color} size={20} />
-              <p className="mt-4 text-sm text-slate-400">{item.title}</p>
-              <h2 className="mt-1 text-2xl font-bold text-white">{item.value}</h2>
+              <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{item.title}</p>
+              <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{item.value}</h2>
             </div>
           );
         })}
       </section>
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
         <div>
-          <h2 className="text-lg font-bold text-white">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             Atividades recentes
           </h2>
 
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-slate-500 dark:text-slate-400">
             Histórico de avisos e atualizações da plataforma.
           </p>
         </div>
 
         <div className="mt-6 space-y-4">
           {loading ? (
-            <p className="text-slate-400">Carregando notificações...</p>
+            <p className="text-slate-500 dark:text-slate-400">Carregando notificações...</p>
           ) : notifications.length === 0 ? (
-            <p className="text-slate-400">Nenhuma notificação encontrada.</p>
+            <p className="text-slate-500 dark:text-slate-400">Nenhuma notificação encontrada.</p>
           ) : (
             notifications.map((notification) => {
               const Icon = getIcon(notification.type);
@@ -228,19 +228,19 @@ export function Notifications() {
                   key={notification.id}
                   className={`rounded-3xl border p-5 ${
                     isUnread
-                      ? "border-cyan-500/40 bg-slate-800"
-                      : "border-slate-800 bg-slate-800/70"
+                      ? "border-cyan-500/40 bg-slate-100 dark:bg-slate-800"
+                      : "border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-800/70"
                   }`}
                 >
                   <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
                     <div className="flex gap-4">
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-slate-900">
+                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-900">
                         <Icon className={getColor(notification.type)} size={26} />
                       </div>
 
                       <div>
                         <div className="flex flex-wrap items-center gap-3">
-                          <h3 className="text-base font-bold text-white">
+                          <h3 className="text-base font-bold text-slate-900 dark:text-white">
                             {notification.title}
                           </h3>
 
@@ -255,14 +255,14 @@ export function Notifications() {
                           )}
                         </div>
 
-                        <p className="mt-2 leading-relaxed text-slate-400">
+                        <p className="mt-2 leading-relaxed text-slate-500 dark:text-slate-400">
                           {notification.body}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex flex-col items-start gap-2 md:items-end">
-                      <span className="text-sm font-semibold text-slate-500">
+                      <span className="text-sm font-semibold text-slate-400 dark:text-slate-500">
                         {formatDate(notification.createdAt)}
                       </span>
 

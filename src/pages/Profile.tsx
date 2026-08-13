@@ -118,7 +118,7 @@ export function Profile() {
       )}
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 xl:col-span-1">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 xl:col-span-1">
           <div className="flex flex-col items-center text-center">
             <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-cyan-500/10 text-2xl font-bold text-cyan-400">
               {(user?.name || "Usuário")
@@ -128,11 +128,11 @@ export function Profile() {
                 .join("")}
             </div>
 
-            <h2 className="mt-5 text-xl font-bold text-white">
+            <h2 className="mt-5 text-xl font-bold text-slate-900 dark:text-white">
               {user?.name || "Usuário"}
             </h2>
 
-            <p className="mt-1 text-slate-400">
+            <p className="mt-1 text-slate-500 dark:text-slate-400">
               {user?.email || ""}
             </p>
 
@@ -151,60 +151,60 @@ export function Profile() {
         </div>
 
         <div className="space-y-6 xl:col-span-2">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-lg font-bold text-white">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               Informações da conta
             </h2>
 
             <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="rounded-2xl bg-slate-800 p-5">
+              <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
                 <Mail className="text-cyan-400" />
-                <p className="mt-4 text-sm text-slate-400">E-mail</p>
-                <h3 className="mt-1 font-bold text-white">
+                <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">E-mail</p>
+                <h3 className="mt-1 font-bold text-slate-900 dark:text-white">
                   {user?.email || "-"}
                 </h3>
               </div>
 
-              <div className="rounded-2xl bg-slate-800 p-5">
+              <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
                 <ShieldCheck className="text-emerald-400" />
-                <p className="mt-4 text-sm text-slate-400">Permissão</p>
-                <h3 className="mt-1 font-bold text-white">
+                <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Permissão</p>
+                <h3 className="mt-1 font-bold text-slate-900 dark:text-white">
                   {roleLabels[user?.orgRole] || "Membro"}
                 </h3>
               </div>
 
-              <div className="rounded-2xl bg-slate-800 p-5">
+              <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
                 <Building2 className="text-purple-400" />
-                <p className="mt-4 text-sm text-slate-400">Empresa</p>
-                <h3 className="mt-1 font-bold text-white">
+                <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Empresa</p>
+                <h3 className="mt-1 font-bold text-slate-900 dark:text-white">
                   {organization?.name || "-"}
                 </h3>
               </div>
 
-              <div className="rounded-2xl bg-slate-800 p-5">
+              <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
                 <CalendarDays className="text-yellow-400" />
-                <p className="mt-4 text-sm text-slate-400">Status da conta</p>
-                <h3 className="mt-1 font-bold text-white">
+                <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Status da conta</p>
+                <h3 className="mt-1 font-bold text-slate-900 dark:text-white">
                   {user?.status === "ACTIVE" ? "Ativa" : user?.status || "-"}
                 </h3>
               </div>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-lg font-bold text-white">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               Segurança
             </h2>
 
-            <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-slate-800 p-5 md:flex-row md:items-center md:justify-between">
+            <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-slate-100 dark:bg-slate-800 p-5 md:flex-row md:items-center md:justify-between">
               <div className="flex items-center gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400">
                   <Lock />
                 </div>
 
                 <div>
-                  <h3 className="font-bold text-white">Senha da conta</h3>
-                  <p className="text-sm text-slate-400">
+                  <h3 className="font-bold text-slate-900 dark:text-white">Senha da conta</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
                     Atualize sua senha periodicamente para manter a segurança.
                   </p>
                 </div>
@@ -212,7 +212,7 @@ export function Profile() {
 
               <button
                 onClick={openPasswordModal}
-                className="rounded-2xl border border-slate-700 px-5 py-3 font-bold text-slate-300 hover:bg-slate-700"
+                className="rounded-2xl border border-slate-300 dark:border-slate-700 px-5 py-3 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
               >
                 Alterar senha
               </button>
@@ -221,10 +221,10 @@ export function Profile() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
         <div className="flex items-center gap-3">
           <Activity className="text-cyan-400" />
-          <h2 className="text-lg font-bold text-white">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             Atividades recentes
           </h2>
         </div>
@@ -233,10 +233,10 @@ export function Profile() {
           {activities.map((item) => (
             <div
               key={item}
-              className="flex items-center gap-4 rounded-2xl bg-slate-800 p-5"
+              className="flex items-center gap-4 rounded-2xl bg-slate-100 dark:bg-slate-800 p-5"
             >
               <CheckCircle2 className="text-emerald-400" />
-              <p className="text-slate-300">{item}</p>
+              <p className="text-slate-600 dark:text-slate-300">{item}</p>
             </div>
           ))}
         </div>
@@ -246,14 +246,14 @@ export function Profile() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <form
             onSubmit={handleChangePassword}
-            className="w-full max-w-md rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
+            className="w-full max-w-md rounded-3xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
           >
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-black text-white">Alterar senha</h2>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white">Alterar senha</h2>
               <button
                 type="button"
                 onClick={() => setShowPasswordModal(false)}
-                className="rounded-xl bg-slate-800 px-4 py-2 text-slate-300 hover:bg-slate-700"
+                className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
               >
                 Fechar
               </button>
@@ -270,7 +270,7 @@ export function Profile() {
                 type="password"
                 placeholder="Senha atual"
                 autoComplete="current-password"
-                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={passwordForm.currentPassword}
                 onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
                 required
@@ -280,7 +280,7 @@ export function Profile() {
                 type="password"
                 placeholder="Nova senha"
                 autoComplete="new-password"
-                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={passwordForm.newPassword}
                 onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
                 minLength={8}
@@ -288,7 +288,7 @@ export function Profile() {
                 title="Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número"
                 required
               />
-              <p className="-mt-2 text-xs text-slate-500">
+              <p className="-mt-2 text-xs text-slate-400 dark:text-slate-500">
                 Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número.
               </p>
 
@@ -296,7 +296,7 @@ export function Profile() {
                 type="password"
                 placeholder="Confirmar nova senha"
                 autoComplete="new-password"
-                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={passwordForm.confirmPassword}
                 onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
                 minLength={8}
@@ -319,14 +319,14 @@ export function Profile() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <form
             onSubmit={handleSaveProfile}
-            className="w-full max-w-md rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
+            className="w-full max-w-md rounded-3xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
           >
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-black text-white">Editar perfil</h2>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white">Editar perfil</h2>
               <button
                 type="button"
                 onClick={() => setShowProfileModal(false)}
-                className="rounded-xl bg-slate-800 px-4 py-2 text-slate-300 hover:bg-slate-700"
+                className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
               >
                 Fechar
               </button>
@@ -342,7 +342,7 @@ export function Profile() {
               <input
                 placeholder="Nome completo"
                 autoComplete="name"
-                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={profileForm.name}
                 onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
                 minLength={2}
@@ -352,7 +352,7 @@ export function Profile() {
               <input
                 placeholder="Telefone"
                 autoComplete="tel"
-                className="w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={profileForm.phone}
                 onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
               />

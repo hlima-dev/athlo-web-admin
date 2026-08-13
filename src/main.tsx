@@ -10,6 +10,7 @@ import {
 import App from "./App";
 import { LoadingScreen } from "./components/LoadingScreen";
 import { ToastProvider } from "./components/Toast";
+import { ThemeProvider } from "./components/Theme";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,11 +38,13 @@ function Root() {
   }
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ToastProvider>
-        <App />
-      </ToastProvider>
-    </QueryClientProvider>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>
+          <App />
+        </ToastProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
 

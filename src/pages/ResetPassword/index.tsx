@@ -35,13 +35,13 @@ export function ResetPassword() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+    <main className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl"
+        className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl"
       >
-        <h1 className="text-3xl font-bold text-white">Redefinir senha</h1>
-        <p className="text-slate-400 mt-2 mb-6">Crie uma nova senha para sua conta.</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Redefinir senha</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-2 mb-6">Crie uma nova senha para sua conta.</p>
 
         {error && (
           <div className="mb-4 p-3 rounded-xl bg-red-900/30 border border-red-700 text-red-300 text-sm">
@@ -53,7 +53,7 @@ export function ResetPassword() {
           <input
             type="text"
             placeholder="Cole o token recebido por e-mail"
-            className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400 mb-4"
+            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400 mb-4"
             value={token}
             onChange={(e) => setToken(e.target.value)}
             required
@@ -65,7 +65,7 @@ export function ResetPassword() {
             type="password"
             placeholder="Nova senha"
             autoComplete="new-password"
-            className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
+            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             minLength={8}
@@ -75,7 +75,7 @@ export function ResetPassword() {
             type="password"
             placeholder="Confirme a nova senha"
             autoComplete="new-password"
-            className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
+            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
             value={confirm}
             onChange={(e) => setConfirm(e.target.value)}
             minLength={8}

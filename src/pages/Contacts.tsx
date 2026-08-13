@@ -170,42 +170,42 @@ export function Contacts() {
       />
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <Users className="text-cyan-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Contatos cadastrados</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">{contacts.length}</h2>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Contatos cadastrados</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{contacts.length}</h2>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <Briefcase className="text-emerald-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Clientes</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">{customers}</h2>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Clientes</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{customers}</h2>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <Building2 className="text-yellow-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Fornecedores</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">{suppliers}</h2>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Fornecedores</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{suppliers}</h2>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <Users className="text-purple-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Leads</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">{leads}</h2>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Leads</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{leads}</h2>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
         <div>
-          <h2 className="text-lg font-bold text-white">Lista de contatos</h2>
-          <p className="text-sm text-slate-400">Dados carregados diretamente do backend.</p>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Lista de contatos</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Dados carregados diretamente do backend.</p>
         </div>
 
-        <div className="mt-6 flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-800 px-4">
-          <Search className="text-slate-500" size={20} />
+        <div className="mt-6 flex items-center gap-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4">
+          <Search className="text-slate-400 dark:text-slate-500" size={20} />
           <input
             placeholder="Buscar contato..."
-            className="w-full bg-transparent py-4 text-white outline-none placeholder:text-slate-500"
+            className="w-full bg-transparent py-4 text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -213,12 +213,12 @@ export function Contacts() {
 
         <div className="mt-6 grid grid-cols-1 gap-5">
           {loading ? (
-            <p className="text-slate-400">Carregando contatos...</p>
+            <p className="text-slate-500 dark:text-slate-400">Carregando contatos...</p>
           ) : contacts.length === 0 ? (
-            <p className="text-slate-400">Nenhum contato encontrado.</p>
+            <p className="text-slate-500 dark:text-slate-400">Nenhum contato encontrado.</p>
           ) : (
             contacts.map((contact) => (
-              <div key={contact.id} className="rounded-2xl border border-slate-800 bg-slate-800/60 p-5">
+              <div key={contact.id} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-800/60 p-5">
                 <div className="flex flex-col gap-5 md:flex-row md:items-center md:justify-between">
                   <div className="flex items-center gap-4">
                     <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/10 text-sm font-bold text-cyan-400">
@@ -226,29 +226,29 @@ export function Contacts() {
                     </div>
 
                     <div>
-                      <h3 className="text-base font-bold text-white">{contact.name}</h3>
-                      <p className="text-sm text-slate-400">{contact.company || "Empresa não informada"}</p>
+                      <h3 className="text-base font-bold text-slate-900 dark:text-white">{contact.name}</h3>
+                      <p className="text-sm text-slate-500 dark:text-slate-400">{contact.company || "Empresa não informada"}</p>
                     </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-4 md:grid-cols-4 md:items-center">
                     <div>
-                      <p className="text-xs text-slate-500">Tipo</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">Tipo</p>
                       <span className="mt-1 inline-flex rounded-full bg-cyan-500/10 px-3 py-1 text-sm font-bold text-cyan-400">
                         {typeLabels[contact.type] || contact.type}
                       </span>
                     </div>
 
                     <div>
-                      <p className="text-xs text-slate-500">Status</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">Status</p>
                       <span className="mt-1 inline-flex rounded-full bg-emerald-500/10 px-3 py-1 text-sm font-bold text-emerald-400">
                         {statusLabels[contact.status] || contact.status}
                       </span>
                     </div>
 
                     <div>
-                      <p className="text-xs text-slate-500">Cidade</p>
-                      <p className="mt-1 font-bold text-white">{contact.city || "N/I"}</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">Cidade</p>
+                      <p className="mt-1 font-bold text-slate-900 dark:text-white">{contact.city || "N/I"}</p>
                     </div>
 
                     <RowActionsMenu
@@ -258,7 +258,7 @@ export function Contacts() {
                   </div>
                 </div>
 
-                <div className="mt-5 grid grid-cols-1 gap-3 border-t border-slate-700 pt-5 text-sm text-slate-400 md:grid-cols-2">
+                <div className="mt-5 grid grid-cols-1 gap-3 border-t border-slate-300 dark:border-slate-700 pt-5 text-sm text-slate-500 dark:text-slate-400 md:grid-cols-2">
                   <p className="flex items-center gap-2">
                     <Mail size={16} />
                     {contact.email || "E-mail não informado"}
@@ -279,14 +279,14 @@ export function Contacts() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <form
             onSubmit={handleSaveContact}
-            className="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
+            className="w-full max-w-2xl rounded-3xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
           >
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white">
                   {editingId ? "Editar contato" : "Novo contato"}
                 </h2>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   {editingId ? "Atualize os dados do contato." : "Cadastre um contato no banco de dados."}
                 </p>
               </div>
@@ -294,7 +294,7 @@ export function Contacts() {
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="rounded-xl bg-slate-800 px-4 py-2 text-slate-300 hover:bg-slate-700"
+                className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
               >
                 Fechar
               </button>
@@ -309,7 +309,7 @@ export function Contacts() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <input
                 placeholder="Nome completo"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 required
@@ -318,27 +318,27 @@ export function Contacts() {
               <input
                 type="email"
                 placeholder="E-mail"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
               />
 
               <input
                 placeholder="Telefone"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.phone}
                 onChange={(e) => setForm({ ...form, phone: e.target.value })}
               />
 
               <input
                 placeholder="Empresa"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.company}
                 onChange={(e) => setForm({ ...form, company: e.target.value })}
               />
 
               <select
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.type}
                 onChange={(e) => setForm({ ...form, type: e.target.value })}
               >
@@ -349,7 +349,7 @@ export function Contacts() {
 
               <input
                 placeholder="Cidade"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.city}
                 onChange={(e) => setForm({ ...form, city: e.target.value })}
               />
@@ -357,7 +357,7 @@ export function Contacts() {
               <input
                 placeholder="Estado"
                 maxLength={2}
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.state}
                 onChange={(e) => setForm({ ...form, state: e.target.value.toUpperCase() })}
               />

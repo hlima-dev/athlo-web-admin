@@ -202,43 +202,43 @@ export function Financeiro() {
       ) : null}
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <TrendingUp className="text-emerald-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Recebido</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Recebido</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
             {loading ? "..." : toCurrency(stats.totalReceivable)}
           </h2>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <TrendingDown className="text-red-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Pago</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Pago</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
             {loading ? "..." : toCurrency(stats.totalPayable)}
           </h2>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <Clock3 className="text-yellow-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Faturas pendentes</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : stats.pending}</h2>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Faturas pendentes</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{loading ? "..." : stats.pending}</h2>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
         <div>
-          <h2 className="text-lg font-bold text-white">Faturas</h2>
-          <p className="text-sm text-slate-400">Contas a pagar e a receber salvas no banco.</p>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Faturas</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Contas a pagar e a receber salvas no banco.</p>
         </div>
 
         <div className="mt-6 space-y-4">
           {loading ? (
-            <p className="text-slate-400">Carregando faturas...</p>
+            <p className="text-slate-500 dark:text-slate-400">Carregando faturas...</p>
           ) : invoices.length === 0 ? (
-            <p className="text-slate-400">Nenhuma fatura encontrada.</p>
+            <p className="text-slate-500 dark:text-slate-400">Nenhuma fatura encontrada.</p>
           ) : (
             invoices.map((invoice) => (
               <div
                 key={invoice.id}
-                className="flex flex-col gap-4 rounded-2xl bg-slate-800 p-5 sm:flex-row sm:items-center sm:justify-between"
+                className="flex flex-col gap-4 rounded-2xl bg-slate-100 dark:bg-slate-800 p-5 sm:flex-row sm:items-center sm:justify-between"
               >
                 <div className="flex items-center gap-4">
                   <div
@@ -251,8 +251,8 @@ export function Financeiro() {
                     {invoice.status === "PAID" ? <CheckCircle2 size={18} /> : <Clock3 size={18} />}
                   </div>
                   <div>
-                    <h3 className="font-bold text-white">{invoice.description}</h3>
-                    <p className="text-sm text-slate-400">
+                    <h3 className="font-bold text-slate-900 dark:text-white">{invoice.description}</h3>
+                    <p className="text-sm text-slate-500 dark:text-slate-400">
                       {invoice.type === "RECEIVABLE" ? "A receber" : "A pagar"} ·{" "}
                       {statusLabels[invoice.status] || invoice.status} · Vence em {formatDate(invoice.dueDate)}
                       {invoice.method ? ` · ${methodLabels[invoice.method] || invoice.method}` : ""}
@@ -293,21 +293,21 @@ export function Financeiro() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <form
             onSubmit={handleSaveInvoice}
-            className="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
+            className="w-full max-w-2xl rounded-3xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
           >
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white">
                   {editingId ? "Editar fatura" : "Nova fatura"}
                 </h2>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   {editingId ? "Atualize os dados da fatura." : "Registre uma conta a pagar ou a receber."}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="rounded-xl bg-slate-800 px-4 py-2 text-slate-300 hover:bg-slate-700"
+                className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
               >
                 Fechar
               </button>
@@ -321,7 +321,7 @@ export function Financeiro() {
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <select
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.type}
                 onChange={(e) => setForm({ ...form, type: e.target.value })}
               >
@@ -334,7 +334,7 @@ export function Financeiro() {
                 min="0.01"
                 step="0.01"
                 placeholder="Valor"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.amount}
                 onChange={(e) => setForm({ ...form, amount: e.target.value })}
                 required
@@ -342,7 +342,7 @@ export function Financeiro() {
 
               <input
                 placeholder="Descrição"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400 md:col-span-2"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-2"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 required
@@ -350,14 +350,14 @@ export function Financeiro() {
 
               <input
                 type="date"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.dueDate}
                 onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
                 required
               />
 
               <select
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.method}
                 onChange={(e) => setForm({ ...form, method: e.target.value })}
               >

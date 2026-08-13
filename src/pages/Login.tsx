@@ -30,13 +30,13 @@ export function Login() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+    <main className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
       <form
         onSubmit={handleLogin}
-        className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl"
+        className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl"
       >
-        <h1 className="text-3xl font-bold text-white">Bem-vindo ao ATHLO</h1>
-        <p className="text-slate-400 mt-2 mb-6">Acesse o painel de gestão da sua empresa.</p>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Bem-vindo ao ATHLO</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-2 mb-6">Acesse o painel de gestão da sua empresa.</p>
 
         {error && (
           <div className="mb-4 p-3 rounded-xl bg-red-900/30 border border-red-700 text-red-300 text-sm">
@@ -49,7 +49,7 @@ export function Login() {
             type="email"
             placeholder="E-mail"
             autoComplete="email"
-            className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
+            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -58,7 +58,7 @@ export function Login() {
             type="password"
             placeholder="Senha"
             autoComplete="current-password"
-            className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
+            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
             required
@@ -79,7 +79,7 @@ export function Login() {
           {loading ? 'Entrando...' : 'Entrar'}
         </button>
 
-        <p className="text-slate-400 text-sm mt-5 text-center">
+        <p className="text-slate-500 dark:text-slate-400 text-sm mt-5 text-center">
           Ainda não tem conta?{' '}
           <Link to="/cadastro" className="text-cyan-400 font-semibold">
             Criar cadastro

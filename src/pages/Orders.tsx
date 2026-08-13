@@ -45,7 +45,7 @@ const statusLabels: Record<Order["status"], string> = {
 };
 
 const statusColors: Record<Order["status"], string> = {
-  CREATED: "bg-slate-500/10 text-slate-300",
+  CREATED: "bg-slate-500/10 text-slate-600 dark:text-slate-300",
   CONFIRMED: "bg-cyan-500/10 text-cyan-400",
   IN_PREPARATION: "bg-yellow-500/10 text-yellow-400",
   OUT_FOR_DELIVERY: "bg-purple-500/10 text-purple-400",
@@ -379,32 +379,32 @@ export function Orders() {
       />
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <ClipboardList className="text-cyan-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Total de pedidos</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">{stats.total}</h2>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Total de pedidos</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{stats.total}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <Clock3 className="text-yellow-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Em aberto</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">{stats.open}</h2>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Em aberto</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{stats.open}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <PackageCheck className="text-emerald-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Entregues</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">{stats.delivered}</h2>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Entregues</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{stats.delivered}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
           <Wallet className="text-purple-400" size={20} />
-          <p className="mt-4 text-sm text-slate-400">Faturamento (pago)</p>
-          <h2 className="mt-1 text-2xl font-bold text-white">{toCurrency(stats.revenue)}</h2>
+          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Faturamento (pago)</p>
+          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{toCurrency(stats.revenue)}</h2>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
         <div>
-          <h2 className="text-lg font-bold text-white">Lista de pedidos</h2>
-          <p className="text-sm text-slate-400">Pedidos carregados diretamente do backend.</p>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Lista de pedidos</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Pedidos carregados diretamente do backend.</p>
         </div>
 
         <div className="mt-6 flex flex-wrap items-center gap-2">
@@ -416,7 +416,7 @@ export function Orders() {
               className={`rounded-xl px-4 py-2 text-sm font-bold transition ${
                 period === option.key
                   ? "bg-cyan-500 text-slate-950"
-                  : "bg-slate-800 text-slate-300 hover:bg-slate-700"
+                  : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
               }`}
             >
               {option.label}
@@ -425,18 +425,18 @@ export function Orders() {
         </div>
 
         <div className="mt-4 flex flex-col gap-3 md:flex-row">
-          <div className="flex flex-1 items-center gap-3 rounded-2xl border border-slate-700 bg-slate-800 px-4">
-            <Search className="text-slate-500" size={20} />
+          <div className="flex flex-1 items-center gap-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4">
+            <Search className="text-slate-400 dark:text-slate-500" size={20} />
             <input
               placeholder="Buscar por cliente ou telefone..."
-              className="w-full bg-transparent py-4 text-white outline-none placeholder:text-slate-500"
+              className="w-full bg-transparent py-4 text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
           </div>
 
           <select
-            className="rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400 md:w-56"
+            className="rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:w-56"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
           >
@@ -451,13 +451,13 @@ export function Orders() {
 
         <div className="mt-6 overflow-x-auto">
           {loading ? (
-            <p className="text-slate-400">Carregando pedidos...</p>
+            <p className="text-slate-500 dark:text-slate-400">Carregando pedidos...</p>
           ) : orders.length === 0 ? (
-            <p className="text-slate-400">Nenhum pedido encontrado.</p>
+            <p className="text-slate-500 dark:text-slate-400">Nenhum pedido encontrado.</p>
           ) : (
             <table className="w-full min-w-[900px] border-collapse text-sm">
               <thead>
-                <tr className="border-b border-slate-800 text-left text-xs uppercase tracking-wide text-slate-500">
+                <tr className="border-b border-slate-200 dark:border-slate-800 text-left text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">
                   <th className="pb-3 pr-4">Cliente</th>
                   <th className="pb-3 pr-4">Tipo</th>
                   <th className="pb-3 pr-4">Status</th>
@@ -471,14 +471,14 @@ export function Orders() {
               </thead>
               <tbody>
                 {orders.map((order) => (
-                  <tr key={order.id} className="border-b border-slate-800/60 align-top">
+                  <tr key={order.id} className="border-b border-slate-200/60 dark:border-slate-800/60 align-top">
                     <td className="py-4 pr-4">
-                      <p className="font-bold text-white">{order.customerName}</p>
+                      <p className="font-bold text-slate-900 dark:text-white">{order.customerName}</p>
                       {order.customerPhone && (
-                        <p className="text-xs text-slate-500">{order.customerPhone}</p>
+                        <p className="text-xs text-slate-400 dark:text-slate-500">{order.customerPhone}</p>
                       )}
                     </td>
-                    <td className="py-4 pr-4 text-slate-300">
+                    <td className="py-4 pr-4 text-slate-600 dark:text-slate-300">
                       <span className="inline-flex items-center gap-1">
                         {order.type === "DELIVERY" ? <Truck size={14} /> : <PackageCheck size={14} />}
                         {typeLabels[order.type]}
@@ -492,26 +492,26 @@ export function Orders() {
                         className={`rounded-full border-0 px-3 py-1 text-xs font-bold outline-none disabled:opacity-60 ${statusColors[order.status]}`}
                       >
                         {Object.entries(statusLabels).map(([value, label]) => (
-                          <option key={value} value={value} className="bg-slate-900 text-white">
+                          <option key={value} value={value} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
                             {label}
                           </option>
                         ))}
                       </select>
                     </td>
-                    <td className="py-4 pr-4 text-slate-300">{formatDateTime(order.scheduledAt)}</td>
+                    <td className="py-4 pr-4 text-slate-600 dark:text-slate-300">{formatDateTime(order.scheduledAt)}</td>
                     <td className="py-4 pr-4 font-bold text-cyan-400">
                       {toCurrency(Number(order.total || 0))}
                     </td>
-                    <td className="py-4 pr-4 text-slate-300">
+                    <td className="py-4 pr-4 text-slate-600 dark:text-slate-300">
                       <p>{paymentMethodLabels[order.paymentMethod]}</p>
-                      <p className="text-xs text-slate-500">{paymentStatusLabels[order.paymentStatus]}</p>
+                      <p className="text-xs text-slate-400 dark:text-slate-500">{paymentStatusLabels[order.paymentStatus]}</p>
                     </td>
                     <td className="py-4 pr-4">
-                      <span className="rounded-full bg-slate-800 px-3 py-1 text-xs font-bold text-slate-300">
+                      <span className="rounded-full bg-slate-100 dark:bg-slate-800 px-3 py-1 text-xs font-bold text-slate-600 dark:text-slate-300">
                         {originLabels[order.origin]}
                       </span>
                     </td>
-                    <td className="py-4 pr-4 text-slate-400">{formatDateTime(order.createdAt)}</td>
+                    <td className="py-4 pr-4 text-slate-500 dark:text-slate-400">{formatDateTime(order.createdAt)}</td>
                     <td className="py-4 pr-4">
                       <RowActionsMenu
                         onEdit={() => openEditModal(order)}
@@ -530,14 +530,14 @@ export function Orders() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4 py-8 overflow-y-auto">
           <form
             onSubmit={handleSaveOrder}
-            className="w-full max-w-3xl rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
+            className="w-full max-w-3xl rounded-3xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
           >
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white">
                   {editingId ? "Editar pedido" : "Novo pedido"}
                 </h2>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   {editingId ? "Atualize os dados do pedido." : "Cadastre um pedido manualmente."}
                 </p>
               </div>
@@ -545,7 +545,7 @@ export function Orders() {
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="rounded-xl bg-slate-800 px-4 py-2 text-slate-300 hover:bg-slate-700"
+                className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
               >
                 Fechar
               </button>
@@ -560,7 +560,7 @@ export function Orders() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <input
                 placeholder="Nome do cliente"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.customerName}
                 onChange={(e) => setForm({ ...form, customerName: e.target.value })}
                 required
@@ -568,13 +568,13 @@ export function Orders() {
 
               <input
                 placeholder="Telefone"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.customerPhone}
                 onChange={(e) => setForm({ ...form, customerPhone: e.target.value })}
               />
 
               <select
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.type}
                 onChange={(e) => setForm({ ...form, type: e.target.value as Order["type"] })}
               >
@@ -583,7 +583,7 @@ export function Orders() {
               </select>
 
               <select
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.origin}
                 onChange={(e) => setForm({ ...form, origin: e.target.value as Order["origin"] })}
               >
@@ -594,7 +594,7 @@ export function Orders() {
 
               {editingId && (
                 <select
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                   value={form.status}
                   onChange={(e) => setForm({ ...form, status: e.target.value as Order["status"] })}
                 >
@@ -608,13 +608,13 @@ export function Orders() {
 
               <input
                 type="datetime-local"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.scheduledAt}
                 onChange={(e) => setForm({ ...form, scheduledAt: e.target.value })}
               />
 
               <select
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.paymentMethod}
                 onChange={(e) => setForm({ ...form, paymentMethod: e.target.value as Order["paymentMethod"] })}
               >
@@ -626,7 +626,7 @@ export function Orders() {
               </select>
 
               <select
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.paymentStatus}
                 onChange={(e) => setForm({ ...form, paymentStatus: e.target.value as Order["paymentStatus"] })}
               >
@@ -642,25 +642,25 @@ export function Orders() {
               <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-2">
                 <input
                   placeholder="Endereço"
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400 md:col-span-2"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-2"
                   value={form.address}
                   onChange={(e) => setForm({ ...form, address: e.target.value })}
                 />
                 <input
                   placeholder="Cidade"
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                   value={form.city}
                   onChange={(e) => setForm({ ...form, city: e.target.value })}
                 />
                 <input
                   placeholder="Estado"
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                   value={form.state}
                   onChange={(e) => setForm({ ...form, state: e.target.value })}
                 />
                 <input
                   placeholder="CEP"
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400 md:col-span-2"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-2"
                   value={form.zipCode}
                   onChange={(e) => setForm({ ...form, zipCode: e.target.value })}
                 />
@@ -669,18 +669,18 @@ export function Orders() {
 
             <textarea
               placeholder="Observações"
-              className="mt-4 w-full rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+              className="mt-4 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
               value={form.notes}
               onChange={(e) => setForm({ ...form, notes: e.target.value })}
             />
 
             <div className="mt-6">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-white">Itens do pedido</h3>
+                <h3 className="font-bold text-slate-900 dark:text-white">Itens do pedido</h3>
                 <button
                   type="button"
                   onClick={addItemRow}
-                  className="rounded-xl bg-slate-800 px-3 py-2 text-xs font-bold text-cyan-400 hover:bg-slate-700"
+                  className="rounded-xl bg-slate-100 dark:bg-slate-800 px-3 py-2 text-xs font-bold text-cyan-400 hover:bg-slate-200 dark:hover:bg-slate-700"
                 >
                   + Adicionar item
                 </button>
@@ -688,9 +688,9 @@ export function Orders() {
 
               <div className="mt-3 space-y-3">
                 {form.items.map((item, index) => (
-                  <div key={index} className="grid grid-cols-1 gap-2 rounded-xl border border-slate-800 bg-slate-800/60 p-3 md:grid-cols-12">
+                  <div key={index} className="grid grid-cols-1 gap-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-800/60 p-3 md:grid-cols-12">
                     <select
-                      className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400 md:col-span-5"
+                      className="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-5"
                       value={item.productId}
                       onChange={(e) => handleSelectProduct(index, e.target.value)}
                     >
@@ -704,7 +704,7 @@ export function Orders() {
 
                     <input
                       placeholder="Descrição"
-                      className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400 md:col-span-3"
+                      className="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-3"
                       value={item.name}
                       onChange={(e) => updateItem(index, { name: e.target.value })}
                     />
@@ -713,7 +713,7 @@ export function Orders() {
                       type="number"
                       min="1"
                       placeholder="Qtd"
-                      className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400 md:col-span-1"
+                      className="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-1"
                       value={item.quantity}
                       onChange={(e) => updateItem(index, { quantity: e.target.value })}
                     />
@@ -723,7 +723,7 @@ export function Orders() {
                       min="0"
                       step="0.01"
                       placeholder="Preço"
-                      className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white outline-none focus:border-cyan-400 md:col-span-2"
+                      className="rounded-lg border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-3 py-2 text-sm text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-2"
                       value={item.unitPrice}
                       onChange={(e) => updateItem(index, { unitPrice: e.target.value })}
                     />
@@ -739,8 +739,8 @@ export function Orders() {
                 ))}
               </div>
 
-              <div className="mt-4 flex items-center justify-end gap-3 border-t border-slate-800 pt-4">
-                <span className="text-sm text-slate-400">Total do pedido</span>
+              <div className="mt-4 flex items-center justify-end gap-3 border-t border-slate-200 dark:border-slate-800 pt-4">
+                <span className="text-sm text-slate-500 dark:text-slate-400">Total do pedido</span>
                 <span className="text-2xl font-black text-cyan-400">{toCurrency(formTotal)}</span>
               </div>
             </div>

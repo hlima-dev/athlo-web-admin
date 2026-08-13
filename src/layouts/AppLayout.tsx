@@ -57,18 +57,18 @@ export function AppLayout() {
 
   function Sidebar() {
     return (
-      <aside className="w-72 bg-slate-900 border-r border-slate-800 flex flex-col h-full">
-        <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+      <aside className="w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full">
+        <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div>
             <h1 className="text-2xl font-black text-cyan-400">ATHLO</h1>
-            <p className="text-sm text-slate-400 truncate max-w-[160px]">
+            <p className="text-sm text-slate-500 dark:text-slate-400 truncate max-w-[160px]">
               {organization?.name || "Gestão para PMEs"}
             </p>
           </div>
 
           <button
             onClick={() => setMenuOpen(false)}
-            className="md:hidden w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-slate-300 hover:bg-slate-700 transition"
+            className="md:hidden w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
           >
             <X size={22} />
           </button>
@@ -87,7 +87,7 @@ export function AppLayout() {
                   `flex items-center gap-3 px-4 py-3 rounded-xl transition ${
                     isActive
                       ? "bg-cyan-500 text-slate-950 font-bold"
-                      : "text-slate-300 hover:bg-slate-800"
+                      : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                   }`
                 }
               >
@@ -98,11 +98,11 @@ export function AppLayout() {
           })}
         </nav>
 
-        <div className="p-4 border-t border-slate-800 space-y-2">
+        <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
           <NavLink
             to="/perfil"
             onClick={() => setMenuOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 transition"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
             <User size={20} />
             Perfil
@@ -111,7 +111,7 @@ export function AppLayout() {
           <NavLink
             to="/configuracoes"
             onClick={() => setMenuOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-300 hover:bg-slate-800 transition"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
             <Settings size={20} />
             Configurações
@@ -130,7 +130,7 @@ export function AppLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white flex">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white flex">
       <div className="hidden md:block">
         <Sidebar />
       </div>
@@ -152,11 +152,11 @@ export function AppLayout() {
       )}
 
       <main className="flex-1 min-h-screen">
-        <header className="h-20 border-b border-slate-800 bg-slate-900/90 backdrop-blur flex items-center justify-between px-5">
+        <header className="h-20 border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur flex items-center justify-between px-5">
           <div className="flex items-center gap-3">
             <button
               onClick={() => setMenuOpen(true)}
-              className="md:hidden w-11 h-11 rounded-xl bg-slate-800 flex items-center justify-center hover:bg-slate-700 transition"
+              className="md:hidden w-11 h-11 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center hover:bg-slate-200 dark:hover:bg-slate-700 transition"
             >
               <Menu size={24} />
             </button>
@@ -166,7 +166,7 @@ export function AppLayout() {
                 {organization?.name || "Painel Administrativo"}
               </h2>
 
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 Bem-vindo{user?.name ? `, ${user.name}` : ""}!
               </p>
             </div>

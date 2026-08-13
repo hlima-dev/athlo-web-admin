@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getDashboard } from "../services/dashboard";
+import { useTheme } from "../components/Theme";
 
 import {
   BarChart3,
@@ -45,6 +46,9 @@ const typeLabels: Record<string, string> = {
 };
 
 export function Dashboard() {
+  const { theme } = useTheme();
+  const gridColor = theme === "dark" ? "#1e293b" : "#e2e8f0";
+  const axisColor = theme === "dark" ? "#94a3b8" : "#64748b";
   const [dashboard, setDashboard] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -66,7 +70,7 @@ export function Dashboard() {
   if (loading) {
     return (
       <div className="flex h-[500px] items-center justify-center">
-        <p className="text-slate-400">Carregando dashboard...</p>
+        <p className="text-slate-500 dark:text-slate-400">Carregando dashboard...</p>
       </div>
     );
   }
@@ -140,17 +144,17 @@ export function Dashboard() {
           return (
             <div
               key={item.title}
-              className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-sm"
+              className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400">
                 <Icon size={24} />
               </div>
 
-              <p className="mt-6 text-sm font-semibold text-slate-400">
+              <p className="mt-6 text-sm font-semibold text-slate-500 dark:text-slate-400">
                 {item.title}
               </p>
 
-              <h2 className="mt-2 text-3xl font-black text-white">
+              <h2 className="mt-2 text-3xl font-black text-slate-900 dark:text-white">
                 {item.value}
               </h2>
             </div>
@@ -159,13 +163,13 @@ export function Dashboard() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 xl:col-span-2">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 xl:col-span-2">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-white">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                 Receita mensal
               </h2>
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 Faturas recebidas por mês.
               </p>
             </div>
@@ -189,9 +193,9 @@ export function Dashboard() {
                   </linearGradient>
                 </defs>
 
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis dataKey="month" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                <XAxis dataKey="month" stroke={axisColor} />
+                <YAxis stroke={axisColor} />
                 <Tooltip />
                 <Area
                   type="monotone"
@@ -205,8 +209,8 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-lg font-bold text-white">Visão geral</h2>
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Visão geral</h2>
 
           <div className="mt-6 h-72 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
@@ -233,9 +237,9 @@ export function Dashboard() {
             {impactData.map((item) => (
               <div
                 key={item.name}
-                className="flex justify-between rounded-xl bg-slate-800 px-4 py-3"
+                className="flex justify-between rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-3"
               >
-                <span className="text-slate-300">{item.name}</span>
+                <span className="text-slate-600 dark:text-slate-300">{item.name}</span>
                 <strong>{item.value}</strong>
               </div>
             ))}
@@ -244,11 +248,11 @@ export function Dashboard() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-lg font-bold text-white">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             Crescimento de contatos
           </h2>
-          <p className="text-sm text-slate-400">Novos contatos por mês.</p>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Novos contatos por mês.</p>
 
           <div className="mt-6 h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -259,9 +263,9 @@ export function Dashboard() {
                     <stop offset="95%" stopColor="#22c55e" stopOpacity={0} />
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" />
-                <XAxis dataKey="month" stroke="#94a3b8" />
-                <YAxis stroke="#94a3b8" />
+                <CartesianGrid strokeDasharray="3 3" stroke={gridColor} />
+                <XAxis dataKey="month" stroke={axisColor} />
+                <YAxis stroke={axisColor} />
                 <Tooltip />
                 <Area type="monotone" dataKey="contatos" stroke="#22c55e" fill="url(#contactsGradient)" strokeWidth={3} />
               </AreaChart>
@@ -269,25 +273,25 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-lg font-bold text-white">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             Próximos compromissos
           </h2>
 
           <div className="mt-6 space-y-4">
             {(dashboard?.upcomingEvents ?? []).length === 0 ? (
-              <p className="text-slate-400">Nenhum compromisso agendado.</p>
+              <p className="text-slate-500 dark:text-slate-400">Nenhum compromisso agendado.</p>
             ) : (
               dashboard?.upcomingEvents.map((event) => (
-                <div key={event.id} className="rounded-2xl bg-slate-800 p-4">
+                <div key={event.id} className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-4">
                   <div className="mb-2 flex items-start justify-between gap-3">
-                    <h3 className="font-bold text-white">{event.title}</h3>
-                    <span className="text-xs text-slate-500">
+                    <h3 className="font-bold text-slate-900 dark:text-white">{event.title}</h3>
+                    <span className="text-xs text-slate-400 dark:text-slate-500">
                       {new Date(event.startDate).toLocaleDateString("pt-BR")}
                     </span>
                   </div>
 
-                  <p className="text-sm leading-relaxed text-slate-400">
+                  <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                     {typeLabels[event.type] || event.type}
                   </p>
                 </div>

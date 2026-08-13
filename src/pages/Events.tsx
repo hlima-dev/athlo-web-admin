@@ -235,14 +235,14 @@ export function Events() {
         }
       />
 
-      <section className="rounded-2xl border border-cyan-800/60 bg-gradient-to-br from-cyan-950/40 to-slate-900 p-6">
+      <section className="rounded-2xl border border-cyan-300 bg-gradient-to-br from-cyan-50 to-white p-6 dark:border-cyan-800/60 dark:from-cyan-950/40 dark:to-slate-900">
         <div className="flex items-center gap-3">
           <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400">
             <Wand2 size={20} />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Cadastro rápido por texto</h2>
-            <p className="text-sm text-slate-400">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Cadastro rápido por texto</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400">
               Descreva o compromisso em uma frase (data, horário e local) e preenchemos o formulário para você revisar.
             </p>
           </div>
@@ -251,7 +251,7 @@ export function Events() {
         <form onSubmit={handleQuickParse} className="mt-4 flex flex-col gap-3 sm:flex-row">
           <input
             placeholder='Ex: "Reunião com o cliente Ana amanhã às 15h no escritório" ou "Entrega para a Padaria Central sexta-feira de manhã"'
-            className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-cyan-400"
+            className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-cyan-400"
             value={quickPrompt}
             onChange={(e) => setQuickPrompt(e.target.value)}
           />
@@ -271,37 +271,37 @@ export function Events() {
           const Icon = item.icon;
 
           return (
-            <div key={item.title} className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+            <div key={item.title} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
               <Icon className={item.color} size={20} />
-              <p className="mt-4 text-sm text-slate-400">{item.title}</p>
-              <h2 className="mt-1 text-2xl font-bold text-white">{item.value}</h2>
+              <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{item.title}</p>
+              <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{item.value}</h2>
             </div>
           );
         })}
       </section>
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
         <div>
-          <h2 className="text-lg font-bold text-white">Próximos compromissos</h2>
-          <p className="text-sm text-slate-400">Itens carregados diretamente do backend.</p>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Próximos compromissos</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Itens carregados diretamente do backend.</p>
         </div>
 
-        <div className="mt-6 flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-800 px-4">
-          <Search className="text-slate-500" size={20} />
+        <div className="mt-6 flex items-center gap-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4">
+          <Search className="text-slate-400 dark:text-slate-500" size={20} />
           <input
             placeholder="Buscar na agenda..."
-            className="w-full bg-transparent py-4 text-white outline-none placeholder:text-slate-500"
+            className="w-full bg-transparent py-4 text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
           />
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-5">
           {loading ? (
-            <p className="text-slate-400">Carregando agenda...</p>
+            <p className="text-slate-500 dark:text-slate-400">Carregando agenda...</p>
           ) : events.length === 0 ? (
-            <p className="text-slate-400">Nenhum item encontrado.</p>
+            <p className="text-slate-500 dark:text-slate-400">Nenhum item encontrado.</p>
           ) : (
             events.map((event) => (
-              <div key={event.id} className="rounded-2xl border border-slate-800 bg-slate-800/60 p-5">
+              <div key={event.id} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-800/60 p-5">
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
@@ -315,9 +315,9 @@ export function Events() {
                       </span>
                     </div>
 
-                    <h3 className="mt-4 text-base font-bold text-white">{event.title}</h3>
+                    <h3 className="mt-4 text-base font-bold text-slate-900 dark:text-white">{event.title}</h3>
 
-                    <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-slate-400 md:grid-cols-3">
+                    <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-slate-500 dark:text-slate-400 md:grid-cols-3">
                       <p className="flex items-center gap-2">
                         <CalendarDays size={16} />
                         {formatDate(event.startDate)}
@@ -350,14 +350,14 @@ export function Events() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
           <form
             onSubmit={handleSaveEvent}
-            className="w-full max-w-2xl rounded-3xl border border-slate-700 bg-slate-900 p-6 shadow-2xl"
+            className="w-full max-w-2xl rounded-3xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
           >
             <div className="mb-6 flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-black text-white">
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white">
                   {editingId ? "Editar item da agenda" : "Novo item da agenda"}
                 </h2>
-                <p className="text-sm text-slate-400">
+                <p className="text-sm text-slate-500 dark:text-slate-400">
                   {editingId ? "Atualize os dados do compromisso." : "Cadastre um compromisso no banco de dados."}
                 </p>
               </div>
@@ -365,7 +365,7 @@ export function Events() {
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="rounded-xl bg-slate-800 px-4 py-2 text-slate-300 hover:bg-slate-700"
+                className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
               >
                 Fechar
               </button>
@@ -380,14 +380,14 @@ export function Events() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <input
                 placeholder="Título"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400 md:col-span-2"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-2"
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 required
               />
 
               <select
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.type}
                 onChange={(e) => setForm({ ...form, type: e.target.value })}
               >
@@ -399,7 +399,7 @@ export function Events() {
 
               {editingId && (
                 <select
-                  className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                  className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                   value={form.status}
                   onChange={(e) => setForm({ ...form, status: e.target.value })}
                 >
@@ -411,14 +411,14 @@ export function Events() {
 
               <input
                 placeholder="Local"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.location}
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
               />
 
               <input
                 type="datetime-local"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.startDate}
                 onChange={(e) => setForm({ ...form, startDate: e.target.value })}
                 required
@@ -426,7 +426,7 @@ export function Events() {
 
               <input
                 type="datetime-local"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.endDate}
                 onChange={(e) => setForm({ ...form, endDate: e.target.value })}
                 required
@@ -434,7 +434,7 @@ export function Events() {
 
               <textarea
                 placeholder="Descrição"
-                className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400 md:col-span-2"
+                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-2"
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
               />

@@ -9,11 +9,14 @@ import {
   Save,
   CheckCircle2,
   Users,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { getMyOrganization, updateOrganization, type OrganizationDetails } from "../services/organization";
 import { getPlans, changePlan, type Plan } from "../services/plans";
 import { PageHeader } from "../components/PageHeader";
 import { useToast } from "../components/Toast";
+import { useTheme } from "../components/Theme";
 
 function formatPrice(value: string | number) {
   const n = Number(value);
@@ -23,6 +26,7 @@ function formatPrice(value: string | number) {
 
 export function Settings() {
   const toast = useToast();
+  const { theme, toggleTheme } = useTheme();
   const [organization, setOrganization] = useState<OrganizationDetails | null>(null);
   const [plans, setPlans] = useState<Plan[]>([]);
   const [loading, setLoading] = useState(true);
@@ -93,10 +97,10 @@ export function Settings() {
         description="Gerencie os dados da empresa, o plano de assinatura e preferências."
       />
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
         <div className="flex items-center gap-3">
           <Building2 className="text-cyan-400" />
-          <h2 className="text-lg font-bold text-white">Dados da empresa</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Dados da empresa</h2>
         </div>
 
         {message && (
@@ -108,27 +112,27 @@ export function Settings() {
         <form onSubmit={handleSaveOrganization} className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
           <input
             placeholder="Nome da empresa"
-            className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
             required
           />
           <input
             placeholder="CNPJ/CPF"
-            className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
             value={form.document}
             onChange={(e) => setForm({ ...form, document: e.target.value })}
           />
           <input
             type="email"
             placeholder="E-mail da empresa"
-            className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
           />
           <input
             placeholder="Telefone"
-            className="rounded-xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none focus:border-cyan-400"
+            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
             value={form.phone}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
           />
@@ -144,27 +148,65 @@ export function Settings() {
         </form>
       </section>
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <div className="flex items-center gap-3">
+          {theme === "dark" ? (
+            <Moon className="text-cyan-400" />
+          ) : (
+            <Sun className="text-cyan-400" />
+          )}
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Aparência</h2>
+        </div>
+
+        <div className="mt-6 flex items-center justify-between rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
+          <div>
+            <h3 className="font-semibold text-slate-700 dark:text-slate-200">Modo escuro</h3>
+            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+              {theme === "dark"
+                ? "Interface escura ativada."
+                : "Interface clara ativada."}
+            </p>
+          </div>
+
+          <button
+            type="button"
+            role="switch"
+            aria-checked={theme === "dark"}
+            onClick={toggleTheme}
+            className={`relative h-7 w-14 shrink-0 rounded-full p-1 transition-colors ${
+              theme === "dark" ? "bg-cyan-500" : "bg-slate-300"
+            }`}
+          >
+            <div
+              className={`h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                theme === "dark" ? "translate-x-7" : "translate-x-0"
+              }`}
+            />
+          </button>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
         <div className="flex items-center gap-3">
           <CreditCard className="text-emerald-400" />
-          <h2 className="text-lg font-bold text-white">Plano e assinatura</h2>
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Plano e assinatura</h2>
         </div>
 
         {loading ? (
-          <p className="mt-6 text-slate-400">Carregando plano atual...</p>
+          <p className="mt-6 text-slate-500 dark:text-slate-400">Carregando plano atual...</p>
         ) : (
           <>
-            <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-slate-800 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-slate-100 dark:bg-slate-800 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm text-slate-400">Plano atual</p>
-                <h3 className="text-lg font-bold text-white">
+                <p className="text-sm text-slate-500 dark:text-slate-400">Plano atual</p>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
                   {organization?.subscription?.plan?.name || "Sem plano"}
                 </h3>
-                <p className="mt-1 text-sm text-slate-400">
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
                   Status: {organization?.subscription?.status || "-"}
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-sm text-slate-300">
+              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                 <Users size={16} />
                 {organization?._count?.users ?? 0} / {organization?.subscription?.plan?.maxUsers ?? "-"} usuários
               </div>
@@ -177,14 +219,14 @@ export function Settings() {
                   className={`rounded-2xl border p-5 ${
                     plan.slug === currentPlanSlug
                       ? "border-cyan-500 bg-cyan-500/10"
-                      : "border-slate-700 bg-slate-800"
+                      : "border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800"
                   }`}
                 >
-                  <h3 className="font-bold text-white">{plan.name}</h3>
+                  <h3 className="font-bold text-slate-900 dark:text-white">{plan.name}</h3>
                   <p className="mt-1 text-2xl font-black text-cyan-400">
                     {formatPrice(plan.priceMonthly)}
                   </p>
-                  <p className="mt-2 text-xs text-slate-400">
+                  <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
                     Até {plan.maxUsers} usuários · {plan.maxContacts.toLocaleString("pt-BR")} contatos
                   </p>
 
@@ -203,10 +245,10 @@ export function Settings() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
           <div className="flex items-center gap-3">
             <Bell className="text-yellow-400" />
-            <h2 className="text-lg font-bold text-white">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               Notificações
             </h2>
           </div>
@@ -220,9 +262,9 @@ export function Settings() {
             ].map((item) => (
               <div
                 key={item}
-                className="flex items-center justify-between rounded-2xl bg-slate-800 p-5"
+                className="flex items-center justify-between rounded-2xl bg-slate-100 dark:bg-slate-800 p-5"
               >
-                <span className="font-semibold text-slate-200">
+                <span className="font-semibold text-slate-700 dark:text-slate-200">
                   {item}
                 </span>
 
@@ -234,21 +276,21 @@ export function Settings() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
           <div className="flex items-center gap-3">
             <ShieldCheck className="text-emerald-400" />
-            <h2 className="text-lg font-bold text-white">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               Segurança
             </h2>
           </div>
 
           <div className="mt-6 space-y-5">
-            <div className="rounded-2xl bg-slate-800 p-5">
-              <h3 className="font-bold text-white">
+            <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
+              <h3 className="font-bold text-slate-900 dark:text-white">
                 Autenticação
               </h3>
 
-              <p className="mt-2 text-sm leading-relaxed text-slate-400">
+              <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                 Sua conta usa autenticação JWT com tokens de acesso e
                 renovação segura.
               </p>
@@ -259,12 +301,12 @@ export function Settings() {
               </span>
             </div>
 
-            <div className="rounded-2xl bg-slate-800 p-5">
-              <h3 className="font-bold text-white">
+            <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
+              <h3 className="font-bold text-slate-900 dark:text-white">
                 Controle de acesso
               </h3>
 
-              <p className="mt-2 text-sm leading-relaxed text-slate-400">
+              <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
                 Papéis de dono, administrador e membro controlam o que cada
                 usuário pode fazer na sua empresa.
               </p>
@@ -273,32 +315,32 @@ export function Settings() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
         <div className="flex items-center gap-3">
           <Database className="text-purple-400" />
-          <h2 className="text-lg font-bold text-white">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             Sistema
           </h2>
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="rounded-2xl bg-slate-800 p-5">
-            <h3 className="font-bold text-white">
+          <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
+            <h3 className="font-bold text-slate-900 dark:text-white">
               Banco de dados
             </h3>
 
-            <p className="mt-2 text-sm text-slate-400">
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
               Backend Node.js com Prisma ORM e PostgreSQL, isolado por
               empresa (multi-tenant).
             </p>
           </div>
 
-          <div className="rounded-2xl bg-slate-800 p-5">
-            <h3 className="font-bold text-white">
+          <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
+            <h3 className="font-bold text-slate-900 dark:text-white">
               Deploy
             </h3>
 
-            <p className="mt-2 text-sm text-slate-400">
+            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
               Plataforma hospedada em produção na Vercel + Render.
             </p>
           </div>

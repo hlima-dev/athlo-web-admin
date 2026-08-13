@@ -25,12 +25,12 @@ export function ForgotPassword() {
 
   if (sent) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
-        <div className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl text-center">
+      <main className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
+        <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl text-center">
           <div className="text-5xl mb-4">📬</div>
-          <h1 className="text-2xl font-bold text-white mb-3">E-mail enviado</h1>
-          <p className="text-slate-400 mb-6">
-            Se o endereço <strong className="text-white">{email}</strong> estiver cadastrado,
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">E-mail enviado</h1>
+          <p className="text-slate-500 dark:text-slate-400 mb-6">
+            Se o endereço <strong className="text-slate-900 dark:text-white">{email}</strong> estiver cadastrado,
             você receberá um e-mail com o link para redefinir sua senha.
           </p>
           <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-semibold">
@@ -42,13 +42,13 @@ export function ForgotPassword() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
+    <main className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-slate-900 border border-slate-800 rounded-3xl p-8 shadow-2xl"
+        className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl"
       >
-        <h1 className="text-3xl font-bold text-white">Recuperar senha</h1>
-        <p className="text-slate-400 mt-2 mb-6">
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Recuperar senha</h1>
+        <p className="text-slate-500 dark:text-slate-400 mt-2 mb-6">
           Informe seu e-mail e enviaremos um link para criar uma nova senha.
         </p>
 
@@ -62,7 +62,7 @@ export function ForgotPassword() {
           type="email"
           placeholder="Seu e-mail"
           autoComplete="email"
-          className="w-full rounded-xl bg-slate-800 border border-slate-700 text-white px-4 py-3 outline-none focus:border-cyan-400"
+          className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
