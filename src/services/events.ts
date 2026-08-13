@@ -38,3 +38,18 @@ export async function deleteEvent(id: string) {
   const response = await api.delete(`/events/${id}`);
   return response.data;
 }
+
+export interface AiEventDraft {
+  title: string;
+  description: string;
+  type: "MEETING" | "TASK" | "DEADLINE" | "OTHER";
+  location: string;
+  startDate: string;
+  endDate: string;
+  isOnline: boolean;
+}
+
+export async function parseEventWithAi(prompt: string) {
+  const response = await api.post("/events/ai-parse", { prompt });
+  return response.data?.data as AiEventDraft;
+}

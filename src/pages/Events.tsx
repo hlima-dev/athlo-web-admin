@@ -8,9 +8,17 @@ import {
   ListChecks,
   Flag,
   CheckCircle2,
+  Sparkles,
 } from "lucide-react";
 
-import { getEvents, createEvent, updateEvent, deleteEvent, type Event } from "../services/events";
+import {
+  getEvents,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+  parseEventWithAi,
+  type Event,
+} from "../services/events";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { PageHeader } from "../components/PageHeader";
 import { ConfirmDialog } from "../components/ConfirmDialog";
@@ -59,6 +67,9 @@ export function Events() {
   const [deleteTarget, setDeleteTarget] = useState<Event | null>(null);
   const [deleting, setDeleting] = useState(false);
 
+  const [aiPrompt, setAiPrompt] = useState("");
+  const [aiLoading, setAiLoading] = useState(false);
+
   const [form, setForm] = useState(emptyForm);
 
   async function loadEvents() {
@@ -97,6 +108,34 @@ export function Events() {
     });
     setError("");
     setShowModal(true);
+  }
+
+  async function handleAiParse(e: React.FormEvent) {
+    e.preventDefault();
+    if (!aiPrompt.trim()) return;
+
+    try {
+      setAiLoading(true);
+      const draft = await parseEventWithAi(aiPrompt.trim());
+      setEditingId(null);
+      setForm({
+        title: draft.title,
+        description: draft.description || "",
+        type: draft.type,
+        status: "SCHEDULED",
+        location: draft.location || "",
+        startDate: toDatetimeLocal(draft.startDate),
+        endDate: toDatetimeLocal(draft.endDate),
+      });
+      setError("");
+      setShowModal(true);
+      setAiPrompt("");
+      toast.success("Sugestão pronta! Revise os dados e salve.");
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Não foi possível interpretar o texto.");
+    } finally {
+      setAiLoading(false);
+    }
   }
 
   async function handleSaveEvent(e: React.FormEvent) {
@@ -195,6 +234,37 @@ export function Events() {
           </button>
         }
       />
+
+      <section className="rounded-2xl border border-cyan-800/60 bg-gradient-to-br from-cyan-950/40 to-slate-900 p-6">
+        <div className="flex items-center gap-3">
+          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400">
+            <Sparkles size={20} />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-white">Cadastro rápido com IA</h2>
+            <p className="text-sm text-slate-400">
+              Descreva o compromisso em uma frase e a IA preenche o formulário para você revisar.
+            </p>
+          </div>
+        </div>
+
+        <form onSubmit={handleAiParse} className="mt-4 flex flex-col gap-3 sm:flex-row">
+          <input
+            placeholder='Ex: "Reunião com o cliente Ana amanhã às 15h no escritório" ou "Entrega para a Padaria Central sexta-feira de manhã"'
+            className="w-full rounded-2xl border border-slate-700 bg-slate-800 px-4 py-3 text-white outline-none placeholder:text-slate-500 focus:border-cyan-400"
+            value={aiPrompt}
+            onChange={(e) => setAiPrompt(e.target.value)}
+          />
+          <button
+            type="submit"
+            disabled={aiLoading || !aiPrompt.trim()}
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
+          >
+            <Sparkles size={18} />
+            {aiLoading ? "Interpretando..." : "Preencher com IA"}
+          </button>
+        </form>
+      </section>
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
         {highlights.map((item) => {
