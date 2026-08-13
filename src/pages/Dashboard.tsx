@@ -9,6 +9,7 @@ import {
   Users,
   Activity,
   ArrowUpRight,
+  ClipboardList,
 } from "lucide-react";
 
 import {
@@ -29,6 +30,7 @@ interface DashboardData {
   users: number;
   events: number;
   pendingInvoices: number;
+  openOrders: number;
   revenue: number | string;
   growthData: { month: string; contatos: number }[];
   revenueData: { month: string; valor: number }[];
@@ -86,6 +88,11 @@ export function Dashboard() {
       icon: Clock3,
     },
     {
+      title: "Pedidos em aberto",
+      value: dashboard?.openOrders ?? 0,
+      icon: ClipboardList,
+    },
+    {
       title: "Compromissos",
       value: dashboard?.events ?? 0,
       icon: CalendarDays,
@@ -126,7 +133,7 @@ export function Dashboard() {
         </div>
       </section>
 
-      <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
+      <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {stats.map((item) => {
           const Icon = item.icon;
 

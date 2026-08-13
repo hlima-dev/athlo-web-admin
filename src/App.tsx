@@ -11,6 +11,7 @@ import { Dashboard } from "./pages/Dashboard";
 import { Financeiro } from "./pages/Financeiro";
 import { Contacts } from "./pages/Contacts";
 import { Products } from "./pages/Products";
+import { Orders } from "./pages/Orders";
 import { Events } from "./pages/Events";
 import { Calendar } from "./pages/Calendar";
 import { Reports } from "./pages/Reports";
@@ -51,6 +52,7 @@ export default function App() {
           <Route path="/financeiro" element={<Financeiro />} />
           <Route path="/contatos" element={<Contacts />} />
           <Route path="/produtos" element={<Products />} />
+          <Route path="/pedidos" element={<Orders />} />
           <Route path="/eventos" element={<Events />} />
           <Route path="/calendario" element={<Calendar />} />
           <Route path="/relatorios" element={<Reports />} />
