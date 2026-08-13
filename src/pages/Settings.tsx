@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { getMyOrganization, updateOrganization, type OrganizationDetails } from "../services/organization";
 import { getPlans, changePlan, type Plan } from "../services/plans";
+import { PageHeader } from "../components/PageHeader";
 
 function formatPrice(value: string | number) {
   const n = Number(value);
@@ -83,26 +84,16 @@ export function Settings() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
-          <SettingsIcon size={16} />
-          Configurações
-        </span>
+      <PageHeader
+        icon={SettingsIcon}
+        title="Configurações"
+        description="Gerencie os dados da empresa, o plano de assinatura e preferências."
+      />
 
-        <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
-          Personalize e controle o funcionamento do ATHLO.
-        </h1>
-
-        <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Gerencie os dados da sua empresa, seu plano de assinatura e
-          preferências da plataforma.
-        </p>
-      </section>
-
-      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <div className="flex items-center gap-3">
           <Building2 className="text-cyan-400" />
-          <h2 className="text-2xl font-black text-white">Dados da empresa</h2>
+          <h2 className="text-lg font-bold text-white">Dados da empresa</h2>
         </div>
 
         {message && (
@@ -142,7 +133,7 @@ export function Settings() {
           <button
             type="submit"
             disabled={saving || loading}
-            className="md:col-span-2 inline-flex items-center justify-center gap-3 rounded-2xl bg-cyan-500 px-8 py-4 font-black text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
+            className="md:col-span-2 inline-flex items-center justify-center gap-3 rounded-2xl bg-cyan-500 px-8 py-4 font-bold text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
           >
             <Save size={20} />
             {saving ? "Salvando..." : "Salvar alterações"}
@@ -150,10 +141,10 @@ export function Settings() {
         </form>
       </section>
 
-      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <div className="flex items-center gap-3">
           <CreditCard className="text-emerald-400" />
-          <h2 className="text-2xl font-black text-white">Plano e assinatura</h2>
+          <h2 className="text-lg font-bold text-white">Plano e assinatura</h2>
         </div>
 
         {loading ? (
@@ -163,7 +154,7 @@ export function Settings() {
             <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-slate-800 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div>
                 <p className="text-sm text-slate-400">Plano atual</p>
-                <h3 className="text-xl font-black text-white">
+                <h3 className="text-lg font-bold text-white">
                   {organization?.subscription?.plan?.name || "Sem plano"}
                 </h3>
                 <p className="mt-1 text-sm text-slate-400">
@@ -186,7 +177,7 @@ export function Settings() {
                       : "border-slate-700 bg-slate-800"
                   }`}
                 >
-                  <h3 className="font-black text-white">{plan.name}</h3>
+                  <h3 className="font-bold text-white">{plan.name}</h3>
                   <p className="mt-1 text-2xl font-black text-cyan-400">
                     {formatPrice(plan.priceMonthly)}
                   </p>
@@ -209,10 +200,10 @@ export function Settings() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <div className="flex items-center gap-3">
             <Bell className="text-yellow-400" />
-            <h2 className="text-2xl font-black text-white">
+            <h2 className="text-lg font-bold text-white">
               Notificações
             </h2>
           </div>
@@ -240,17 +231,17 @@ export function Settings() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <div className="flex items-center gap-3">
             <ShieldCheck className="text-emerald-400" />
-            <h2 className="text-2xl font-black text-white">
+            <h2 className="text-lg font-bold text-white">
               Segurança
             </h2>
           </div>
 
           <div className="mt-6 space-y-5">
             <div className="rounded-2xl bg-slate-800 p-5">
-              <h3 className="font-black text-white">
+              <h3 className="font-bold text-white">
                 Autenticação
               </h3>
 
@@ -266,7 +257,7 @@ export function Settings() {
             </div>
 
             <div className="rounded-2xl bg-slate-800 p-5">
-              <h3 className="font-black text-white">
+              <h3 className="font-bold text-white">
                 Controle de acesso
               </h3>
 
@@ -279,17 +270,17 @@ export function Settings() {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <div className="flex items-center gap-3">
           <Database className="text-purple-400" />
-          <h2 className="text-2xl font-black text-white">
+          <h2 className="text-lg font-bold text-white">
             Sistema
           </h2>
         </div>
 
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
           <div className="rounded-2xl bg-slate-800 p-5">
-            <h3 className="font-black text-white">
+            <h3 className="font-bold text-white">
               Banco de dados
             </h3>
 
@@ -300,7 +291,7 @@ export function Settings() {
           </div>
 
           <div className="rounded-2xl bg-slate-800 p-5">
-            <h3 className="font-black text-white">
+            <h3 className="font-bold text-white">
               Deploy
             </h3>
 

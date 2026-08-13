@@ -18,6 +18,7 @@ import {
   markAllNotificationsAsRead,
   type NotificationItem,
 } from "../services/notifications";
+import { PageHeader } from "../components/PageHeader";
 
 export function Notifications() {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -168,21 +169,21 @@ export function Notifications() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
-          <Bell size={16} />
-          Central de notificações
-        </span>
-
-        <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
-          Acompanhe tudo que acontece na plataforma.
-        </h1>
-
-        <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Receba alertas sobre faturas, agenda, equipe e atividades
-          importantes da sua empresa.
-        </p>
-      </section>
+      <PageHeader
+        icon={Bell}
+        title="Notificações"
+        description="Receba alertas sobre faturas, agenda, equipe e atividades da empresa."
+        action={
+          <button
+            type="button"
+            onClick={handleMarkAllRead}
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-800 px-5 py-3 font-bold text-slate-300 hover:bg-slate-700"
+          >
+            <Filter size={20} />
+            Marcar todas como lidas
+          </button>
+        }
+      />
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
         {summary.map((item) => {
@@ -191,36 +192,25 @@ export function Notifications() {
           return (
             <div
               key={item.title}
-              className="rounded-3xl border border-slate-800 bg-slate-900 p-6"
+              className="rounded-2xl border border-slate-800 bg-slate-900 p-5"
             >
-              <Icon className={item.color} />
-              <p className="mt-5 text-sm text-slate-400">{item.title}</p>
-              <h2 className="mt-2 text-3xl font-black">{item.value}</h2>
+              <Icon className={item.color} size={20} />
+              <p className="mt-4 text-sm text-slate-400">{item.title}</p>
+              <h2 className="mt-1 text-2xl font-bold text-white">{item.value}</h2>
             </div>
           );
         })}
       </section>
 
-      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-2xl font-black text-white">
-              Atividades recentes
-            </h2>
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div>
+          <h2 className="text-lg font-bold text-white">
+            Atividades recentes
+          </h2>
 
-            <p className="text-sm text-slate-400">
-              Histórico de avisos e atualizações da plataforma.
-            </p>
-          </div>
-
-          <button
-            type="button"
-            onClick={handleMarkAllRead}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-800 px-5 py-3 font-black text-slate-300 hover:bg-slate-700"
-          >
-            <Filter size={20} />
-            Marcar todas como lidas
-          </button>
+          <p className="text-sm text-slate-400">
+            Histórico de avisos e atualizações da plataforma.
+          </p>
         </div>
 
         <div className="mt-6 space-y-4">
@@ -250,7 +240,7 @@ export function Notifications() {
 
                       <div>
                         <div className="flex flex-wrap items-center gap-3">
-                          <h3 className="text-lg font-black text-white">
+                          <h3 className="text-base font-bold text-white">
                             {notification.title}
                           </h3>
 

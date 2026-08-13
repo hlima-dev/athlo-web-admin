@@ -11,6 +11,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { changePassword, getStoredOrganization, getStoredUser, updateProfile } from "../services/auth";
+import { PageHeader } from "../components/PageHeader";
 
 const roleLabels: Record<string, string> = {
   OWNER: "Dono da empresa",
@@ -100,21 +101,11 @@ export function Profile() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
-          <User size={16} />
-          Perfil do usuário
-        </span>
-
-        <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
-          Gerencie suas informações e acesso ao ATHLO.
-        </h1>
-
-        <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Visualize dados da conta, função na empresa, segurança e histórico
-          recente de atividades na plataforma.
-        </p>
-      </section>
+      <PageHeader
+        icon={User}
+        title="Perfil"
+        description="Dados da conta, função na empresa e segurança."
+      />
 
       {success && (
         <div className="rounded-2xl border border-emerald-700 bg-emerald-900/30 p-4 text-sm text-emerald-300">
@@ -123,9 +114,9 @@ export function Profile() {
       )}
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 xl:col-span-1">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 xl:col-span-1">
           <div className="flex flex-col items-center text-center">
-            <div className="flex h-28 w-28 items-center justify-center rounded-[32px] bg-cyan-500/10 text-4xl font-black text-cyan-400">
+            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-cyan-500/10 text-2xl font-bold text-cyan-400">
               {(user?.name || "Usuário")
                 .split(" ")
                 .map((n: string) => n[0])
@@ -133,7 +124,7 @@ export function Profile() {
                 .join("")}
             </div>
 
-            <h2 className="mt-5 text-2xl font-black text-white">
+            <h2 className="mt-5 text-xl font-bold text-white">
               {user?.name || "Usuário"}
             </h2>
 
@@ -148,7 +139,7 @@ export function Profile() {
 
           <button
             onClick={openProfileModal}
-            className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-4 font-black text-slate-950 hover:bg-cyan-400"
+            className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-4 font-bold text-slate-950 hover:bg-cyan-400"
           >
             <Edit size={20} />
             Editar perfil
@@ -156,8 +147,8 @@ export function Profile() {
         </div>
 
         <div className="space-y-6 xl:col-span-2">
-          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-2xl font-black text-white">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h2 className="text-lg font-bold text-white">
               Informações da conta
             </h2>
 
@@ -196,8 +187,8 @@ export function Profile() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-            <h2 className="text-2xl font-black text-white">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h2 className="text-lg font-bold text-white">
               Segurança
             </h2>
 
@@ -208,7 +199,7 @@ export function Profile() {
                 </div>
 
                 <div>
-                  <h3 className="font-black text-white">Senha da conta</h3>
+                  <h3 className="font-bold text-white">Senha da conta</h3>
                   <p className="text-sm text-slate-400">
                     Atualize sua senha periodicamente para manter a segurança.
                   </p>
@@ -226,10 +217,10 @@ export function Profile() {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <div className="flex items-center gap-3">
           <Activity className="text-cyan-400" />
-          <h2 className="text-2xl font-black text-white">
+          <h2 className="text-lg font-bold text-white">
             Atividades recentes
           </h2>
         </div>

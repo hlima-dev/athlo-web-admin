@@ -12,6 +12,7 @@ import {
 
 import { getEvents, createEvent, updateEvent, deleteEvent, type Event } from "../services/events";
 import { RowActionsMenu } from "../components/RowActionsMenu";
+import { PageHeader } from "../components/PageHeader";
 
 const typeLabels: Record<string, string> = {
   MEETING: "Reunião",
@@ -170,51 +171,40 @@ export function Events() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
-          <CalendarDays size={16} />
-          Agenda
-        </span>
-
-        <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
-          Organize reuniões, tarefas e prazos da equipe.
-        </h1>
-
-        <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Controle datas, responsáveis e status de cada compromisso em uma
-          visão clara e profissional.
-        </p>
-      </section>
+      <PageHeader
+        icon={CalendarDays}
+        title="Agenda"
+        description="Organize reuniões, tarefas e prazos da equipe."
+        action={
+          <button
+            type="button"
+            onClick={openCreateModal}
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 hover:bg-cyan-400"
+          >
+            <Plus size={20} />
+            Novo item
+          </button>
+        }
+      />
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
         {highlights.map((item) => {
           const Icon = item.icon;
 
           return (
-            <div key={item.title} className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-              <Icon className={item.color} />
-              <p className="mt-5 text-sm text-slate-400">{item.title}</p>
-              <h2 className="mt-2 text-3xl font-black">{item.value}</h2>
+            <div key={item.title} className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+              <Icon className={item.color} size={20} />
+              <p className="mt-4 text-sm text-slate-400">{item.title}</p>
+              <h2 className="mt-1 text-2xl font-bold text-white">{item.value}</h2>
             </div>
           );
         })}
       </section>
 
-      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-2xl font-black text-white">Próximos compromissos</h2>
-            <p className="text-sm text-slate-400">Itens carregados diretamente do backend.</p>
-          </div>
-
-          <button
-            type="button"
-            onClick={openCreateModal}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400"
-          >
-            <Plus size={20} />
-            Novo item
-          </button>
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div>
+          <h2 className="text-lg font-bold text-white">Próximos compromissos</h2>
+          <p className="text-sm text-slate-400">Itens carregados diretamente do backend.</p>
         </div>
 
         <div className="mt-6 flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-800 px-4">
@@ -232,7 +222,7 @@ export function Events() {
             <p className="text-slate-400">Nenhum item encontrado.</p>
           ) : (
             events.map((event) => (
-              <div key={event.id} className="rounded-3xl border border-slate-800 bg-slate-800 p-5">
+              <div key={event.id} className="rounded-2xl border border-slate-800 bg-slate-800/60 p-5">
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                   <div>
                     <div className="flex flex-wrap items-center gap-3">
@@ -246,7 +236,7 @@ export function Events() {
                       </span>
                     </div>
 
-                    <h3 className="mt-4 text-xl font-black text-white">{event.title}</h3>
+                    <h3 className="mt-4 text-base font-bold text-white">{event.title}</h3>
 
                     <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-slate-400 md:grid-cols-3">
                       <p className="flex items-center gap-2">

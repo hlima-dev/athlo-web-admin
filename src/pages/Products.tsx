@@ -8,6 +8,7 @@ import {
   type Product,
 } from "../services/products";
 import { RowActionsMenu } from "../components/RowActionsMenu";
+import { PageHeader } from "../components/PageHeader";
 
 function toCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -118,54 +119,44 @@ export function Products() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
-          <Package size={16} />
-          Catálogo
-        </span>
-
-        <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
-          Organize produtos e serviços da sua empresa.
-        </h1>
-
-        <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Use o catálogo para agilizar orçamentos e faturas.
-        </p>
-      </section>
-
-      <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Package className="text-cyan-400" />
-          <p className="mt-5 text-sm text-slate-400">Itens cadastrados</p>
-          <h2 className="mt-2 text-3xl font-black">{products.length}</h2>
-        </div>
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <CheckCircle2 className="text-emerald-400" />
-          <p className="mt-5 text-sm text-slate-400">Ativos</p>
-          <h2 className="mt-2 text-3xl font-black">{activeCount}</h2>
-        </div>
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Tag className="text-purple-400" />
-          <p className="mt-5 text-sm text-slate-400">Serviços</p>
-          <h2 className="mt-2 text-3xl font-black">{servicesCount}</h2>
-        </div>
-      </section>
-
-      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-2xl font-black text-white">Catálogo</h2>
-            <p className="text-sm text-slate-400">Produtos e serviços salvos no banco.</p>
-          </div>
-
+      <PageHeader
+        icon={Package}
+        title="Catálogo"
+        description="Organize produtos e serviços para agilizar orçamentos e faturas."
+        action={
           <button
             type="button"
             onClick={openCreateModal}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 hover:bg-cyan-400"
           >
             <Plus size={20} />
             Novo item
           </button>
+        }
+      />
+
+      <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <Package className="text-cyan-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Itens cadastrados</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{products.length}</h2>
+        </div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <CheckCircle2 className="text-emerald-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Ativos</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{activeCount}</h2>
+        </div>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <Tag className="text-purple-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Serviços</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{servicesCount}</h2>
+        </div>
+      </section>
+
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div>
+          <h2 className="text-lg font-bold text-white">Catálogo</h2>
+          <p className="text-sm text-slate-400">Produtos e serviços salvos no banco.</p>
         </div>
 
         <div className="mt-6 flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-800 px-4">
@@ -185,13 +176,13 @@ export function Products() {
             <p className="text-slate-400">Nenhum item cadastrado.</p>
           ) : (
             products.map((product) => (
-              <div key={product.id} className="rounded-3xl border border-slate-800 bg-slate-800 p-5">
+              <div key={product.id} className="rounded-2xl border border-slate-800 bg-slate-800/60 p-5">
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-400">
                       {product.type === "SERVICE" ? "Serviço" : "Produto"}
                     </span>
-                    <h3 className="mt-3 text-lg font-black text-white">{product.name}</h3>
+                    <h3 className="mt-3 text-base font-bold text-white">{product.name}</h3>
                     {product.sku && <p className="text-xs text-slate-500">SKU: {product.sku}</p>}
                   </div>
 

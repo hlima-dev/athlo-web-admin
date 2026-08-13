@@ -8,6 +8,7 @@ import {
   Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts"
 import { getDashboard } from "../services/dashboard"
+import { PageHeader } from "../components/PageHeader"
 
 export function Reports() {
   const [data, setData] = useState<any>(null)
@@ -42,47 +43,40 @@ export function Reports() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
-          <BarChart3 size={16} />
-          Relatórios e indicadores
-        </span>
-        <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
-          Dados claros para medir a evolução da sua empresa.
-        </h1>
-        <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Acompanhe crescimento, receita, contatos e resultados com relatórios visuais e estratégicos.
-        </p>
-      </section>
+      <PageHeader
+        icon={BarChart3}
+        title="Relatórios"
+        description="Dados claros para medir a evolução da sua empresa."
+      />
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Users className="text-cyan-400" />
-          <p className="mt-5 text-sm text-slate-400">Contatos cadastrados</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : contacts}</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <Users className="text-cyan-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Contatos cadastrados</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : contacts}</h2>
         </div>
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Wallet className="text-emerald-400" />
-          <p className="mt-5 text-sm text-slate-400">Receita do mês</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : formatCurrency(revenue)}</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <Wallet className="text-emerald-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Receita do mês</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : formatCurrency(revenue)}</h2>
         </div>
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <CalendarDays className="text-purple-400" />
-          <p className="mt-5 text-sm text-slate-400">Compromissos</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : events}</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <CalendarDays className="text-purple-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Compromissos</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : events}</h2>
         </div>
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Clock3 className="text-yellow-400" />
-          <p className="mt-5 text-sm text-slate-400">Faturas pendentes</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : pendingInvoices}</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <Clock3 className="text-yellow-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Faturas pendentes</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : pendingInvoices}</h2>
         </div>
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 xl:col-span-2">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 xl:col-span-2">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-black text-white">Crescimento de contatos</h2>
+              <h2 className="text-lg font-bold text-white">Crescimento de contatos</h2>
               <p className="text-sm text-slate-400">Novos contatos cadastrados por mês.</p>
             </div>
             <TrendingUp className="text-cyan-400" />
@@ -106,8 +100,8 @@ export function Reports() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">Distribuição geral</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-lg font-bold text-white">Distribuição geral</h2>
           <div className="mt-6 h-72">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -132,8 +126,8 @@ export function Reports() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">Receita por mês</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-lg font-bold text-white">Receita por mês</h2>
           <div className="mt-6 h-80">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={revenueData}>
@@ -147,8 +141,8 @@ export function Reports() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">Metas estratégicas</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-lg font-bold text-white">Metas estratégicas</h2>
           <div className="mt-6 space-y-6">
             {goals.map((goal) => (
               <div key={goal.title}>
@@ -162,17 +156,17 @@ export function Reports() {
               </div>
             ))}
           </div>
-          <button className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-4 font-black text-slate-950 hover:bg-cyan-400">
+          <button className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-4 font-bold text-slate-950 hover:bg-cyan-400">
             <Download size={20} />
             Exportar relatório
           </button>
         </div>
       </section>
 
-      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <div className="flex items-center gap-3">
           <Target className="text-cyan-400" />
-          <h2 className="text-2xl font-black text-white">Análise de desempenho</h2>
+          <h2 className="text-lg font-bold text-white">Análise de desempenho</h2>
         </div>
         <p className="mt-4 max-w-4xl text-slate-400 leading-relaxed">
           {loading ? "Carregando análise..." : `O sistema registra ${contacts} contato${contacts !== 1 ? "s" : ""}, ${events} compromisso${events !== 1 ? "s" : ""} e ${formatCurrency(revenue)} em receita neste mês. Esses indicadores ajudam a orientar decisões sobre vendas, cobrança e planejamento da equipe.`}

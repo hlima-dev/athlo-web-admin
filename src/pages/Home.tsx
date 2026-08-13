@@ -37,47 +37,47 @@ export function Home() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 md:p-10 shadow-2xl">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
-          <HomeIcon size={16} />
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-600 to-slate-900 p-6 shadow-xl md:p-8">
+        <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold text-white">
+          <HomeIcon size={14} />
           Início
         </span>
-        <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
+        <h1 className="mt-5 text-2xl font-bold text-white md:text-4xl">
           Bem-vindo ao centro operacional do ATHLO.
         </h1>
-        <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
+        <p className="mt-3 max-w-2xl text-sm text-white/80 md:text-base">
           Acompanhe rapidamente a saúde da sua empresa e acesse os principais módulos da plataforma.
         </p>
       </section>
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Users className="text-cyan-400" />
-          <p className="mt-5 text-sm text-slate-400">Contatos</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : contacts}</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <Users className="text-cyan-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Contatos</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : contacts}</h2>
         </div>
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Wallet className="text-emerald-400" />
-          <p className="mt-5 text-sm text-slate-400">Receita do mês</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : formatCurrency(revenue)}</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <Wallet className="text-emerald-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Receita do mês</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : formatCurrency(revenue)}</h2>
         </div>
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <CalendarDays className="text-purple-400" />
-          <p className="mt-5 text-sm text-slate-400">Compromissos</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : events}</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <CalendarDays className="text-purple-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Compromissos</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : events}</h2>
         </div>
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Clock3 className="text-yellow-400" />
-          <p className="mt-5 text-sm text-slate-400">Faturas pendentes</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : pendingInvoices}</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <Clock3 className="text-yellow-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Faturas pendentes</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : pendingInvoices}</h2>
         </div>
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 xl:col-span-2">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 xl:col-span-2">
           <div className="flex items-center gap-3">
             <Activity className="text-cyan-400" />
-            <h2 className="text-2xl font-black text-white">Resumo operacional</h2>
+            <h2 className="text-lg font-bold text-white">Resumo operacional</h2>
           </div>
           <div className="mt-6 space-y-5">
             {[
@@ -98,10 +98,10 @@ export function Home() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
           <div className="flex items-center gap-3">
             <Target className="text-cyan-400" />
-            <h2 className="text-2xl font-black text-white">Ações rápidas</h2>
+            <h2 className="text-lg font-bold text-white">Ações rápidas</h2>
           </div>
           <div className="mt-6 space-y-3">
             {quickActions.map((action) => (
@@ -118,26 +118,26 @@ export function Home() {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
         <div className="flex items-center gap-3">
           <Bell className="text-yellow-400" />
-          <h2 className="text-2xl font-black text-white">Resumo do banco</h2>
+          <h2 className="text-lg font-bold text-white">Resumo do banco</h2>
         </div>
         <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
           <div className="rounded-2xl bg-slate-800 p-5">
-            <h3 className="font-black text-white">Contatos</h3>
+            <h3 className="font-bold text-white">Contatos</h3>
             <p className="mt-2 text-sm text-slate-400">
               {loading ? "Carregando..." : `${contacts} contato${contacts !== 1 ? "s" : ""} cadastrado${contacts !== 1 ? "s" : ""} no sistema.`}
             </p>
           </div>
           <div className="rounded-2xl bg-slate-800 p-5">
-            <h3 className="font-black text-white">Financeiro</h3>
+            <h3 className="font-bold text-white">Financeiro</h3>
             <p className="mt-2 text-sm text-slate-400">
               {loading ? "Carregando..." : `${formatCurrency(revenue)} recebidos este mês.`}
             </p>
           </div>
           <div className="rounded-2xl bg-slate-800 p-5">
-            <h3 className="font-black text-white">Agenda</h3>
+            <h3 className="font-bold text-white">Agenda</h3>
             <p className="mt-2 text-sm text-slate-400">
               {loading ? "Carregando..." : `${events} compromisso${events !== 1 ? "s" : ""} registrado${events !== 1 ? "s" : ""}.`}
             </p>

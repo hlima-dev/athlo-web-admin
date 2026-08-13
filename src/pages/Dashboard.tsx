@@ -100,28 +100,28 @@ export function Dashboard() {
 
   return (
     <div className="space-y-8">
-      <section className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
+      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-cyan-600 to-slate-900 p-6 shadow-xl md:p-8">
         <div className="relative z-10 max-w-3xl">
-          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
-            <Activity size={16} />
+          <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1.5 text-xs font-bold text-white">
+            <Activity size={14} />
             Visão geral da empresa
           </span>
 
-          <h1 className="mt-6 text-3xl font-black leading-tight text-white md:text-5xl">
+          <h1 className="mt-5 text-2xl font-bold leading-tight text-white md:text-4xl">
             Sua empresa organizada em um painel só.
           </h1>
 
-          <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
+          <p className="mt-3 max-w-2xl text-sm text-white/80 md:text-base">
             Acompanhe contatos, financeiro, agenda e equipe em um painel
             moderno e estratégico.
           </p>
 
           <a
             href="/relatorios"
-            className="mt-8 inline-flex items-center gap-2 rounded-2xl bg-white px-6 py-4 font-black text-slate-950"
+            className="mt-6 inline-flex items-center gap-2 rounded-xl bg-white px-5 py-3 text-sm font-bold text-slate-950"
           >
             Ver relatórios
-            <ArrowUpRight size={20} />
+            <ArrowUpRight size={18} />
           </a>
         </div>
       </section>
@@ -133,7 +133,7 @@ export function Dashboard() {
           return (
             <div
               key={item.title}
-              className="rounded-3xl border border-slate-800 bg-slate-900 p-6 shadow-xl"
+              className="rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-sm"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400">
                 <Icon size={24} />
@@ -152,10 +152,10 @@ export function Dashboard() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6 xl:col-span-2">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6 xl:col-span-2">
           <div className="mb-6 flex items-center justify-between">
             <div>
-              <h2 className="text-2xl font-black text-white">
+              <h2 className="text-lg font-bold text-white">
                 Receita mensal
               </h2>
               <p className="text-sm text-slate-400">
@@ -198,8 +198,8 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">Visão geral</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-lg font-bold text-white">Visão geral</h2>
 
           <div className="mt-6 h-72 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
@@ -237,8 +237,8 @@ export function Dashboard() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-lg font-bold text-white">
             Crescimento de contatos
           </h2>
           <p className="text-sm text-slate-400">Novos contatos por mês.</p>
@@ -262,8 +262,8 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-white">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-lg font-bold text-white">
             Próximos compromissos
           </h2>
 

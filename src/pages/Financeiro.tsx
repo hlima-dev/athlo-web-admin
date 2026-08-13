@@ -16,6 +16,7 @@ import {
   type Invoice,
 } from "../services/invoices";
 import { RowActionsMenu } from "../components/RowActionsMenu";
+import { PageHeader } from "../components/PageHeader";
 
 function toCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -169,17 +170,20 @@ export function Financeiro() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
-          <Wallet size={16} /> Financeiro
-        </span>
-        <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
-          Controle contas a pagar e a receber.
-        </h1>
-        <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Acompanhe faturas, prazos e o fluxo de caixa da sua empresa em um só lugar.
-        </p>
-      </section>
+      <PageHeader
+        icon={Wallet}
+        title="Financeiro"
+        description="Controle contas a pagar e a receber e o fluxo de caixa da empresa."
+        action={
+          <button
+            type="button"
+            onClick={openCreateModal}
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 hover:bg-cyan-400"
+          >
+            <Plus size={20} /> Nova fatura
+          </button>
+        }
+      />
 
       {error ? (
         <div className="rounded-2xl border border-red-700 bg-red-900/30 p-4 text-sm text-red-300">
@@ -188,40 +192,31 @@ export function Financeiro() {
       ) : null}
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <TrendingUp className="text-emerald-400" />
-          <p className="mt-5 text-sm text-slate-400">Recebido</p>
-          <h2 className="mt-2 text-3xl font-black text-white">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <TrendingUp className="text-emerald-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Recebido</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">
             {loading ? "..." : toCurrency(stats.totalReceivable)}
           </h2>
         </div>
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <TrendingDown className="text-red-400" />
-          <p className="mt-5 text-sm text-slate-400">Pago</p>
-          <h2 className="mt-2 text-3xl font-black text-white">
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <TrendingDown className="text-red-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Pago</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">
             {loading ? "..." : toCurrency(stats.totalPayable)}
           </h2>
         </div>
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Clock3 className="text-yellow-400" />
-          <p className="mt-5 text-sm text-slate-400">Faturas pendentes</p>
-          <h2 className="mt-2 text-3xl font-black text-white">{loading ? "..." : stats.pending}</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <Clock3 className="text-yellow-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Faturas pendentes</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : stats.pending}</h2>
         </div>
       </section>
 
-      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-2xl font-black text-white">Faturas</h2>
-            <p className="text-sm text-slate-400">Contas a pagar e a receber salvas no banco.</p>
-          </div>
-          <button
-            type="button"
-            onClick={openCreateModal}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400"
-          >
-            <Plus size={20} /> Nova fatura
-          </button>
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div>
+          <h2 className="text-lg font-bold text-white">Faturas</h2>
+          <p className="text-sm text-slate-400">Contas a pagar e a receber salvas no banco.</p>
         </div>
 
         <div className="mt-6 space-y-4">
@@ -246,7 +241,7 @@ export function Financeiro() {
                     {invoice.status === "PAID" ? <CheckCircle2 size={18} /> : <Clock3 size={18} />}
                   </div>
                   <div>
-                    <h3 className="font-black text-white">{invoice.description}</h3>
+                    <h3 className="font-bold text-white">{invoice.description}</h3>
                     <p className="text-sm text-slate-400">
                       {invoice.type === "RECEIVABLE" ? "A receber" : "A pagar"} ·{" "}
                       {statusLabels[invoice.status] || invoice.status} · Vence em {formatDate(invoice.dueDate)}

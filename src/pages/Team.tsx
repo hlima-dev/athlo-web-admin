@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { getMembers, type Member } from "../services/organization";
 import { getInvites, createInvite, revokeInvite, type Invite } from "../services/invites";
+import { PageHeader } from "../components/PageHeader";
 
 const roleLabels: Record<string, string> = {
   OWNER: "Dono",
@@ -80,40 +81,42 @@ export function Team() {
 
   return (
     <div className="space-y-8">
-      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
-          <Users size={16} />
-          Equipe
-        </span>
-        <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
-          Gerencie os membros da sua empresa.
-        </h1>
-        <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
-          Convide colaboradores e defina o papel de cada um dentro da plataforma.
-        </p>
-      </section>
+      <PageHeader
+        icon={Users}
+        title="Equipe"
+        description="Convide colaboradores e defina o papel de cada um na plataforma."
+        action={
+          <button
+            onClick={() => setShowModal(true)}
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 hover:bg-cyan-400"
+          >
+            <Plus size={20} />
+            Convidar membro
+          </button>
+        }
+      />
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Users className="text-cyan-400" />
-          <p className="mt-5 text-sm text-slate-400">Membros ativos</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : members.length}</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <Users className="text-cyan-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Membros ativos</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : members.length}</h2>
         </div>
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <ShieldCheck className="text-emerald-400" />
-          <p className="mt-5 text-sm text-slate-400">Administradores</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : admins}</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <ShieldCheck className="text-emerald-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Administradores</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : admins}</h2>
         </div>
-        <div className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <Clock3 className="text-yellow-400" />
-          <p className="mt-5 text-sm text-slate-400">Convites pendentes</p>
-          <h2 className="mt-2 text-3xl font-black">{loading ? "..." : invites.length}</h2>
+        <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+          <Clock3 className="text-yellow-400" size={20} />
+          <p className="mt-4 text-sm text-slate-400">Convites pendentes</p>
+          <h2 className="mt-1 text-2xl font-bold text-white">{loading ? "..." : invites.length}</h2>
         </div>
       </section>
 
       {invites.length > 0 && (
-        <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-          <h2 className="text-xl font-black text-white">Convites pendentes</h2>
+        <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+          <h2 className="text-lg font-bold text-white">Convites pendentes</h2>
           <div className="mt-4 space-y-3">
             {invites.map((invite) => (
               <div key={invite.id} className="flex items-center justify-between rounded-2xl bg-slate-800 p-4">
@@ -139,19 +142,10 @@ export function Team() {
         </section>
       )}
 
-      <section className="rounded-3xl border border-slate-800 bg-slate-900 p-6">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-2xl font-black text-white">Membros da equipe</h2>
-            <p className="text-sm text-slate-400">Gerencie os usuários da sua empresa.</p>
-          </div>
-          <button
-            onClick={() => setShowModal(true)}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400"
-          >
-            <Plus size={20} />
-            Convidar membro
-          </button>
+      <section className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+        <div>
+          <h2 className="text-lg font-bold text-white">Membros da equipe</h2>
+          <p className="text-sm text-slate-400">Gerencie os usuários da sua empresa.</p>
         </div>
 
         <div className="mt-6 flex items-center gap-3 rounded-2xl border border-slate-700 bg-slate-800 px-4">
@@ -175,14 +169,14 @@ export function Team() {
           ) : (
             <div className="grid grid-cols-1 gap-5">
               {filtered.map((member) => (
-                <div key={member.id} className="rounded-3xl border border-slate-800 bg-slate-800 p-5">
+                <div key={member.id} className="rounded-2xl border border-slate-800 bg-slate-800/60 p-5">
                   <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-cyan-500/10 text-xl font-black text-cyan-400">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-cyan-500/10 text-sm font-bold text-cyan-400">
                         {getInitials(member.name)}
                       </div>
                       <div>
-                        <h3 className="text-xl font-black text-white">{member.name}</h3>
+                        <h3 className="text-base font-bold text-white">{member.name}</h3>
                         <p className="text-sm text-slate-400">{member.email}</p>
                       </div>
                     </div>
