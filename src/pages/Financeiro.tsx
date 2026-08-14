@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Clock3,
   Plus,
+  FileDown,
 } from "lucide-react";
 import {
   getInvoices,
@@ -19,6 +20,7 @@ import { RowActionsMenu } from "../components/RowActionsMenu";
 import { PageHeader } from "../components/PageHeader";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
+import { openPdf } from "../services/api";
 
 function toCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -281,6 +283,16 @@ export function Financeiro() {
                   <RowActionsMenu
                     onEdit={() => openEditModal(invoice)}
                     onDelete={() => setDeleteTarget(invoice)}
+                    extraActions={[
+                      {
+                        label: "Baixar PDF",
+                        icon: FileDown,
+                        onClick: () =>
+                          openPdf(`/invoices/${invoice.id}/pdf`).catch(() =>
+                            toast.error("Erro ao gerar o PDF da fatura.")
+                          ),
+                      },
+                    ]}
                   />
                 </div>
               </div>

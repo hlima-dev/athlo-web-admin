@@ -8,6 +8,7 @@ import {
   Clock3,
   Wallet,
   Trash2,
+  FileDown,
 } from "lucide-react";
 
 import {
@@ -23,6 +24,8 @@ import { RowActionsMenu } from "../components/RowActionsMenu";
 import { PageHeader } from "../components/PageHeader";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
+import { openPdf } from "../services/api";
+import { maskPhone, maskZipCode } from "../utils/masks";
 
 function toCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -516,6 +519,16 @@ export function Orders() {
                       <RowActionsMenu
                         onEdit={() => openEditModal(order)}
                         onDelete={() => setDeleteTarget(order)}
+                        extraActions={[
+                          {
+                            label: "Baixar PDF",
+                            icon: FileDown,
+                            onClick: () =>
+                              openPdf(`/orders/${order.id}/pdf`).catch(() =>
+                                toast.error("Erro ao gerar o PDF do pedido.")
+                              ),
+                          },
+                        ]}
                       />
                     </td>
                   </tr>
@@ -568,9 +581,11 @@ export function Orders() {
 
               <input
                 placeholder="Telefone"
+                inputMode="tel"
+                maxLength={16}
                 className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.customerPhone}
-                onChange={(e) => setForm({ ...form, customerPhone: e.target.value })}
+                onChange={(e) => setForm({ ...form, customerPhone: maskPhone(e.target.value) })}
               />
 
               <select
@@ -660,9 +675,11 @@ export function Orders() {
                 />
                 <input
                   placeholder="CEP"
+                  inputMode="numeric"
+                  maxLength={9}
                   className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-2"
                   value={form.zipCode}
-                  onChange={(e) => setForm({ ...form, zipCode: e.target.value })}
+                  onChange={(e) => setForm({ ...form, zipCode: maskZipCode(e.target.value) })}
                 />
               </div>
             )}

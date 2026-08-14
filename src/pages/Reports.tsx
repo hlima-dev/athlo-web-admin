@@ -45,6 +45,44 @@ export function Reports() {
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
   }
 
+  function handleExport() {
+    const rows: string[][] = [
+      ["Relatório ATHLO", new Date().toLocaleDateString("pt-BR")],
+      [],
+      ["Indicador", "Valor"],
+      ["Contatos cadastrados", String(contacts)],
+      ["Receita do mês", formatCurrency(revenue)],
+      ["Compromissos", String(events)],
+      ["Faturas pendentes", String(pendingInvoices)],
+      [],
+      ["Crescimento de contatos por mês"],
+      ["Mês", "Contatos"],
+      ...growthData.map((item: any) => [item.month, String(item.contatos ?? 0)]),
+      [],
+      ["Receita por mês"],
+      ["Mês", "Valor"],
+      ...revenueData.map((item: any) => [item.month, String(item.valor ?? 0)]),
+      [],
+      ["Metas estratégicas"],
+      ["Meta", "Progresso"],
+      ...goals.map((goal) => [goal.title, `${goal.value}%`]),
+    ]
+
+    const csv = rows
+      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(";"))
+      .join("\n")
+
+    const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8" })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.download = `relatorio-athlo-${new Date().toISOString().slice(0, 10)}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  }
+
   return (
     <div className="space-y-8">
       <PageHeader
@@ -160,9 +198,13 @@ export function Reports() {
               </div>
             ))}
           </div>
-          <button className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-4 font-bold text-slate-950 hover:bg-cyan-400">
+          <button
+            onClick={handleExport}
+            disabled={loading}
+            className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-4 font-bold text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
+          >
             <Download size={20} />
-            Exportar relatório
+            Exportar relatório (CSV)
           </button>
         </div>
       </section>

@@ -1,12 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal, Pencil, Trash2, type LucideIcon } from "lucide-react";
+
+interface ExtraAction {
+  label: string;
+  icon: LucideIcon;
+  onClick: () => void;
+}
 
 interface Props {
   onEdit: () => void;
   onDelete: () => void;
+  extraActions?: ExtraAction[];
 }
 
-export function RowActionsMenu({ onEdit, onDelete }: Props) {
+export function RowActionsMenu({ onEdit, onDelete, extraActions }: Props) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -43,6 +50,20 @@ export function RowActionsMenu({ onEdit, onDelete }: Props) {
             <Pencil size={16} />
             Editar
           </button>
+          {extraActions?.map((action) => (
+            <button
+              key={action.label}
+              type="button"
+              onClick={() => {
+                setOpen(false);
+                action.onClick();
+              }}
+              className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            >
+              <action.icon size={16} />
+              {action.label}
+            </button>
+          ))}
           <button
             type="button"
             onClick={() => {

@@ -28,6 +28,7 @@ interface AuthResponse {
     email: string
     orgRole: string
     status: string
+    isPlatformAdmin?: boolean
     organization?: Organization
   }
   accessToken: string

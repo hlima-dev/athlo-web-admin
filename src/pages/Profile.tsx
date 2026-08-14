@@ -13,6 +13,7 @@ import {
 import { changePassword, getStoredOrganization, getStoredUser, updateProfile } from "../services/auth";
 import { PageHeader } from "../components/PageHeader";
 import { useToast } from "../components/Toast";
+import { maskPhone } from "../utils/masks";
 
 const roleLabels: Record<string, string> = {
   OWNER: "Dono da empresa",
@@ -352,9 +353,11 @@ export function Profile() {
               <input
                 placeholder="Telefone"
                 autoComplete="tel"
+                inputMode="tel"
+                maxLength={16}
                 className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={profileForm.phone}
-                onChange={(e) => setProfileForm({ ...profileForm, phone: e.target.value })}
+                onChange={(e) => setProfileForm({ ...profileForm, phone: maskPhone(e.target.value) })}
               />
             </div>
 

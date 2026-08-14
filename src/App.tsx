@@ -18,9 +18,12 @@ import { Team } from "./pages/Team";
 import { Notifications } from "./pages/Notifications";
 import { Profile } from "./pages/Profile";
 import { Settings } from "./pages/Settings";
+import { Admin } from "./pages/Admin";
+import { VerifyEmail } from "./pages/VerifyEmail";
 
 import { AppLayout } from "./layouts/AppLayout";
 import { PrivateRoute } from "./routes/PrivateRoute";
+import { PlatformAdminRoute } from "./routes/PlatformAdminRoute";
 
 export default function App() {
   return (
@@ -37,6 +40,8 @@ export default function App() {
 
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/redefinir-senha" element={<ResetPassword />} />
+
+        <Route path="/verificar-email" element={<VerifyEmail />} />
 
         {/* Privadas */}
         <Route
@@ -59,6 +64,14 @@ export default function App() {
           <Route path="/notificacoes" element={<Notifications />} />
           <Route path="/perfil" element={<Profile />} />
           <Route path="/configuracoes" element={<Settings />} />
+          <Route
+            path="/admin"
+            element={
+              <PlatformAdminRoute>
+                <Admin />
+              </PlatformAdminRoute>
+            }
+          />
 
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Route>

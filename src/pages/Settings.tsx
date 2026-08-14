@@ -11,12 +11,20 @@ import {
   Users,
   Sun,
   Moon,
+  AlertTriangle,
 } from "lucide-react";
-import { getMyOrganization, updateOrganization, type OrganizationDetails } from "../services/organization";
-import { getPlans, changePlan, type Plan } from "../services/plans";
+import {
+  getMyOrganization,
+  updateOrganization,
+  deleteOrganization,
+  type OrganizationDetails,
+} from "../services/organization";
+import { getPlans, changePlan, checkoutPlan, openBillingPortal, type Plan } from "../services/plans";
 import { PageHeader } from "../components/PageHeader";
 import { useToast } from "../components/Toast";
 import { useTheme } from "../components/Theme";
+import { clearSession, getStoredUser } from "../services/auth";
+import { maskCpfCnpj, maskPhone } from "../utils/masks";
 
 function formatPrice(value: string | number) {
   const n = Number(value);
@@ -34,6 +42,11 @@ export function Settings() {
   const [changingPlan, setChangingPlan] = useState(false);
   const [message, setMessage] = useState("");
   const [form, setForm] = useState({ name: "", document: "", email: "", phone: "" });
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const currentUser = getStoredUser();
+  const isOwner = currentUser?.orgRole === "OWNER";
 
   async function load() {
     try {
@@ -56,6 +69,17 @@ export function Settings() {
 
   useEffect(() => {
     load();
+
+    const params = new URLSearchParams(window.location.search);
+    const checkout = params.get("checkout");
+    if (checkout === "sucesso") {
+      toast.success("Pagamento confirmado! Seu plano será atualizado em instantes.");
+      window.history.replaceState({}, "", "/configuracoes");
+    } else if (checkout === "cancelado") {
+      toast.error("Checkout cancelado. Nenhuma cobrança foi feita.");
+      window.history.replaceState({}, "", "/configuracoes");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleSaveOrganization(e: React.FormEvent) {
@@ -75,15 +99,55 @@ export function Settings() {
   }
 
   async function handleChangePlan(slug: string) {
+    // Plano Free não passa pelo Stripe — troca direta. Planos pagos
+    // exigem checkout no Stripe (o webhook ativa a assinatura depois).
+    if (slug === "free") {
+      try {
+        setChangingPlan(true);
+        await changePlan(slug);
+        await load();
+        toast.success("Plano alterado com sucesso.");
+      } catch (err: any) {
+        toast.error(err?.response?.data?.message || "Erro ao trocar de plano.");
+      } finally {
+        setChangingPlan(false);
+      }
+      return;
+    }
+
     try {
       setChangingPlan(true);
-      await changePlan(slug);
-      await load();
-      toast.success("Plano alterado com sucesso.");
+      const url = await checkoutPlan(slug);
+      window.location.href = url;
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao trocar de plano.");
-    } finally {
+      toast.error(err?.response?.data?.message || "Erro ao iniciar checkout do plano.");
       setChangingPlan(false);
+    }
+  }
+
+  async function handleOpenPortal() {
+    try {
+      setChangingPlan(true);
+      const url = await openBillingPortal();
+      window.location.href = url;
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Erro ao abrir o portal de cobrança.");
+      setChangingPlan(false);
+    }
+  }
+
+  async function handleDeleteOrganization() {
+    try {
+      setDeleting(true);
+      await deleteOrganization(deletePassword);
+      toast.success("Empresa excluída. Você será desconectado.");
+      clearSession();
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1200);
+    } catch (err: any) {
+      toast.error(err?.response?.data?.message || "Erro ao excluir a empresa.");
+      setDeleting(false);
     }
   }
 
@@ -119,9 +183,11 @@ export function Settings() {
           />
           <input
             placeholder="CNPJ/CPF"
+            inputMode="numeric"
+            maxLength={18}
             className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
             value={form.document}
-            onChange={(e) => setForm({ ...form, document: e.target.value })}
+            onChange={(e) => setForm({ ...form, document: maskCpfCnpj(e.target.value) })}
           />
           <input
             type="email"
@@ -132,9 +198,11 @@ export function Settings() {
           />
           <input
             placeholder="Telefone"
+            inputMode="tel"
+            maxLength={16}
             className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
             value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: e.target.value })}
+            onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })}
           />
 
           <button
@@ -187,9 +255,22 @@ export function Settings() {
       </section>
 
       <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-        <div className="flex items-center gap-3">
-          <CreditCard className="text-emerald-400" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Plano e assinatura</h2>
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <CreditCard className="text-emerald-400" />
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Plano e assinatura</h2>
+          </div>
+
+          {organization?.subscription?.status && currentPlanSlug !== "free" && (
+            <button
+              type="button"
+              onClick={handleOpenPortal}
+              disabled={changingPlan}
+              className="rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40"
+            >
+              Gerenciar cobrança
+            </button>
+          )}
         </div>
 
         {loading ? (
@@ -346,6 +427,88 @@ export function Settings() {
           </div>
         </div>
       </section>
+
+      {isOwner && (
+        <section className="rounded-2xl border border-red-800/60 bg-red-950/10 dark:bg-red-950/10 p-6">
+          <div className="flex items-center gap-3">
+            <AlertTriangle className="text-red-400" />
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Zona de risco</h2>
+          </div>
+
+          <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-slate-100 dark:bg-slate-800 p-5 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h3 className="font-bold text-slate-900 dark:text-white">Excluir empresa</h3>
+              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                Remove permanentemente sua empresa e todos os dados associados (contatos,
+                financeiro, produtos, pedidos, agenda e equipe). Essa ação não pode ser desfeita.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setDeleteModalOpen(true)}
+              className="shrink-0 rounded-xl border border-red-700 px-4 py-2 text-sm font-bold text-red-400 hover:bg-red-900/30"
+            >
+              Excluir empresa
+            </button>
+          </div>
+        </section>
+      )}
+
+      {deleteModalOpen && (
+        <div
+          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-4"
+          onClick={() => !deleting && setDeleteModalOpen(false)}
+        >
+          <div
+            className="w-full max-w-sm rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-500/10 text-red-400">
+                <AlertTriangle size={22} />
+              </div>
+              <div>
+                <h2 className="font-bold text-slate-900 dark:text-white">Excluir empresa</h2>
+                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
+                  Essa ação é permanente. Digite sua senha para confirmar a exclusão de{" "}
+                  <strong>{organization?.name}</strong> e de todos os seus dados.
+                </p>
+              </div>
+            </div>
+
+            <input
+              type="password"
+              placeholder="Sua senha"
+              autoFocus
+              className="mt-5 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-red-400"
+              value={deletePassword}
+              onChange={(e) => setDeletePassword(e.target.value)}
+            />
+
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setDeleteModalOpen(false);
+                  setDeletePassword("");
+                }}
+                disabled={deleting}
+                className="rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-60"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={handleDeleteOrganization}
+                disabled={deleting || !deletePassword}
+                className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-500 disabled:opacity-60"
+              >
+                {deleting ? "Excluindo..." : "Excluir permanentemente"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

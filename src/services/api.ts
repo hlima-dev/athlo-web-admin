@@ -14,6 +14,13 @@ api.interceptors.request.use((config) => {
   return config
 })
 
+// Evento global disparado quando a API recusa uma escrita por falta de
+// assinatura ativa (trial encerrado / pagamento pendente). Um componente
+// no topo da árvore (veja PaymentRequiredBanner) escuta esse evento e
+// mostra um aviso — sem redirecionar, para não perder o que o usuário
+// estava fazendo.
+export const PAYMENT_REQUIRED_EVENT = 'athlo:payment-required'
+
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -27,6 +34,15 @@ api.interceptors.response.use(
         window.location.href = '/login'
       }
     }
+
+    if (error.response?.status === 402) {
+      window.dispatchEvent(
+        new CustomEvent(PAYMENT_REQUIRED_EVENT, {
+          detail: { message: error.response?.data?.message },
+        })
+      )
+    }
+
     return Promise.reject(error)
   }
 )
@@ -41,6 +57,16 @@ export function extractList<T>(data: any): T[] {
   if (Array.isArray(data?.data?.items)) return data.data.items
   if (Array.isArray(data?.items)) return data.items
   return []
+}
+
+// Baixa um PDF gerado pelo backend (autenticado) e abre numa nova aba.
+// Não dá para usar um <a href> simples porque o endpoint exige o header
+// Authorization — por isso o fetch via axios com responseType blob.
+export async function openPdf(path: string): Promise<void> {
+  const response = await api.get(path, { responseType: 'blob' })
+  const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }))
+  window.open(url, '_blank')
+  setTimeout(() => window.URL.revokeObjectURL(url), 60_000)
 }
 
 export default api

@@ -48,3 +48,10 @@ export async function getMembers(): Promise<Member[]> {
   const response = await api.get("/organization/members");
   return response.data.data ?? [];
 }
+
+// LGPD — exclusão definitiva da empresa e de todos os dados associados.
+// Exige a senha do usuário OWNER como confirmação.
+export async function deleteOrganization(password: string) {
+  const response = await api.delete("/organization/me", { data: { password } });
+  return response.data;
+}

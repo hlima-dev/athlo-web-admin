@@ -15,8 +15,10 @@ import {
   Settings,
   Menu,
   X,
+  Shield,
 } from "lucide-react";
 import { clearSession, getStoredOrganization, getStoredUser } from "../services/auth";
+import { PaymentRequiredBanner } from "../components/PaymentRequiredBanner";
 
 const menuItems = [
   { label: "Painel", path: "/dashboard", icon: LayoutDashboard },
@@ -37,6 +39,7 @@ export function AppLayout() {
 
   const user = getStoredUser();
   const organization = getStoredOrganization();
+  const isPlatformAdmin = !!user?.isPlatformAdmin;
 
   useEffect(() => {
     if (menuOpen) {
@@ -117,6 +120,17 @@ export function AppLayout() {
             Configurações
           </NavLink>
 
+          {isPlatformAdmin && (
+            <NavLink
+              to="/admin"
+              onClick={() => setMenuOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-purple-400 hover:bg-purple-500/10 transition"
+            >
+              <Shield size={20} />
+              Admin ATHLO
+            </NavLink>
+          )}
+
           <button
             onClick={logout}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition"
@@ -131,6 +145,7 @@ export function AppLayout() {
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-white flex">
+      <PaymentRequiredBanner />
       <div className="hidden md:block">
         <Sidebar />
       </div>

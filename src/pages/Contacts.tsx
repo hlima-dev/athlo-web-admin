@@ -20,6 +20,7 @@ import { RowActionsMenu } from "../components/RowActionsMenu";
 import { PageHeader } from "../components/PageHeader";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
+import { maskPhone } from "../utils/masks";
 
 const emptyForm = {
   name: "",
@@ -325,9 +326,11 @@ export function Contacts() {
 
               <input
                 placeholder="Telefone"
+                inputMode="tel"
+                maxLength={16}
                 className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
                 value={form.phone}
-                onChange={(e) => setForm({ ...form, phone: e.target.value })}
+                onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })}
               />
 
               <input
