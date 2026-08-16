@@ -17,7 +17,7 @@ import {
   X,
   Shield,
 } from "lucide-react";
-import { clearSession, getStoredOrganization, getStoredUser } from "../services/auth";
+import { logout as logoutRequest, getStoredOrganization, getStoredUser } from "../services/auth";
 import { PaymentRequiredBanner } from "../components/PaymentRequiredBanner";
 
 const menuItems = [
@@ -53,8 +53,8 @@ export function AppLayout() {
     };
   }, [menuOpen]);
 
-  function logout() {
-    clearSession();
+  async function logout() {
+    await logoutRequest();
     navigate("/login");
   }
 

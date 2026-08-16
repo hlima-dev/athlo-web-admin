@@ -31,8 +31,10 @@ interface AuthResponse {
     isPlatformAdmin?: boolean
     organization?: Organization
   }
-  accessToken: string
-  refreshToken: string
+  // Os tokens de sessão em si não vêm mais no corpo — o backend os manda
+  // como cookies httpOnly. O csrfToken é o único valor que o front
+  // precisa guardar, para ecoar como header nas escritas (proteção CSRF).
+  csrfToken: string
 }
 
 export async function login(data: LoginData): Promise<AuthResponse> {
@@ -55,9 +57,22 @@ export async function updateProfile(data: { name?: string; phone?: string }) {
   return response.data.data
 }
 
+// Os tokens agora são cookies httpOnly — só limpar o localStorage não os
+// invalida no navegador. Precisa chamar o backend para ele mandar o
+// Set-Cookie de expiração.
+export async function logout(): Promise<void> {
+  try {
+    await api.post('/auth/logout')
+  } catch {
+    // segue o fluxo de limpeza local mesmo se a chamada falhar
+    // (ex.: sessão já expirada)
+  } finally {
+    clearSession()
+  }
+}
+
 export function saveSession(auth: AuthResponse): void {
-  localStorage.setItem('@athlo:token', auth.accessToken)
-  localStorage.setItem('@athlo:refreshToken', auth.refreshToken)
+  localStorage.setItem('@athlo:csrf', auth.csrfToken)
   localStorage.setItem('@athlo:user', JSON.stringify(auth.user))
   if (auth.user.organization) {
     localStorage.setItem('@athlo:organization', JSON.stringify(auth.user.organization))
@@ -65,10 +80,17 @@ export function saveSession(auth: AuthResponse): void {
 }
 
 export function clearSession(): void {
-  localStorage.removeItem('@athlo:token')
-  localStorage.removeItem('@athlo:refreshToken')
+  localStorage.removeItem('@athlo:csrf')
   localStorage.removeItem('@athlo:user')
   localStorage.removeItem('@athlo:organization')
+}
+
+// Sinal do lado do cliente de que provavelmente existe uma sessão ativa
+// (usado só para decidir rotas no front). A segurança de verdade está no
+// cookie httpOnly, que o JS não enxerga — se ele tiver expirado, a
+// primeira chamada à API vai devolver 401 e redirecionar pro login.
+export function hasStoredSession(): boolean {
+  return !!localStorage.getItem('@athlo:csrf')
 }
 
 export function getStoredUser() {
