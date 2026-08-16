@@ -20,5 +20,8 @@ jobs:
       - name: Instalar dependências
         run: npm ci
 
+      - name: Auditoria de dependências (falha em vulnerabilidades altas/críticas)
+        run: npm audit --audit-level=high
+
       - name: Build (typecheck + vite build)
         run: npm run build
