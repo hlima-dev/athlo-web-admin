@@ -23,5 +23,8 @@ jobs:
       - name: Auditoria de dependências (falha em vulnerabilidades altas/críticas)
         run: npm audit --audit-level=high
 
+      - name: Testes
+        run: npm run test
+
       - name: Build (typecheck + vite build)
         run: npm run build
