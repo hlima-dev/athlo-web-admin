@@ -70,22 +70,22 @@ export function Reports() {
       />
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <Users className="text-cyan-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Contatos cadastrados</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{loading ? "..." : contacts}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <Wallet className="text-emerald-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Receita do mês</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{loading ? "..." : formatCurrency(revenue)}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <CalendarDays className="text-purple-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Compromissos</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{loading ? "..." : events}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <Clock3 className="text-yellow-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Faturas pendentes</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{loading ? "..." : pendingInvoices}</h2>
@@ -93,7 +93,7 @@ export function Reports() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 xl:col-span-2">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6 xl:col-span-2">
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">Crescimento de contatos</h2>
@@ -120,7 +120,7 @@ export function Reports() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Distribuição geral</h2>
           <div className="mt-6 h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -146,7 +146,7 @@ export function Reports() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Receita por mês</h2>
           <div className="mt-6 h-80">
             <ResponsiveContainer width="100%" height="100%">
@@ -161,7 +161,7 @@ export function Reports() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Metas estratégicas</h2>
           <div className="mt-6 space-y-6">
             {goals.map((goal) => (
@@ -187,7 +187,7 @@ export function Reports() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
         <div className="flex items-center gap-3">
           <Target className="text-cyan-400" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Análise de desempenho</h2>

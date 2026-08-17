@@ -113,7 +113,7 @@ export function Admin() {
         {cards.map((card) => (
           <div
             key={card.label}
-            className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5"
+            className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5"
           >
             <div className="flex items-center gap-3">
               <card.icon className={card.color} size={20} />
@@ -127,7 +127,7 @@ export function Admin() {
       </div>
 
       {overview && (
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
           <h2 className="font-bold text-slate-900 dark:text-white">Assinaturas por status</h2>
           <div className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-4">
             {Object.entries(overview.subscriptions).map(([key, value]) => (
@@ -146,7 +146,7 @@ export function Admin() {
         </div>
       )}
 
-      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h2 className="font-bold text-slate-900 dark:text-white">Empresas clientes</h2>
 

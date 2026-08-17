@@ -39,7 +39,7 @@ export function Login() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
+    <main className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 px-4">
       <form
         onSubmit={handleLogin}
         className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl"

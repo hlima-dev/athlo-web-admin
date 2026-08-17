@@ -281,7 +281,7 @@ export function Events() {
           const Icon = item.icon;
 
           return (
-            <div key={item.title} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+            <div key={item.title} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
               <Icon className={item.color} size={20} />
               <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{item.title}</p>
               <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{item.value}</h2>
@@ -290,7 +290,7 @@ export function Events() {
         })}
       </section>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
         <div>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Próximos compromissos</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">Itens carregados diretamente do backend.</p>

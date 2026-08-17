@@ -43,7 +43,7 @@ export function SelectOrganization() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
+    <main className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 px-4">
       <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl">
         <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Selecione a empresa</h1>
         <p className="text-slate-500 dark:text-slate-400 mt-2 mb-6">

@@ -145,24 +145,24 @@ export function Products() {
       />
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <Package className="text-cyan-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Itens cadastrados</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{products.length}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <CheckCircle2 className="text-emerald-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Ativos</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{activeCount}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <Tag className="text-purple-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Serviços</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{servicesCount}</h2>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
         <div>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Catálogo</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">Produtos e serviços salvos no banco.</p>

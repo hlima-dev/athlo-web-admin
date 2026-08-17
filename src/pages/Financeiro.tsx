@@ -204,28 +204,28 @@ export function Financeiro() {
       ) : null}
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <TrendingUp className="text-emerald-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Recebido</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
             {loading ? "..." : toCurrency(stats.totalReceivable)}
           </h2>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <TrendingDown className="text-red-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Pago</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">
             {loading ? "..." : toCurrency(stats.totalPayable)}
           </h2>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <Clock3 className="text-yellow-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Faturas pendentes</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{loading ? "..." : stats.pending}</h2>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
         <div>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Faturas</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">Contas a pagar e a receber salvas no banco.</p>

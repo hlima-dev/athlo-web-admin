@@ -97,17 +97,17 @@ export function Team() {
       />
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <Users className="text-cyan-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Membros ativos</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{loading ? "..." : members.length}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <ShieldCheck className="text-emerald-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Administradores</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{loading ? "..." : admins}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <Clock3 className="text-yellow-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Convites pendentes</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{loading ? "..." : invites.length}</h2>
@@ -115,7 +115,7 @@ export function Team() {
       </section>
 
       {invites.length > 0 && (
-        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Convites pendentes</h2>
           <div className="mt-4 space-y-3">
             {invites.map((invite) => (
@@ -142,7 +142,7 @@ export function Team() {
         </section>
       )}
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
         <div>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Membros da equipe</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">Gerencie os usuários da sua empresa.</p>

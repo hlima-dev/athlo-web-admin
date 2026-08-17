@@ -382,29 +382,29 @@ export function Orders() {
       />
 
       <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <ClipboardList className="text-cyan-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Total de pedidos</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{stats.total}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <Clock3 className="text-yellow-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Em aberto</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{stats.open}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <PackageCheck className="text-emerald-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Entregues</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{stats.delivered}</h2>
         </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
           <Wallet className="text-purple-400" size={20} />
           <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Faturamento (pago)</p>
           <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{toCurrency(stats.revenue)}</h2>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
         <div>
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Lista de pedidos</h2>
           <p className="text-sm text-slate-500 dark:text-slate-400">Pedidos carregados diretamente do backend.</p>

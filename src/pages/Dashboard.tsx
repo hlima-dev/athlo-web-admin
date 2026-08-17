@@ -154,7 +154,7 @@ export function Dashboard() {
           return (
             <div
               key={item.title}
-              className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 shadow-sm"
+              className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5 shadow-sm"
             >
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400">
                 <Icon size={24} />
@@ -172,7 +172,7 @@ export function Dashboard() {
         })}
       </section>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
         <div className="flex items-center gap-3">
           <Target className="text-cyan-400" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Ações rápidas</h2>
@@ -194,7 +194,7 @@ export function Dashboard() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 xl:col-span-2">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6 xl:col-span-2">
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -240,7 +240,7 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Visão geral</h2>
 
           <div className="mt-6 h-72 w-full min-w-0">
@@ -279,7 +279,7 @@ export function Dashboard() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             Crescimento de contatos
           </h2>
@@ -304,7 +304,7 @@ export function Dashboard() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
             Próximos compromissos
           </h2>

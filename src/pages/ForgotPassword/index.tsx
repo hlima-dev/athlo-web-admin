@@ -25,7 +25,7 @@ export function ForgotPassword() {
 
   if (sent) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
+      <main className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 px-4">
         <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl text-center">
           <div className="text-5xl mb-4">📬</div>
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">E-mail enviado</h1>
@@ -42,7 +42,7 @@ export function ForgotPassword() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
+    <main className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 px-4">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl"

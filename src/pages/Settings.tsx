@@ -161,7 +161,7 @@ export function Settings() {
         description="Gerencie os dados da empresa, o plano de assinatura e preferências."
       />
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
         <div className="flex items-center gap-3">
           <Building2 className="text-cyan-400" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Dados da empresa</h2>
@@ -216,7 +216,7 @@ export function Settings() {
         </form>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
         <div className="flex items-center gap-3">
           {theme === "dark" ? (
             <Moon className="text-cyan-400" />
@@ -254,7 +254,7 @@ export function Settings() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             <CreditCard className="text-emerald-400" />
@@ -326,7 +326,7 @@ export function Settings() {
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
           <div className="flex items-center gap-3">
             <Bell className="text-yellow-400" />
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -357,7 +357,7 @@ export function Settings() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
           <div className="flex items-center gap-3">
             <ShieldCheck className="text-emerald-400" />
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
@@ -396,7 +396,7 @@ export function Settings() {
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
         <div className="flex items-center gap-3">
           <Database className="text-purple-400" />
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">
