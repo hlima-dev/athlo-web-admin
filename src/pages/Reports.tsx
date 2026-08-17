@@ -10,13 +10,17 @@ import {
 import { getDashboard } from "../services/dashboard"
 import { PageHeader } from "../components/PageHeader"
 import { useTheme } from "../components/Theme"
+import { downloadFile } from "../services/api"
+import { useToast } from "../components/Toast"
 
 export function Reports() {
   const { theme } = useTheme()
+  const toast = useToast()
   const gridColor = theme === "dark" ? "#1e293b" : "#e2e8f0"
   const axisColor = theme === "dark" ? "#94a3b8" : "#64748b"
   const [data, setData] = useState<any>(null)
   const [loading, setLoading] = useState(true)
+  const [exporting, setExporting] = useState(false)
 
   useEffect(() => {
     getDashboard().then(setData).catch(console.error).finally(() => setLoading(false))
@@ -45,42 +49,16 @@ export function Reports() {
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
   }
 
-  function handleExport() {
-    const rows: string[][] = [
-      ["Relatório ATHLO", new Date().toLocaleDateString("pt-BR")],
-      [],
-      ["Indicador", "Valor"],
-      ["Contatos cadastrados", String(contacts)],
-      ["Receita do mês", formatCurrency(revenue)],
-      ["Compromissos", String(events)],
-      ["Faturas pendentes", String(pendingInvoices)],
-      [],
-      ["Crescimento de contatos por mês"],
-      ["Mês", "Contatos"],
-      ...growthData.map((item: any) => [item.month, String(item.contatos ?? 0)]),
-      [],
-      ["Receita por mês"],
-      ["Mês", "Valor"],
-      ...revenueData.map((item: any) => [item.month, String(item.valor ?? 0)]),
-      [],
-      ["Metas estratégicas"],
-      ["Meta", "Progresso"],
-      ...goals.map((goal) => [goal.title, `${goal.value}%`]),
-    ]
-
-    const csv = rows
-      .map((row) => row.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(";"))
-      .join("\n")
-
-    const blob = new Blob([`﻿${csv}`], { type: "text/csv;charset=utf-8" })
-    const url = window.URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `relatorio-athlo-${new Date().toISOString().slice(0, 10)}.csv`
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
+  async function handleExport() {
+    try {
+      setExporting(true);
+      const filename = `relatorio-athlo-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      await downloadFile("/dashboard/export", filename);
+    } catch {
+      toast.error("Erro ao gerar o relatório. Tente novamente.");
+    } finally {
+      setExporting(false);
+    }
   }
 
   return (
@@ -200,11 +178,11 @@ export function Reports() {
           </div>
           <button
             onClick={handleExport}
-            disabled={loading}
+            disabled={loading || exporting}
             className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-4 font-bold text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
           >
             <Download size={20} />
-            Exportar relatório (CSV)
+            {exporting ? "Gerando..." : "Exportar relatório (Excel)"}
           </button>
         </div>
       </section>

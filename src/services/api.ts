@@ -124,4 +124,19 @@ export async function openPdf(path: string): Promise<void> {
   setTimeout(() => window.URL.revokeObjectURL(url), 60_000)
 }
 
+// Baixa qualquer arquivo gerado pelo backend (autenticado via cookie) e
+// dispara o download — para arquivos que o navegador não sabe exibir
+// direto (xlsx, por exemplo), diferente do PDF que abre numa aba.
+export async function downloadFile(path: string, filename: string): Promise<void> {
+  const response = await api.get(path, { responseType: 'blob' })
+  const url = window.URL.createObjectURL(new Blob([response.data]))
+  const link = document.createElement('a')
+  link.href = url
+  link.download = filename
+  document.body.appendChild(link)
+  link.click()
+  document.body.removeChild(link)
+  window.URL.revokeObjectURL(url)
+}
+
 export default api
