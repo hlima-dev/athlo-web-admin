@@ -9,6 +9,9 @@ import {
   Clock3,
   Filter,
   MailCheck,
+  BellRing,
+  BellOff,
+  Smartphone,
 } from "lucide-react";
 
 import {
@@ -18,12 +21,23 @@ import {
   markAllNotificationsAsRead,
   type NotificationItem,
 } from "../services/notifications";
+import {
+  isPushSupported,
+  isSubscribedOnThisDevice,
+  enablePushNotifications,
+  disablePushNotifications,
+} from "../services/push";
 import { PageHeader } from "../components/PageHeader";
+import { useToast } from "../components/Toast";
 
 export function Notifications() {
+  const toast = useToast();
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [pushEnabled, setPushEnabled] = useState(false);
+  const [pushBusy, setPushBusy] = useState(false);
+  const pushSupported = isPushSupported();
 
   async function loadNotifications() {
     try {
@@ -56,7 +70,30 @@ export function Notifications() {
 
   useEffect(() => {
     loadNotifications();
+    if (pushSupported) {
+      isSubscribedOnThisDevice().then(setPushEnabled).catch(() => {});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  async function handleTogglePush() {
+    try {
+      setPushBusy(true);
+      if (pushEnabled) {
+        await disablePushNotifications();
+        setPushEnabled(false);
+        toast.success("Notificações push desativadas neste dispositivo.");
+      } else {
+        await enablePushNotifications();
+        setPushEnabled(true);
+        toast.success("Notificações push ativadas neste dispositivo!");
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Não foi possível alterar as notificações push.");
+    } finally {
+      setPushBusy(false);
+    }
+  }
 
   async function handleMarkRead(id: string) {
     try {
@@ -200,6 +237,42 @@ export function Notifications() {
             </div>
           );
         })}
+      </section>
+
+      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400">
+              <Smartphone size={22} />
+            </div>
+            <div>
+              <h2 className="font-bold text-slate-900 dark:text-white">
+                Notificações neste dispositivo
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {pushSupported
+                  ? "Receba um aviso mesmo com o ATHLO fechado, quando um compromisso da agenda estiver chegando."
+                  : "Este navegador não suporta notificações push."}
+              </p>
+            </div>
+          </div>
+
+          {pushSupported && (
+            <button
+              type="button"
+              onClick={handleTogglePush}
+              disabled={pushBusy}
+              className={`inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold disabled:opacity-60 ${
+                pushEnabled
+                  ? "border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                  : "bg-cyan-500 text-slate-950 hover:bg-cyan-400"
+              }`}
+            >
+              {pushEnabled ? <BellOff size={18} /> : <BellRing size={18} />}
+              {pushBusy ? "Aguarde..." : pushEnabled ? "Desativar" : "Ativar notificações"}
+            </button>
+          )}
+        </div>
       </section>
 
       <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
