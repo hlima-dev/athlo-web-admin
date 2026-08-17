@@ -21,6 +21,15 @@ interface Organization {
   status: string
 }
 
+// Empresa que o login pode acessar (lista usada no seletor de unidade) —
+// mais enxuta que Organization, que é o objeto completo da empresa ativa.
+export interface OrganizationOption {
+  id: string
+  name: string
+  slug: string
+  orgRole: string
+}
+
 interface AuthResponse {
   user: {
     id: string
@@ -30,6 +39,7 @@ interface AuthResponse {
     status: string
     isPlatformAdmin?: boolean
     organization?: Organization
+    organizations?: OrganizationOption[]
   }
   // Os tokens de sessão em si não vêm mais no corpo — o backend os manda
   // como cookies httpOnly. O csrfToken é o único valor que o front
@@ -37,8 +47,42 @@ interface AuthResponse {
   csrfToken: string
 }
 
-export async function login(data: LoginData): Promise<AuthResponse> {
+// Quando o login tem acesso a mais de uma empresa, /auth/login não emite
+// sessão ainda — devolve isso para o front mostrar a tela de seleção.
+export interface OrgSelectionRequired {
+  requiresOrgSelection: true
+  preAuthToken: string
+  organizations: OrganizationOption[]
+}
+
+export async function login(data: LoginData): Promise<AuthResponse | OrgSelectionRequired> {
   const response = await api.post('/auth/login', data)
+  return response.data.data
+}
+
+export async function selectOrganization(
+  preAuthToken: string,
+  organizationId: string,
+): Promise<AuthResponse> {
+  const response = await api.post('/auth/select-organization', { preAuthToken, organizationId })
+  return response.data.data
+}
+
+// "Trocar Unidade" — já autenticado, não pede senha de novo.
+export async function switchOrganization(organizationId: string): Promise<AuthResponse> {
+  const response = await api.post('/auth/switch-organization', { organizationId })
+  return response.data.data
+}
+
+export async function listMyOrganizations(): Promise<OrganizationOption[]> {
+  const response = await api.get('/auth/organizations')
+  return response.data.data ?? []
+}
+
+// Cria mais uma empresa (outro CNPJ) para o usuário já logado e já
+// entra nela automaticamente.
+export async function createOrganization(organizationName: string): Promise<AuthResponse> {
+  const response = await api.post('/auth/organizations', { organizationName })
   return response.data.data
 }
 

@@ -20,6 +20,7 @@ import { Profile } from "./pages/Profile";
 import { Settings } from "./pages/Settings";
 import { Admin } from "./pages/Admin";
 import { VerifyEmail } from "./pages/VerifyEmail";
+import { SelectOrganization } from "./pages/SelectOrganization";
 
 import { AppLayout } from "./layouts/AppLayout";
 import { PrivateRoute } from "./routes/PrivateRoute";
@@ -42,6 +43,7 @@ export default function App() {
         <Route path="/redefinir-senha" element={<ResetPassword />} />
 
         <Route path="/verificar-email" element={<VerifyEmail />} />
+        <Route path="/selecionar-empresa" element={<SelectOrganization />} />
 
         {/* Privadas */}
         <Route

@@ -18,8 +18,17 @@ export function Login() {
 
     try {
       setLoading(true)
-      const auth = await login({ email, password: senha })
-      saveSession(auth)
+      const result = await login({ email, password: senha })
+
+      if ('requiresOrgSelection' in result) {
+        navigate('/selecionar-empresa', {
+          replace: true,
+          state: { preAuthToken: result.preAuthToken, organizations: result.organizations },
+        })
+        return
+      }
+
+      saveSession(result)
       navigate(from, { replace: true })
     } catch (err: any) {
       const msg = err?.response?.data?.message ?? 'E-mail ou senha inválidos.'
