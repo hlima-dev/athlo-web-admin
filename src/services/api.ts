@@ -67,12 +67,19 @@ async function tryRefresh(): Promise<boolean> {
   return refreshInFlight
 }
 
+// Endpoints "pré-sessão": um 401 aqui é um resultado normal (senha
+// errada, token de seleção expirado), não um sinal de sessão expirada —
+// não deve tentar renovar nem redirecionar, só devolver o erro pro
+// formulário mostrar a mensagem.
+const AUTH_ENTRY_ENDPOINTS = ['/auth/login', '/auth/register', '/auth/select-organization', '/auth/refresh']
+
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const { config, response } = error
+    const isAuthEntryCall = config?.url && AUTH_ENTRY_ENDPOINTS.includes(config.url)
 
-    if (response?.status === 401 && config && !config._retry && config.url !== '/auth/refresh') {
+    if (response?.status === 401 && config && !config._retry && !isAuthEntryCall) {
       config._retry = true
       const refreshed = await tryRefresh()
       if (refreshed) return api(config)
@@ -80,7 +87,7 @@ api.interceptors.response.use(
       return Promise.reject(error)
     }
 
-    if (response?.status === 401) {
+    if (response?.status === 401 && !isAuthEntryCall) {
       redirectToLogin()
     }
 
