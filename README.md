@@ -7,15 +7,35 @@
 
 ---
 
+# 🌐 Demonstração Online
+
+## Frontend
+https://athlo-web-admin-fdizioprj-hlima-dev1.vercel.app/
+
+## Backend API
+https://athlo-backend-r176.onrender.com
+
+## Credenciais de demonstração
+| E-mail | Senha |
+|---|---|
+| admin@athlodemo.com.br | Admin@2024 |
+
+> O backend está no plano gratuito do Render — se ficar inativo por um
+> tempo, o primeiro acesso pode demorar até ~1 minuto para "acordar".
+
+---
+
 # 📌 Sobre o projeto
 
 O **ATHLO** é uma plataforma **SaaS multi-tenant** para pequenas e médias
 empresas gerenciarem seu negócio em um só lugar: contatos (CRM), financeiro,
-agenda, produtos/serviços e equipe.
+agenda, produtos/serviços, pedidos e equipe.
 
 Cada empresa que se cadastra (tenant) tem seus dados completamente isolados,
 usuários próprios com papéis de acesso (dono, administrador, membro) e um
-plano de assinatura (Free, Starter, Pro).
+plano de assinatura pago de verdade (Free, Starter, Pro) via Stripe. Um
+mesmo login também pode ter acesso a mais de uma empresa (múltiplos
+CNPJs/unidades), com um seletor para trocar entre elas.
 
 Tudo através de uma interface moderna, responsiva e focada em acessibilidade
 e experiência do usuário.
@@ -25,10 +45,25 @@ e experiência do usuário.
 # 🚀 Funcionalidades
 
 ## 🔐 Autenticação e multi-tenant
-- Cadastro self-service (cria uma nova empresa)
-- Convite de membros da equipe por e-mail
-- Proteção de rotas e JWT Authentication
+- Cadastro self-service (cria uma nova empresa) e convite de membros por e-mail
+- Um mesmo login pode acessar várias empresas — tela de seleção de empresa e
+  botão "Trocar Unidade" na sidebar
+- Verificação de e-mail no cadastro
+- Sessão em cookies httpOnly + proteção CSRF (tokens nunca ficam expostos ao JavaScript)
+- Bloqueio automático de conta após tentativas de senha incorretas seguidas
 - Papéis por empresa: Dono, Administrador, Membro
+
+## 💳 Cobrança (Stripe)
+- Checkout de assinatura hospedado pelo Stripe
+- Portal de cobrança (trocar cartão, cancelar, ver faturas)
+- Webhooks ativando/cancelando o plano automaticamente
+- Bloqueio de escrita quando o trial acaba e não há assinatura ativa
+- Limite de contatos e usuários por plano
+
+## 👑 Administração da plataforma
+- Painel exclusivo da equipe ATHLO (separado do dono de cada empresa cliente)
+- Visão geral de MRR, assinaturas por status, lista de empresas clientes
+- Suspender/reativar empresas
 
 ## 📊 Dashboard
 - Estatísticas em tempo real da empresa
@@ -36,62 +71,64 @@ e experiência do usuário.
 - Gráficos interativos
 
 ## 👥 Contatos (CRM)
-- Cadastro de leads, clientes e fornecedores
+- Cadastro de leads, clientes e fornecedores, com máscara de telefone/CPF/CNPJ
 - Busca e filtros
 - Histórico de faturas e agenda por contato
 
 ## 💰 Financeiro
 - Contas a pagar e a receber
 - Marcar faturas como pagas
-- Indicadores de fluxo de caixa
+- Geração de PDF da fatura
 
 ## 📦 Produtos e serviços
 - Catálogo de produtos e serviços
 - Preço, SKU e status
 
+## 🧾 Pedidos
+- Pedidos com itens, status, forma de pagamento e origem
+- Geração de PDF do pedido
+- E-mail automático ao cliente quando o status muda
+
 ## 📅 Agenda
-- Reuniões, tarefas e prazos
-- Calendário mensal
+- Reuniões, tarefas e prazos, com calendário mensal
+- Cadastro rápido por texto em português (identifica data/hora automaticamente)
+- Lembrete automático: notificação dentro do sistema + push no navegador
+  (notebook e celular) quando um compromisso está prestes a começar
 
 ## 🤝 Equipe
-- Convite de membros
+- Convite de membros (inclusive para quem já tem conta em outra empresa)
 - Papéis de acesso por empresa
 
-## 💳 Planos e assinatura
-- Planos Free / Starter / Pro
-- Troca de plano pela própria empresa
-- Estrutura pronta para integração de cobrança (Stripe)
-
 ## 🔔 Notificações
-- Alertas administrativos, de financeiro, agenda e equipe
+- Central de notificações dentro do sistema
+- Notificações push no navegador (Web Push, sem app nativo)
 
 ## 📈 Relatórios
-- Indicadores de desempenho
-- Gráficos analíticos
+- Indicadores de desempenho e gráficos analíticos
+- Exportação em Excel (.xlsx) com abas organizadas por assunto
+
+## 🔒 Segurança
+- LGPD: exclusão definitiva da empresa e de todos os dados, com confirmação de senha
+- Limite de requisições por IP em toda a API
+- Auditoria automática de dependências vulneráveis na CI
 
 ---
 
 # 🛠️ Tecnologias utilizadas
 
 ## Frontend
-- React
-- TypeScript
-- Vite
-- TailwindCSS
-- React Router DOM
-- React Query
-- Recharts
-- Framer Motion
-- Lucide React
+- React, TypeScript, Vite, TailwindCSS
+- React Router DOM, React Query
+- Recharts, Framer Motion, Lucide React
 - Axios
+- Vitest + Testing Library (testes automatizados)
 
 ## Backend
-- Node.js
-- Express
-- TypeScript
-- Prisma ORM
-- PostgreSQL
-- JWT
+- Node.js, Express, TypeScript
+- Prisma ORM, PostgreSQL
+- JWT + cookies httpOnly, Stripe, Resend (e-mail), Web Push
+- ExcelJS, PDFKit
+- Vitest (testes automatizados)
 
 ---
 
@@ -99,7 +136,7 @@ e experiência do usuário.
 
 A interface foi desenvolvida com foco em:
 
-- visual moderno
+- visual moderno, com modo claro e escuro
 - experiência premium
 - responsividade
 - acessibilidade
@@ -133,6 +170,14 @@ npm run dev
 
 ---
 
+# 🧪 Testes
+
+```bash
+npm run test
+```
+
+---
+
 # 🌐 Build de produção
 
 ```bash
@@ -151,15 +196,17 @@ src/
  ├── pages/
  ├── routes/
  ├── services/
+ ├── utils/
  ├── assets/
+tests/
 ```
 
 ---
 
 # 🗺️ Roadmap
 
-- Integração de cobrança real (Stripe Checkout)
-- Enforcement automático de limites de plano
+- Monitoramento de erros em produção (Sentry)
+- Upload de logo da empresa e foto de perfil
 - Pipeline de vendas / Kanban de oportunidades
 
 ---
