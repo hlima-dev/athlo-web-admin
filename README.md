@@ -1,194 +1,63 @@
-# ATHLO — SaaS de Gestão para Pequenas e Médias Empresas
+# ATHLO — Gestão para pequenas e médias empresas
 
-![React](https://img.shields.io/badge/React-19-blue?logo=react)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
-![Vite](https://img.shields.io/badge/Vite-8-purple?logo=vite)
-![Tailwind](https://img.shields.io/badge/TailwindCSS-4-06B6D4?logo=tailwindcss)
+SaaS multi-tenant para PMEs administrarem contatos, financeiro, produtos,
+pedidos e agenda em um só lugar. Cada empresa que assina tem seus dados
+isolados, controle de acesso por papel (dono/admin/membro) e cobrança real
+via Stripe. Um mesmo login pode dar acesso a mais de uma empresa (útil pra
+quem tem várias unidades/CNPJs), com um seletor pra trocar entre elas.
 
----
+React + TypeScript + Vite no front, Express + Prisma + PostgreSQL no back.
 
-# 🌐 Demonstração Online
+## Demo
 
-## Frontend
-https://athlo-web-admin-fdizioprj-hlima-dev1.vercel.app/
+- Frontend: https://athlo-web-admin-fdizioprj-hlima-dev1.vercel.app/
+- API: https://athlo-backend-r176.onrender.com
+- Login: `admin@athlodemo.com.br` / `Admin@2024`
 
-## Backend API
-https://athlo-backend-r176.onrender.com
+A API roda no plano free do Render, então o primeiro request depois de um
+tempo parado pode demorar ~1 min pra "acordar".
 
-## Credenciais de demonstração
-| E-mail | Senha |
-|---|---|
-| admin@athlodemo.com.br | Admin@2024 |
+## O que tem
 
-> O backend está no plano gratuito do Render — se ficar inativo por um
-> tempo, o primeiro acesso pode demorar até ~1 minuto para "acordar".
+- Contatos (CRM), financeiro (contas a pagar/receber), catálogo de
+  produtos, pedidos e agenda — com PDF de fatura/pedido e máscaras de
+  telefone/CPF/CNPJ nos formulários
+- Assinatura paga de verdade: Checkout do Stripe, portal de cobrança,
+  webhooks ativando/cancelando o plano, bloqueio de escrita quando o
+  trial acaba
+- Login pode acessar mais de uma empresa (Membership) — tela de seleção
+  e botão de trocar de unidade na sidebar
+- Sessão em cookie httpOnly + CSRF, bloqueio de conta após tentativas de
+  senha erradas seguidas, rate limit em toda a API
+- Verificação de e-mail e convite de equipe (inclusive pra quem já tem
+  conta em outra empresa)
+- Notificação de compromisso da agenda: dentro do sistema + push no
+  navegador (funciona no notebook e no celular, sem app nativo)
+- Painel separado pra administração da plataforma (visão de todas as
+  empresas clientes, MRR, suspender conta)
+- Exportação de relatórios em Excel
+- Exclusão de conta/empresa (LGPD)
+- Testes automatizados (Vitest) e CI
 
----
-
-# 📌 Sobre o projeto
-
-O **ATHLO** é uma plataforma **SaaS multi-tenant** para pequenas e médias
-empresas gerenciarem seu negócio em um só lugar: contatos (CRM), financeiro,
-agenda, produtos/serviços, pedidos e equipe.
-
-Cada empresa que se cadastra (tenant) tem seus dados completamente isolados,
-usuários próprios com papéis de acesso (dono, administrador, membro) e um
-plano de assinatura pago de verdade (Free, Starter, Pro) via Stripe. Um
-mesmo login também pode ter acesso a mais de uma empresa (múltiplos
-CNPJs/unidades), com um seletor para trocar entre elas.
-
-Tudo através de uma interface moderna, responsiva e focada em acessibilidade
-e experiência do usuário.
-
----
-
-# 🚀 Funcionalidades
-
-## 🔐 Autenticação e multi-tenant
-- Cadastro self-service (cria uma nova empresa) e convite de membros por e-mail
-- Um mesmo login pode acessar várias empresas — tela de seleção de empresa e
-  botão "Trocar Unidade" na sidebar
-- Verificação de e-mail no cadastro
-- Sessão em cookies httpOnly + proteção CSRF (tokens nunca ficam expostos ao JavaScript)
-- Bloqueio automático de conta após tentativas de senha incorretas seguidas
-- Papéis por empresa: Dono, Administrador, Membro
-
-## 💳 Cobrança (Stripe)
-- Checkout de assinatura hospedado pelo Stripe
-- Portal de cobrança (trocar cartão, cancelar, ver faturas)
-- Webhooks ativando/cancelando o plano automaticamente
-- Bloqueio de escrita quando o trial acaba e não há assinatura ativa
-- Limite de contatos e usuários por plano
-
-## 👑 Administração da plataforma
-- Painel exclusivo da equipe ATHLO (separado do dono de cada empresa cliente)
-- Visão geral de MRR, assinaturas por status, lista de empresas clientes
-- Suspender/reativar empresas
-
-## 📊 Dashboard
-- Estatísticas em tempo real da empresa
-- Indicadores de contatos, receita, faturas e agenda
-- Gráficos interativos
-
-## 👥 Contatos (CRM)
-- Cadastro de leads, clientes e fornecedores, com máscara de telefone/CPF/CNPJ
-- Busca e filtros
-- Histórico de faturas e agenda por contato
-
-## 💰 Financeiro
-- Contas a pagar e a receber
-- Marcar faturas como pagas
-- Geração de PDF da fatura
-
-## 📦 Produtos e serviços
-- Catálogo de produtos e serviços
-- Preço, SKU e status
-
-## 🧾 Pedidos
-- Pedidos com itens, status, forma de pagamento e origem
-- Geração de PDF do pedido
-- E-mail automático ao cliente quando o status muda
-
-## 📅 Agenda
-- Reuniões, tarefas e prazos, com calendário mensal
-- Cadastro rápido por texto em português (identifica data/hora automaticamente)
-- Lembrete automático: notificação dentro do sistema + push no navegador
-  (notebook e celular) quando um compromisso está prestes a começar
-
-## 🤝 Equipe
-- Convite de membros (inclusive para quem já tem conta em outra empresa)
-- Papéis de acesso por empresa
-
-## 🔔 Notificações
-- Central de notificações dentro do sistema
-- Notificações push no navegador (Web Push, sem app nativo)
-
-## 📈 Relatórios
-- Indicadores de desempenho e gráficos analíticos
-- Exportação em Excel (.xlsx) com abas organizadas por assunto
-
-## 🔒 Segurança
-- LGPD: exclusão definitiva da empresa e de todos os dados, com confirmação de senha
-- Limite de requisições por IP em toda a API
-- Auditoria automática de dependências vulneráveis na CI
-
----
-
-# 🛠️ Tecnologias utilizadas
-
-## Frontend
-- React, TypeScript, Vite, TailwindCSS
-- React Router DOM, React Query
-- Recharts, Framer Motion, Lucide React
-- Axios
-- Vitest + Testing Library (testes automatizados)
-
-## Backend
-- Node.js, Express, TypeScript
-- Prisma ORM, PostgreSQL
-- JWT + cookies httpOnly, Stripe, Resend (e-mail), Web Push
-- ExcelJS, PDFKit
-- Vitest (testes automatizados)
-
----
-
-# 🎨 Design
-
-A interface foi desenvolvida com foco em:
-
-- visual moderno, com modo claro e escuro
-- experiência premium
-- responsividade
-- acessibilidade
-- UI estilo SaaS
-
----
-
-# ⚙️ Como executar o projeto
-
-## Clone o repositório
+## Rodando local
 
 ```bash
 git clone https://github.com/hlima-dev/athlo-web-admin.git
-```
-
----
-
-## Instale as dependências
-
-```bash
+cd athlo-web-admin
 npm install
-```
-
----
-
-## Execute o projeto
-
-```bash
 npm run dev
 ```
 
----
+Outros comandos: `npm run build`, `npm run test`.
 
-# 🧪 Testes
+## Stack
 
-```bash
-npm run test
+React, TypeScript, Vite, TailwindCSS, React Router, React Query, Recharts,
+Axios. Testes com Vitest + Testing Library.
+
+## Estrutura
+
 ```
-
----
-
-# 🌐 Build de produção
-
-```bash
-npm run build
-```
-
----
-
-# 📁 Estrutura do projeto
-
-```bash
 src/
  ├── components/
  ├── hooks/
@@ -196,28 +65,16 @@ src/
  ├── pages/
  ├── routes/
  ├── services/
- ├── utils/
- ├── assets/
+ └── utils/
 tests/
 ```
 
----
+## Falta
 
-# 🗺️ Roadmap
-
-- Monitoramento de erros em produção (Sentry)
-- Upload de logo da empresa e foto de perfil
-- Pipeline de vendas / Kanban de oportunidades
+- Monitoramento de erros em produção
+- Upload de logo/avatar
+- Pipeline de vendas / Kanban
 
 ---
 
-# 👨‍💻 Desenvolvido por
-
-- Lucas Lima Santos
-
----
-
-# 📄 Licença
-
-Projeto acadêmico desenvolvido para fins educacionais, evoluído para um
-produto SaaS.
+Lucas Lima Santos
