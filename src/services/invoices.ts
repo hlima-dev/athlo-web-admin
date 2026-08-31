@@ -19,14 +19,14 @@ export async function getInvoices(params?: Record<string, string>) {
   return extractList<Invoice>(response.data);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function createInvoice(data: any) {
+ 
+export async function createInvoice(data: Record<string, unknown>) {
   const response = await api.post("/invoices", data);
   return response.data;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function updateInvoice(id: string, data: any) {
+ 
+export async function updateInvoice(id: string, data: Record<string, unknown>) {
   const response = await api.patch(`/invoices/${id}`, data);
   return response.data;
 }

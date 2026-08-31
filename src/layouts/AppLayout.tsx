@@ -47,41 +47,36 @@ const menuItems = [
   { label: "Notificações", path: "/notificacoes", icon: Bell },
 ];
 
-export function AppLayout() {
-  const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [switchModalOpen, setSwitchModalOpen] = useState(false);
+type StoredUser = ReturnType<typeof getStoredUser>;
+type StoredOrganization = ReturnType<typeof getStoredOrganization>;
 
-  const user = getStoredUser();
-  const organization = getStoredOrganization();
-  const isPlatformAdmin = !!user?.isPlatformAdmin;
+interface SidebarProps {
+  user: StoredUser;
+  organization: StoredOrganization;
+  isPlatformAdmin: boolean;
+  onNavigate: () => void;
+  onClose: () => void;
+  onSwitchOrganization: () => void;
+  onLogout: () => void;
+}
 
-  useEffect(() => {
-    if (menuOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [menuOpen]);
-
-  async function logout() {
-    await logoutRequest();
-    navigate("/login");
-  }
-
-  function Sidebar() {
-    return (
+function Sidebar({
+  user,
+  organization,
+  isPlatformAdmin,
+  onNavigate,
+  onClose,
+  onSwitchOrganization,
+  onLogout,
+}: SidebarProps) {
+  return (
       <aside className="w-72 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex flex-col h-full">
         <div className="p-6 border-b border-slate-200 dark:border-slate-800">
           <div className="flex items-center justify-between">
             <h1 className="text-xl font-black text-cyan-400">ATHLO</h1>
 
             <button
-              onClick={() => setMenuOpen(false)}
+              onClick={onClose}
               className="md:hidden w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
             >
               <X size={22} />
@@ -113,7 +108,7 @@ export function AppLayout() {
 
           <button
             type="button"
-            onClick={() => setSwitchModalOpen(true)}
+            onClick={onSwitchOrganization}
             className="mt-2 flex items-center gap-2 text-xs font-bold text-cyan-500 hover:text-cyan-400"
           >
             <RefreshCw size={13} />
@@ -129,7 +124,7 @@ export function AppLayout() {
               <NavLink
                 key={item.path}
                 to={item.path}
-                onClick={() => setMenuOpen(false)}
+                onClick={onNavigate}
                 className={({ isActive }) =>
                   `flex items-center gap-3 px-4 py-3 rounded-xl transition ${
                     isActive
@@ -148,7 +143,7 @@ export function AppLayout() {
         <div className="p-4 border-t border-slate-200 dark:border-slate-800 space-y-2">
           <NavLink
             to="/perfil"
-            onClick={() => setMenuOpen(false)}
+            onClick={onNavigate}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
             <User size={20} />
@@ -157,7 +152,7 @@ export function AppLayout() {
 
           <NavLink
             to="/configuracoes"
-            onClick={() => setMenuOpen(false)}
+            onClick={onNavigate}
             className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
           >
             <Settings size={20} />
@@ -167,7 +162,7 @@ export function AppLayout() {
           {isPlatformAdmin && (
             <NavLink
               to="/admin"
-              onClick={() => setMenuOpen(false)}
+              onClick={onNavigate}
               className="flex items-center gap-3 px-4 py-3 rounded-xl text-purple-400 hover:bg-purple-500/10 transition"
             >
               <Shield size={20} />
@@ -176,7 +171,7 @@ export function AppLayout() {
           )}
 
           <button
-            onClick={logout}
+            onClick={onLogout}
             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition"
           >
             <LogOut size={20} />
@@ -184,15 +179,51 @@ export function AppLayout() {
           </button>
         </div>
       </aside>
-    );
+  );
+}
+
+export function AppLayout() {
+  const navigate = useNavigate();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [switchModalOpen, setSwitchModalOpen] = useState(false);
+
+  const user = getStoredUser();
+  const organization = getStoredOrganization();
+  const isPlatformAdmin = !!user?.isPlatformAdmin;
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
+
+  async function logout() {
+    await logoutRequest();
+    navigate("/login");
   }
+
+  const sidebarProps: SidebarProps = {
+    user,
+    organization,
+    isPlatformAdmin,
+    onNavigate: () => setMenuOpen(false),
+    onClose: () => setMenuOpen(false),
+    onSwitchOrganization: () => setSwitchModalOpen(true),
+    onLogout: logout,
+  };
 
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-white flex">
       <PaymentRequiredBanner />
       <SwitchOrganizationModal open={switchModalOpen} onClose={() => setSwitchModalOpen(false)} />
       <div className="hidden md:block">
-        <Sidebar />
+        <Sidebar {...sidebarProps} />
       </div>
 
       {menuOpen && (
@@ -206,7 +237,7 @@ export function AppLayout() {
           />
 
           <div className="relative z-10 h-full w-72 shadow-2xl">
-            <Sidebar />
+            <Sidebar {...sidebarProps} />
           </div>
         </div>
       )}

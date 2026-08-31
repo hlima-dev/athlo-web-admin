@@ -1,6 +1,7 @@
 ﻿import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useState } from 'react'
 import { login, saveSession } from '../services/auth'
+import { getErrorMessage } from '../utils/errors'
 
 export function Login() {
   const navigate = useNavigate()
@@ -30,9 +31,8 @@ export function Login() {
 
       saveSession(result)
       navigate(from, { replace: true })
-    } catch (err: any) {
-      const msg = err?.response?.data?.message ?? 'E-mail ou senha inválidos.'
-      setError(msg)
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'E-mail ou senha inválidos.'))
     } finally {
       setLoading(false)
     }

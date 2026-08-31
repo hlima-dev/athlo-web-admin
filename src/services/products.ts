@@ -16,14 +16,14 @@ export async function getProducts(params?: Record<string, string>) {
   return extractList<Product>(response.data);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function createProduct(data: any) {
+ 
+export async function createProduct(data: Record<string, unknown>) {
   const response = await api.post("/products", data);
   return response.data;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function updateProduct(id: string, data: any) {
+ 
+export async function updateProduct(id: string, data: Record<string, unknown>) {
   const response = await api.patch(`/products/${id}`, data);
   return response.data;
 }

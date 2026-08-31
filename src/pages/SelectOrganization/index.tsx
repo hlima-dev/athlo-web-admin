@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import { Building2, ArrowRight } from 'lucide-react'
 import { selectOrganization, saveSession, type OrganizationOption } from '../../services/auth'
+import { getErrorMessage } from '../../utils/errors'
 
 interface LocationState {
   preAuthToken?: string
@@ -36,8 +37,8 @@ export function SelectOrganization() {
       const auth = await selectOrganization(state.preAuthToken!, organizationId)
       saveSession(auth)
       navigate('/dashboard', { replace: true })
-    } catch (err: any) {
-      setError(err?.response?.data?.message ?? 'Não foi possível acessar essa empresa.')
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Não foi possível acessar essa empresa.'))
       setLoadingId(null)
     }
   }

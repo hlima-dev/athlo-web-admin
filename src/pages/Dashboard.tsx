@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getDashboard } from "../services/dashboard";
+import { getDashboard, type DashboardData } from "../services/dashboard";
 import { useTheme } from "../components/Theme";
 
 import {
@@ -27,18 +27,6 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-
-interface DashboardData {
-  contacts: number;
-  users: number;
-  events: number;
-  pendingInvoices: number;
-  openOrders: number;
-  revenue: number | string;
-  growthData: { month: string; contatos: number }[];
-  revenueData: { month: string; valor: number }[];
-  upcomingEvents: { id: string; title: string; type: string; startDate: string }[];
-}
 
 const typeLabels: Record<string, string> = {
   MEETING: "Reunião",

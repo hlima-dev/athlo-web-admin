@@ -12,6 +12,7 @@ import {
 import { getMembers, type Member } from "../services/organization";
 import { getInvites, createInvite, revokeInvite, type Invite } from "../services/invites";
 import { PageHeader } from "../components/PageHeader";
+import { getErrorMessage } from "../utils/errors";
 
 const roleLabels: Record<string, string> = {
   OWNER: "Dono",
@@ -47,6 +48,7 @@ export function Team() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
     load();
   }, []);
 
@@ -60,8 +62,8 @@ export function Team() {
       setShowModal(false);
       setForm({ email: "", role: "MEMBER" });
       await load();
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Erro ao enviar convite.");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Erro ao enviar convite."));
     } finally {
       setSaving(false);
     }

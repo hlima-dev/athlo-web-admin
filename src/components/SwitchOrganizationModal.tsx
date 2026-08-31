@@ -9,6 +9,7 @@ import {
   type OrganizationOption,
 } from "../services/auth";
 import { useToast } from "./Toast";
+import { getErrorMessage } from "../utils/errors";
 
 interface Props {
   open: boolean;
@@ -34,6 +35,7 @@ export function SwitchOrganizationModal({ open, onClose }: Props) {
 
   useEffect(() => {
     if (!open) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- exibe o spinner assim que o modal abre, antes da busca resolver
     setLoading(true);
     listMyOrganizations()
       .then(setOrganizations)
@@ -54,9 +56,10 @@ export function SwitchOrganizationModal({ open, onClose }: Props) {
       setSwitchingId(organizationId);
       const auth = await switchOrganization(organizationId);
       saveSession(auth);
+      // eslint-disable-next-line react-hooks/immutability -- navegação de página inteira de propósito, pra recarregar todo o estado da nova organização
       window.location.href = "/dashboard";
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao trocar de unidade.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao trocar de unidade."));
       setSwitchingId(null);
     }
   }
@@ -70,8 +73,8 @@ export function SwitchOrganizationModal({ open, onClose }: Props) {
       const auth = await createOrganization(newOrgName.trim());
       saveSession(auth);
       window.location.href = "/dashboard";
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao criar empresa.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao criar empresa."));
       setCreating(false);
     }
   }

@@ -1,6 +1,7 @@
 ﻿import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { api } from '../../services/api'
+import { getErrorMessage } from '../../utils/errors'
 
 export function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -16,8 +17,8 @@ export function ForgotPassword() {
       setLoading(true)
       await api.post('/auth/forgot-password', { email })
       setSent(true)
-    } catch (err: any) {
-      setError(err?.response?.data?.message ?? 'Erro ao processar solicitação.')
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Erro ao processar solicitação.'))
     } finally {
       setLoading(false)
     }

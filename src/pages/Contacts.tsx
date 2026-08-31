@@ -21,6 +21,7 @@ import { PageHeader } from "../components/PageHeader";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
 import { maskPhone } from "../utils/masks";
+import { getErrorMessage } from "../utils/errors";
 
 const emptyForm = {
   name: "",
@@ -70,6 +71,7 @@ export function Contacts() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
     loadContacts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -118,9 +120,9 @@ export function Contacts() {
       setEditingId(null);
       await loadContacts();
       toast.success(editingId ? "Contato atualizado com sucesso." : "Contato cadastrado com sucesso.");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
-        err?.response?.data?.message || err?.response?.data?.error || "Erro ao salvar contato."
+        getErrorMessage(err, "Erro ao salvar contato.")
       );
     } finally {
       setSaving(false);
@@ -136,8 +138,8 @@ export function Contacts() {
       setDeleteTarget(null);
       await loadContacts();
       toast.success("Contato excluído com sucesso.");
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao excluir contato.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao excluir contato."));
     } finally {
       setDeleting(false);
     }

@@ -21,6 +21,7 @@ import { PageHeader } from "../components/PageHeader";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
 import { openPdf } from "../services/api";
+import { getErrorMessage } from "../utils/errors";
 
 function toCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -85,6 +86,7 @@ export function Financeiro() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
     loadInvoices();
   }, []);
 
@@ -133,8 +135,8 @@ export function Financeiro() {
       setEditingId(null);
       await loadInvoices();
       toast.success(editingId ? "Fatura atualizada com sucesso." : "Fatura cadastrada com sucesso.");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Erro ao salvar fatura.");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Erro ao salvar fatura."));
     } finally {
       setSaving(false);
     }
@@ -145,8 +147,8 @@ export function Financeiro() {
       await markInvoicePaid(id);
       await loadInvoices();
       toast.success("Fatura marcada como paga.");
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao marcar fatura como paga.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao marcar fatura como paga."));
     }
   }
 
@@ -159,8 +161,8 @@ export function Financeiro() {
       setDeleteTarget(null);
       await loadInvoices();
       toast.success("Fatura excluída com sucesso.");
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao excluir fatura.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao excluir fatura."));
     } finally {
       setDeleting(false);
     }

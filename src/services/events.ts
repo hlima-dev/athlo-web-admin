@@ -22,14 +22,14 @@ export async function getEvents(params?: Record<string, string>) {
   return extractList<Event>(response.data);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function createEvent(data: any) {
+ 
+export async function createEvent(data: Record<string, unknown>) {
   const response = await api.post("/events", data);
   return response.data;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function updateEvent(id: string, data: any) {
+ 
+export async function updateEvent(id: string, data: Record<string, unknown>) {
   const response = await api.patch(`/events/${id}`, data);
   return response.data;
 }

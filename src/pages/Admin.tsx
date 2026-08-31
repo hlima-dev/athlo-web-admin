@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
 import { useToast } from "../components/Toast";
+import { getErrorMessage } from "../utils/errors";
 import {
   getAdminOverview,
   listAdminOrganizations,
@@ -62,6 +63,7 @@ export function Admin() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -80,8 +82,8 @@ export function Admin() {
         nextStatus === "SUSPENDED" ? "Empresa suspensa." : "Empresa reativada."
       );
       await load();
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao atualizar status da empresa.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao atualizar status da empresa."));
     } finally {
       setUpdatingId(null);
     }

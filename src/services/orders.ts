@@ -43,14 +43,14 @@ export async function getOrderById(id: string) {
   return response.data?.data as Order;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function createOrder(data: any) {
+ 
+export async function createOrder(data: Record<string, unknown>) {
   const response = await api.post("/orders", data);
   return response.data;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function updateOrder(id: string, data: any) {
+ 
+export async function updateOrder(id: string, data: Record<string, unknown>) {
   const response = await api.patch(`/orders/${id}`, data);
   return response.data;
 }

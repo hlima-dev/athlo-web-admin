@@ -1,6 +1,8 @@
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useState } from 'react'
+import { isAxiosError } from 'axios'
 import { register, saveSession } from '../services/auth'
+import { getErrorMessage } from '../utils/errors'
 
 export function Register() {
   const navigate = useNavigate()
@@ -26,11 +28,12 @@ export function Register() {
       })
       saveSession(auth)
       navigate('/dashboard', { replace: true })
-    } catch (err: any) {
-      const fieldErrors = err?.response?.data?.errors as Record<string, string[]> | undefined
+    } catch (err: unknown) {
+      const fieldErrors = isAxiosError(err)
+        ? (err.response?.data?.errors as Record<string, string[]> | undefined)
+        : undefined
       const firstFieldError = fieldErrors && Object.values(fieldErrors).flat()[0]
-      const msg = firstFieldError ?? err?.response?.data?.message ?? 'Erro ao criar cadastro.'
-      setError(msg)
+      setError(firstFieldError ?? getErrorMessage(err, 'Erro ao criar cadastro.'))
     } finally {
       setLoading(false)
     }

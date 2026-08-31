@@ -11,6 +11,7 @@ import { RowActionsMenu } from "../components/RowActionsMenu";
 import { PageHeader } from "../components/PageHeader";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
+import { getErrorMessage } from "../utils/errors";
 
 function toCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -52,6 +53,7 @@ export function Products() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
     loadProducts();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -100,8 +102,8 @@ export function Products() {
       setEditingId(null);
       await loadProducts();
       toast.success(editingId ? "Item atualizado com sucesso." : "Item cadastrado com sucesso.");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Erro ao salvar produto.");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Erro ao salvar produto."));
     } finally {
       setSaving(false);
     }
@@ -116,8 +118,8 @@ export function Products() {
       setDeleteTarget(null);
       await loadProducts();
       toast.success("Item excluído com sucesso.");
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao excluir produto.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao excluir produto."));
     } finally {
       setDeleting(false);
     }

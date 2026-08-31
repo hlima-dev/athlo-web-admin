@@ -25,6 +25,7 @@ import { useToast } from "../components/Toast";
 import { useTheme } from "../components/Theme";
 import { clearSession, getStoredUser } from "../services/auth";
 import { maskCpfCnpj, maskPhone } from "../utils/masks";
+import { getErrorMessage } from "../utils/errors";
 
 function formatPrice(value: string | number) {
   const n = Number(value);
@@ -68,6 +69,7 @@ export function Settings() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial dos dados da empresa/planos ao montar a tela
     load();
 
     const params = new URLSearchParams(window.location.search);
@@ -91,8 +93,8 @@ export function Settings() {
       await updateOrganization(form);
       setMessage("Dados da empresa atualizados com sucesso.");
       await load();
-    } catch (err: any) {
-      setMessage(err?.response?.data?.message || "Erro ao salvar dados da empresa.");
+    } catch (err: unknown) {
+      setMessage(getErrorMessage(err, "Erro ao salvar dados da empresa."));
     } finally {
       setSaving(false);
     }
@@ -107,8 +109,8 @@ export function Settings() {
         await changePlan(slug);
         await load();
         toast.success("Plano alterado com sucesso.");
-      } catch (err: any) {
-        toast.error(err?.response?.data?.message || "Erro ao trocar de plano.");
+      } catch (err: unknown) {
+        toast.error(getErrorMessage(err, "Erro ao trocar de plano."));
       } finally {
         setChangingPlan(false);
       }
@@ -118,9 +120,10 @@ export function Settings() {
     try {
       setChangingPlan(true);
       const url = await checkoutPlan(slug);
+      // eslint-disable-next-line react-hooks/immutability -- redireciona pro checkout do Stripe, fora da SPA
       window.location.href = url;
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao iniciar checkout do plano.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao iniciar checkout do plano."));
       setChangingPlan(false);
     }
   }
@@ -130,8 +133,8 @@ export function Settings() {
       setChangingPlan(true);
       const url = await openBillingPortal();
       window.location.href = url;
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao abrir o portal de cobrança.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao abrir o portal de cobrança."));
       setChangingPlan(false);
     }
   }
@@ -145,8 +148,8 @@ export function Settings() {
       setTimeout(() => {
         window.location.href = "/";
       }, 1200);
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao excluir a empresa.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao excluir a empresa."));
       setDeleting(false);
     }
   }

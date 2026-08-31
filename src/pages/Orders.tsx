@@ -26,6 +26,7 @@ import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
 import { openPdf } from "../services/api";
 import { maskPhone, maskZipCode } from "../utils/masks";
+import { getErrorMessage } from "../utils/errors";
 
 function toCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -184,10 +185,10 @@ export function Orders() {
     getProducts({ active: "true" })
       .then(setProducts)
       .catch((err) => console.error("Erro ao carregar produtos:", err));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- refaz a busca quando o período/status do filtro muda
     loadOrders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period, statusFilter]);
@@ -317,8 +318,8 @@ export function Orders() {
       setEditingId(null);
       await loadOrders();
       toast.success(editingId ? "Pedido atualizado com sucesso." : "Pedido cadastrado com sucesso.");
-    } catch (err: any) {
-      setError(err?.response?.data?.message || "Erro ao salvar pedido.");
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, "Erro ao salvar pedido."));
     } finally {
       setSaving(false);
     }
@@ -330,8 +331,8 @@ export function Orders() {
       await updateOrderStatus(order.id, status);
       await loadOrders();
       toast.success("Status do pedido atualizado.");
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao atualizar status do pedido.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao atualizar status do pedido."));
     } finally {
       setUpdatingStatusId(null);
     }
@@ -346,8 +347,8 @@ export function Orders() {
       setDeleteTarget(null);
       await loadOrders();
       toast.success("Pedido excluído com sucesso.");
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao excluir pedido.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao excluir pedido."));
     } finally {
       setDeleting(false);
     }

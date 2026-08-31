@@ -14,6 +14,7 @@ import { changePassword, getStoredOrganization, getStoredUser, updateProfile } f
 import { PageHeader } from "../components/PageHeader";
 import { useToast } from "../components/Toast";
 import { maskPhone } from "../utils/masks";
+import { getErrorMessage, getFirstFieldError } from "../utils/errors";
 
 const roleLabels: Record<string, string> = {
   OWNER: "Dono da empresa",
@@ -71,10 +72,9 @@ export function Profile() {
       setShowProfileModal(false);
       setSuccess("Perfil atualizado com sucesso.");
       toast.success("Perfil atualizado com sucesso.");
-    } catch (err: any) {
-      const fieldErrors = err?.response?.data?.errors as Record<string, string[]> | undefined;
-      const firstFieldError = fieldErrors && Object.values(fieldErrors).flat()[0];
-      setProfileError(firstFieldError || err?.response?.data?.message || "Erro ao atualizar perfil.");
+    } catch (err: unknown) {
+      const firstFieldError = getFirstFieldError(err);
+      setProfileError(firstFieldError || getErrorMessage(err, "Erro ao atualizar perfil."));
     } finally {
       setSavingProfile(false);
     }
@@ -95,10 +95,9 @@ export function Profile() {
       setShowPasswordModal(false);
       setSuccess("Senha alterada com sucesso.");
       toast.success("Senha alterada com sucesso.");
-    } catch (err: any) {
-      const fieldErrors = err?.response?.data?.errors as Record<string, string[]> | undefined;
-      const firstFieldError = fieldErrors && Object.values(fieldErrors).flat()[0];
-      setError(firstFieldError || err?.response?.data?.message || "Erro ao alterar senha.");
+    } catch (err: unknown) {
+      const firstFieldError = getFirstFieldError(err);
+      setError(firstFieldError || getErrorMessage(err, "Erro ao alterar senha."));
     } finally {
       setSaving(false);
     }

@@ -69,6 +69,7 @@ export function Notifications() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
     loadNotifications();
     if (pushSupported) {
       isSubscribedOnThisDevice().then(setPushEnabled).catch(() => {});
@@ -88,8 +89,10 @@ export function Notifications() {
         setPushEnabled(true);
         toast.success("Notificações push ativadas neste dispositivo!");
       }
-    } catch (err: any) {
-      toast.error(err?.message || "Não foi possível alterar as notificações push.");
+    } catch (err: unknown) {
+      // Erro do navegador (ex: permissão de notificação negada) — não é uma
+      // resposta da API, por isso não usa getErrorMessage aqui.
+      toast.error(err instanceof Error ? err.message : "Não foi possível alterar as notificações push.");
     } finally {
       setPushBusy(false);
     }

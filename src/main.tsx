@@ -22,6 +22,7 @@ const queryClient = new QueryClient({
   },
 });
 
+// eslint-disable-next-line react-refresh/only-export-components -- entry point da app, não é feito pra hot-reload
 function Root() {
   const [loading, setLoading] = React.useState(true);
 

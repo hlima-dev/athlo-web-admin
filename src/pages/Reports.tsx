@@ -7,7 +7,7 @@ import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell,
   Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts"
-import { getDashboard } from "../services/dashboard"
+import { getDashboard, type DashboardData } from "../services/dashboard"
 import { PageHeader } from "../components/PageHeader"
 import { useTheme } from "../components/Theme"
 import { downloadFile } from "../services/api"
@@ -18,7 +18,7 @@ export function Reports() {
   const toast = useToast()
   const gridColor = theme === "dark" ? "#1e293b" : "#e2e8f0"
   const axisColor = theme === "dark" ? "#94a3b8" : "#64748b"
-  const [data, setData] = useState<any>(null)
+  const [data, setData] = useState<DashboardData | null>(null)
   const [loading, setLoading] = useState(true)
   const [exporting, setExporting] = useState(false)
 

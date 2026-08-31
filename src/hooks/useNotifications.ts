@@ -1,5 +1,5 @@
 ﻿import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '../services/api'
+import { api, extractList } from '../services/api'
 
 export interface Notification {
   id: string
@@ -10,19 +10,12 @@ export interface Notification {
   createdAt: string
 }
 
-function extractList(data: any): Notification[] {
-  if (Array.isArray(data)) return data
-  if (Array.isArray(data?.data)) return data.data
-  if (Array.isArray(data?.data?.items)) return data.data.items
-  return []
-}
-
 export function useNotifications() {
   return useQuery<Notification[]>({
     queryKey: ['notifications'],
     queryFn: async () => {
       const response = await api.get('/notifications/me')
-      return extractList(response.data)
+      return extractList<Notification>(response.data)
     },
   })
 }

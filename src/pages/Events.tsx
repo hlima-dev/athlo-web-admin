@@ -24,6 +24,7 @@ import { RowActionsMenu } from "../components/RowActionsMenu";
 import { PageHeader } from "../components/PageHeader";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
+import { getErrorMessage } from "../utils/errors";
 
 const typeLabels: Record<string, string> = {
   MEETING: "Reunião",
@@ -86,6 +87,7 @@ export function Events() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
     loadEvents();
   }, []);
 
@@ -132,8 +134,8 @@ export function Events() {
       setShowModal(true);
       setQuickPrompt("");
       toast.success("Sugestão pronta! Revise os dados e salve.");
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Não foi possível interpretar o texto.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Não foi possível interpretar o texto."));
     } finally {
       setQuickLoading(false);
     }
@@ -167,11 +169,9 @@ export function Events() {
       setEditingId(null);
       await loadEvents();
       toast.success(editingId ? "Item atualizado com sucesso." : "Item cadastrado com sucesso.");
-    } catch (error: any) {
+    } catch (error: unknown) {
       setError(
-        error?.response?.data?.message ||
-          error?.response?.data?.error ||
-          "Erro ao salvar item da agenda."
+        getErrorMessage(error, "Erro ao salvar item da agenda.")
       );
     } finally {
       setSaving(false);
@@ -187,8 +187,8 @@ export function Events() {
       setDeleteTarget(null);
       await loadEvents();
       toast.success("Item excluído com sucesso.");
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message || "Erro ao excluir item da agenda.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao excluir item da agenda."));
     } finally {
       setDeleting(false);
     }

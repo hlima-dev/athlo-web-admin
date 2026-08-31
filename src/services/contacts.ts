@@ -28,14 +28,14 @@ export async function getContactById(id: string) {
   return response.data?.data;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function createContact(data: any) {
+ 
+export async function createContact(data: Record<string, unknown>) {
   const response = await api.post("/contacts", data);
   return response.data;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function updateContact(id: string, data: any) {
+ 
+export async function updateContact(id: string, data: Record<string, unknown>) {
   const response = await api.patch(`/contacts/${id}`, data);
   return response.data;
 }

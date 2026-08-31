@@ -1,6 +1,7 @@
 ﻿import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useState } from 'react'
 import { api } from '../../services/api'
+import { getErrorMessage } from '../../utils/errors'
 
 export function ResetPassword() {
   const navigate = useNavigate()
@@ -27,8 +28,8 @@ export function ResetPassword() {
       navigate('/login', {
         state: { message: 'Senha redefinida com sucesso! Faça login com a nova senha.' },
       })
-    } catch (err: any) {
-      setError(err?.response?.data?.message ?? 'Erro ao redefinir senha.')
+    } catch (err: unknown) {
+      setError(getErrorMessage(err, 'Erro ao redefinir senha.'))
     } finally {
       setLoading(false)
     }

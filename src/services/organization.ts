@@ -38,8 +38,8 @@ export async function getMyOrganization(): Promise<OrganizationDetails> {
   return response.data.data;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export async function updateOrganization(data: any) {
+ 
+export async function updateOrganization(data: Record<string, unknown>) {
   const response = await api.patch("/organization/me", data);
   return response.data;
 }
