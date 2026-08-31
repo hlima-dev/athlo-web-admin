@@ -34,7 +34,8 @@ tempo parado pode demorar ~1 min pra "acordar".
 - Notificação de compromisso da agenda: dentro do sistema + push no
   navegador (funciona no notebook e no celular, sem app nativo)
 - Painel separado pra administração da plataforma (visão de todas as
-  empresas clientes, MRR, suspender conta)
+  empresas clientes, MRR, suspender conta, log de erros 5xx com filtro
+  e busca)
 - Exportação de relatórios em Excel
 - Exclusão de conta/empresa (LGPD)
 - Testes automatizados (Vitest) e CI
@@ -71,7 +72,6 @@ tests/
 
 ## Falta
 
-- Monitoramento de erros em produção
 - Upload de logo/avatar
 - Pipeline de vendas / Kanban
 
