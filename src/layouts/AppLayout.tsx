@@ -19,6 +19,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { logout as logoutRequest, getStoredOrganization, getStoredUser } from "../services/auth";
+import { getAdminErrorsSummary } from "../services/admin";
 import { PaymentRequiredBanner } from "../components/PaymentRequiredBanner";
 import { SwitchOrganizationModal } from "../components/SwitchOrganizationModal";
 
@@ -54,6 +55,7 @@ interface SidebarProps {
   user: StoredUser;
   organization: StoredOrganization;
   isPlatformAdmin: boolean;
+  unresolvedErrorCount: number;
   onNavigate: () => void;
   onClose: () => void;
   onSwitchOrganization: () => void;
@@ -64,6 +66,7 @@ function Sidebar({
   user,
   organization,
   isPlatformAdmin,
+  unresolvedErrorCount,
   onNavigate,
   onClose,
   onSwitchOrganization,
@@ -163,10 +166,17 @@ function Sidebar({
             <NavLink
               to="/admin"
               onClick={onNavigate}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-purple-400 hover:bg-purple-500/10 transition"
+              className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl text-purple-400 hover:bg-purple-500/10 transition"
             >
-              <Shield size={20} />
-              Admin ATHLO
+              <span className="flex items-center gap-3">
+                <Shield size={20} />
+                Admin ATHLO
+              </span>
+              {unresolvedErrorCount > 0 && (
+                <span className="rounded-full bg-red-500 px-2 py-0.5 text-[11px] font-bold text-white">
+                  {unresolvedErrorCount}
+                </span>
+              )}
             </NavLink>
           )}
 
@@ -190,6 +200,21 @@ export function AppLayout() {
   const user = getStoredUser();
   const organization = getStoredOrganization();
   const isPlatformAdmin = !!user?.isPlatformAdmin;
+  const [unresolvedErrorCount, setUnresolvedErrorCount] = useState(0);
+
+  useEffect(() => {
+    if (!isPlatformAdmin) return;
+
+    function refresh() {
+      getAdminErrorsSummary()
+        .then(({ unresolvedCount }) => setUnresolvedErrorCount(unresolvedCount))
+        .catch(() => {});
+    }
+
+    refresh();
+    const interval = setInterval(refresh, 60_000);
+    return () => clearInterval(interval);
+  }, [isPlatformAdmin]);
 
   useEffect(() => {
     if (menuOpen) {
@@ -212,6 +237,7 @@ export function AppLayout() {
     user,
     organization,
     isPlatformAdmin,
+    unresolvedErrorCount,
     onNavigate: () => setMenuOpen(false),
     onClose: () => setMenuOpen(false),
     onSwitchOrganization: () => setSwitchModalOpen(true),

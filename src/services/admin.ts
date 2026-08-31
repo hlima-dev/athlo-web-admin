@@ -45,3 +45,35 @@ export async function setOrganizationStatus(id: string, status: "ACTIVE" | "SUSP
   const response = await api.patch(`/admin/organizations/${id}/status`, { status });
   return response.data.data;
 }
+
+export interface AdminErrorLog {
+  id: string;
+  message: string;
+  stack: string | null;
+  statusCode: number;
+  method: string;
+  path: string;
+  resolvedAt: string | null;
+  createdAt: string;
+  user: { id: string; name: string; email: string } | null;
+  organization: { id: string; name: string } | null;
+}
+
+export async function listAdminErrors(params?: {
+  resolved?: boolean;
+  search?: string;
+  page?: number;
+}): Promise<AdminErrorLog[]> {
+  const response = await api.get("/admin/errors", { params });
+  return extractList<AdminErrorLog>(response.data);
+}
+
+export async function getAdminErrorsSummary(): Promise<{ unresolvedCount: number }> {
+  const response = await api.get("/admin/errors/summary");
+  return response.data.data;
+}
+
+export async function resolveAdminError(id: string): Promise<AdminErrorLog> {
+  const response = await api.patch(`/admin/errors/${id}/resolve`);
+  return response.data.data;
+}

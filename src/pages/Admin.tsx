@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { PageHeader } from "../components/PageHeader";
 import { useToast } from "../components/Toast";
+import { AdminErrorsPanel } from "../components/AdminErrorsPanel";
 import { getErrorMessage } from "../utils/errors";
 import {
   getAdminOverview,
@@ -246,6 +247,8 @@ export function Admin() {
           </table>
         </div>
       </div>
+
+      <AdminErrorsPanel />
     </div>
   );
 }
