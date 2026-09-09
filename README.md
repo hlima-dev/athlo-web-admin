@@ -46,6 +46,7 @@ tempo parado pode demorar ~1 min pra "acordar".
 git clone https://github.com/hlima-dev/athlo-web-admin.git
 cd athlo-web-admin
 npm install
+cp .env.example .env   # aponta pra API de demo por padrão
 npm run dev
 ```
 

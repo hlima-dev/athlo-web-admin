@@ -1,7 +1,4 @@
-npm run build
-git add .
-git commit -m "Integra doacoes com backend"
-git push# Logs
+# Logs
 logs
 *.log
 npm-debug.log*
@@ -14,6 +11,10 @@ node_modules
 dist
 dist-ssr
 *.local
+
+# Variáveis de ambiente locais — .env.example é o template versionado.
+.env
+.env.local
 
 # Editor directories and files
 .vscode/*
