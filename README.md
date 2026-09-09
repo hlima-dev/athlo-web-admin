@@ -12,7 +12,11 @@ React + TypeScript + Vite no front, Express + Prisma + PostgreSQL no back.
 
 - Frontend: https://athlo-web-admin-fdizioprj-hlima-dev1.vercel.app/
 - API: https://athlo-backend-r176.onrender.com
-- Login: `admin@athlodemo.com.br` / `Admin@2024`
+
+O login de demonstração não é publicado aqui porque esse ambiente ao
+vivo usa Stripe em modo **live** (cobrança real) — ver
+[`athlo-backend`](https://github.com/hlima-dev/athlo-backend) pra rodar
+localmente com o seed de demonstração.
 
 A API roda no plano free do Render, então o primeiro request depois de um
 tempo parado pode demorar ~1 min pra "acordar".
