@@ -19,6 +19,14 @@ interface Organization {
   name: string
   slug: string
   status: string
+  // O backend já manda isso dentro de user.organization (visto no
+  // /auth/login) — só não estava declarado aqui. Usado pelo aviso de
+  // trial na barra lateral.
+  subscription?: {
+    status: string
+    trialEndsAt?: string | null
+    plan?: { name: string; slug: string }
+  } | null
 }
 
 // Empresa que o login pode acessar (lista usada no seletor de unidade) —
