@@ -45,29 +45,25 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-2xl border p-4 shadow-2xl backdrop-blur ${
+            className={`pointer-events-auto flex w-full max-w-sm items-start gap-3 rounded-card border bg-surface p-4 shadow-lg dark:bg-surface-dark ${
               toast.type === "success"
-                ? "border-emerald-700 bg-emerald-950/90"
-                : "border-red-700 bg-red-950/90"
+                ? "border-forest-100 dark:border-forest-900"
+                : "border-[#F6E4E1] dark:border-danger-dark/30"
             }`}
           >
             {toast.type === "success" ? (
-              <CheckCircle2 className="mt-0.5 shrink-0 text-emerald-400" size={20} />
+              <CheckCircle2 className="mt-0.5 shrink-0 text-forest-600 dark:text-forest-400" size={20} />
             ) : (
-              <XCircle className="mt-0.5 shrink-0 text-red-400" size={20} />
+              <XCircle className="mt-0.5 shrink-0 text-danger dark:text-danger-dark" size={20} />
             )}
 
-            <p
-              className={`flex-1 text-sm font-semibold ${
-                toast.type === "success" ? "text-emerald-200" : "text-red-200"
-              }`}
-            >
+            <p className="flex-1 text-[13px] font-medium text-ink dark:text-ink-dark">
               {toast.message}
             </p>
 
             <button
               onClick={() => remove(toast.id)}
-              className="shrink-0 text-slate-400 hover:text-white"
+              className="shrink-0 text-faint hover:text-ink dark:text-faint-dark dark:hover:text-ink-dark"
             >
               <X size={16} />
             </button>

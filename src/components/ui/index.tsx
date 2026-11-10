@@ -38,6 +38,9 @@ type ButtonProps = {
   variant?: 'primary' | 'ghost' | 'danger'
   size?: 'sm' | 'md'
   type?: 'button' | 'submit'
+  // associa a um <form> fora da árvore do botão (ex.: botão no footer do
+  // Modal, que fica fora do <form> que envolve o conteúdo)
+  form?: string
   disabled?: boolean
   loading?: boolean
   className?: string
@@ -49,6 +52,7 @@ export function Button({
   variant = 'primary',
   size = 'md',
   type = 'button',
+  form,
   disabled,
   loading,
   className = '',
@@ -67,6 +71,7 @@ export function Button({
   return (
     <button
       type={type}
+      form={form}
       onClick={onClick}
       disabled={disabled || loading}
       className={`${base} ${sizes} ${variants} ${className}`}

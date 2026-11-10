@@ -32,22 +32,22 @@ export function RowActionsMenu({ onEdit, onDelete, extraActions }: Props) {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-600"
+        className="grid h-8 w-8 place-items-center rounded-md text-muted transition hover:bg-[#F0EEE8] hover:text-ink dark:text-muted-dark dark:hover:bg-white/[0.06] dark:hover:text-ink-dark"
       >
-        <MoreHorizontal />
+        <MoreHorizontal size={18} />
       </button>
 
       {open && (
-        <div className="absolute right-0 z-20 mt-2 w-40 overflow-hidden rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 shadow-2xl">
+        <div className="absolute right-0 z-20 mt-1.5 w-40 overflow-hidden rounded-md border border-line bg-surface shadow-lg dark:border-line-dark dark:bg-surface-dark">
           <button
             type="button"
             onClick={() => {
               setOpen(false);
               onEdit();
             }}
-            className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="flex w-full items-center gap-2 px-3.5 py-2.5 text-[13px] font-medium text-ink hover:bg-[#F0EEE8] dark:text-ink-dark dark:hover:bg-white/[0.06]"
           >
-            <Pencil size={16} />
+            <Pencil size={15} />
             Editar
           </button>
           {extraActions?.map((action) => (
@@ -58,9 +58,9 @@ export function RowActionsMenu({ onEdit, onDelete, extraActions }: Props) {
                 setOpen(false);
                 action.onClick();
               }}
-              className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="flex w-full items-center gap-2 px-3.5 py-2.5 text-[13px] font-medium text-ink hover:bg-[#F0EEE8] dark:text-ink-dark dark:hover:bg-white/[0.06]"
             >
-              <action.icon size={16} />
+              <action.icon size={15} />
               {action.label}
             </button>
           ))}
@@ -70,9 +70,9 @@ export function RowActionsMenu({ onEdit, onDelete, extraActions }: Props) {
               setOpen(false);
               onDelete();
             }}
-            className="flex w-full items-center gap-2 px-4 py-3 text-sm font-semibold text-red-400 hover:bg-red-500/10"
+            className="flex w-full items-center gap-2 px-3.5 py-2.5 text-[13px] font-medium text-danger hover:bg-[#F6E4E1] dark:text-danger-dark dark:hover:bg-danger-dark/10"
           >
-            <Trash2 size={16} />
+            <Trash2 size={15} />
             Excluir
           </button>
         </div>

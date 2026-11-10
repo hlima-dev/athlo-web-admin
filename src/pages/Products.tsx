@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { Package, Plus, Search, Tag, CheckCircle2, XCircle } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
+import { Package, Plus, Search, CheckCircle2 } from "lucide-react";
 import {
   getProducts,
   createProduct,
@@ -8,10 +9,28 @@ import {
   type Product,
 } from "../services/products";
 import { RowActionsMenu } from "../components/RowActionsMenu";
-import { PageHeader } from "../components/PageHeader";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
 import { getErrorMessage } from "../utils/errors";
+import {
+  Badge,
+  Button,
+  Card,
+  CardHeader,
+  EmptyState,
+  Field,
+  Modal,
+  PageContainer,
+  SkeletonRows,
+  StatStrip,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  inputClass,
+} from "../components/ui";
 
 function toCurrency(value: number) {
   return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
@@ -28,6 +47,7 @@ const emptyForm = {
 
 export function Products() {
   const toast = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -63,6 +83,19 @@ export function Products() {
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
+
+  // ?novo=1 (link de criação rápida do header) abre o modal de criação —
+  // só na montagem, de propósito (searchParams muda de identidade a cada
+  // render e não deve reexecutar isso)
+  useEffect(() => {
+    if (searchParams.get("novo") === "1") {
+      openCreateModal();
+      const next = new URLSearchParams(searchParams);
+      next.delete("novo");
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function openCreateModal() {
     setEditingId(null);
@@ -129,197 +162,189 @@ export function Products() {
   const servicesCount = products.filter((p) => p.type === "SERVICE").length;
 
   return (
-    <div className="space-y-8">
-      <PageHeader
-        icon={Package}
-        title="Catálogo"
-        description="Organize produtos e serviços para agilizar orçamentos e faturas."
-        action={
-          <button
-            type="button"
-            onClick={openCreateModal}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 hover:bg-cyan-400"
-          >
-            <Plus size={20} />
-            Novo item
-          </button>
-        }
+    <PageContainer>
+      <StatStrip
+        items={[
+          { label: "Itens cadastrados", value: String(products.length) },
+          { label: "Ativos", value: String(activeCount) },
+          { label: "Serviços", value: String(servicesCount) },
+        ]}
       />
 
-      <section className="grid grid-cols-1 gap-5 md:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
-          <Package className="text-cyan-400" size={20} />
-          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Itens cadastrados</p>
-          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{products.length}</h2>
-        </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
-          <CheckCircle2 className="text-emerald-400" size={20} />
-          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Ativos</p>
-          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{activeCount}</h2>
-        </div>
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
-          <Tag className="text-purple-400" size={20} />
-          <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Serviços</p>
-          <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{servicesCount}</h2>
-        </div>
-      </section>
+      <Card>
+        <CardHeader
+          title="Catálogo"
+          subtitle="Produtos e serviços salvos no banco."
+          action={
+            <Button onClick={openCreateModal}>
+              <Plus size={16} />
+              Novo item
+            </Button>
+          }
+        />
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-        <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Catálogo</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Produtos e serviços salvos no banco.</p>
-        </div>
-
-        <div className="mt-6 flex items-center gap-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4">
-          <Search className="text-slate-400 dark:text-slate-500" size={20} />
+        <div className="flex items-center gap-2.5 border-b border-line px-5 py-3.5 dark:border-line-dark">
+          <Search size={16} className="text-faint dark:text-faint-dark" />
           <input
             placeholder="Buscar produto ou serviço..."
-            className="w-full bg-transparent py-4 text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
+            className="w-full bg-transparent text-[13.5px] outline-none placeholder:text-faint dark:placeholder:text-faint-dark"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
         </div>
 
-        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {loading ? (
-            <p className="text-slate-500 dark:text-slate-400">Carregando...</p>
-          ) : products.length === 0 ? (
-            <p className="text-slate-500 dark:text-slate-400">Nenhum item cadastrado.</p>
-          ) : (
-            products.map((product) => (
-              <div key={product.id} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-800/60 p-5">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-400">
-                      {product.type === "SERVICE" ? "Serviço" : "Produto"}
-                    </span>
-                    <h3 className="mt-3 text-base font-bold text-slate-900 dark:text-white">{product.name}</h3>
-                    {product.sku && <p className="text-xs text-slate-400 dark:text-slate-500">SKU: {product.sku}</p>}
-                  </div>
-
-                  <div className="flex items-center gap-2 shrink-0">
-                    {product.active ? (
-                      <CheckCircle2 className="text-emerald-400" size={20} />
-                    ) : (
-                      <XCircle className="text-slate-400 dark:text-slate-600" size={20} />
+        {loading ? (
+          <SkeletonRows rows={5} cols={5} />
+        ) : products.length === 0 ? (
+          <EmptyState
+            icon={<Package size={20} />}
+            title="Nenhum item cadastrado"
+            description="Cadastre um produto ou serviço, ou ajuste os termos da busca."
+            action={
+              <Button onClick={openCreateModal}>
+                <Plus size={16} />
+                Novo item
+              </Button>
+            }
+          />
+        ) : (
+          <Table minWidth={680}>
+            <Thead>
+              <Tr>
+                <Th>Nome</Th>
+                <Th>Tipo</Th>
+                <Th>SKU</Th>
+                <Th align="right">Preço</Th>
+                <Th>Status</Th>
+                <Th align="right">Ações</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {products.map((product) => (
+                <Tr key={product.id}>
+                  <Td>
+                    <p className="font-medium">{product.name}</p>
+                    {product.description && (
+                      <p className="mt-0.5 max-w-xs truncate text-[12px] text-muted dark:text-muted-dark">
+                        {product.description}
+                      </p>
                     )}
-                    <RowActionsMenu
-                      onEdit={() => openEditModal(product)}
-                      onDelete={() => setDeleteTarget(product)}
-                    />
-                  </div>
-                </div>
+                  </Td>
+                  <Td>
+                    <Badge tone={product.type === "SERVICE" ? "accent" : "info"}>
+                      {product.type === "SERVICE" ? "Serviço" : "Produto"}
+                    </Badge>
+                  </Td>
+                  <Td>{product.sku || "—"}</Td>
+                  <Td align="right" className="font-medium tabular-nums">
+                    {toCurrency(Number(product.price || 0))}
+                  </Td>
+                  <Td>
+                    {product.active ? (
+                      <Badge tone="positive">Ativo</Badge>
+                    ) : (
+                      <Badge tone="neutral">Inativo</Badge>
+                    )}
+                  </Td>
+                  <Td align="right">
+                    <div className="flex justify-end">
+                      <RowActionsMenu
+                        onEdit={() => openEditModal(product)}
+                        onDelete={() => setDeleteTarget(product)}
+                      />
+                    </div>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        )}
+      </Card>
 
-                {product.description && (
-                  <p className="mt-3 text-sm text-slate-500 dark:text-slate-400 leading-relaxed">{product.description}</p>
-                )}
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        title={editingId ? "Editar item" : "Novo item"}
+        subtitle={editingId ? "Atualize os dados do produto ou serviço." : "Cadastre um produto ou serviço."}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setShowModal(false)}>
+              Cancelar
+            </Button>
+            <Button type="submit" form="product-form" loading={saving}>
+              {editingId ? "Salvar alterações" : "Cadastrar item"}
+            </Button>
+          </>
+        }
+      >
+        <form id="product-form" onSubmit={handleSaveProduct} className="space-y-4">
+          {error && <p className="rounded-md bg-[#F6E4E1] px-3.5 py-2.5 text-[12.5px] text-danger dark:bg-danger-dark/10 dark:text-danger-dark">{error}</p>}
 
-                <p className="mt-4 text-2xl font-black text-cyan-400">
-                  {toCurrency(Number(product.price || 0))}
-                </p>
-              </div>
-            ))
-          )}
-        </div>
-      </section>
-
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
-          <form
-            onSubmit={handleSaveProduct}
-            className="w-full max-w-2xl rounded-3xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
-          >
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-                  {editingId ? "Editar item" : "Novo item"}
-                </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {editingId ? "Atualize os dados do produto ou serviço." : "Cadastre um produto ou serviço."}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-              >
-                Fechar
-              </button>
-            </div>
-
-            {error && (
-              <div className="mb-4 rounded-xl border border-red-700 bg-red-900/30 p-3 text-sm text-red-300">
-                {error}
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label="Nome" className="sm:col-span-2">
               <input
-                placeholder="Nome"
-                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-2"
+                className={inputClass}
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
                 required
               />
+            </Field>
 
+            <Field label="Tipo">
               <select
-                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
+                className={inputClass}
                 value={form.type}
                 onChange={(e) => setForm({ ...form, type: e.target.value })}
               >
                 <option value="PRODUCT">Produto</option>
                 <option value="SERVICE">Serviço</option>
               </select>
+            </Field>
 
+            <Field label="Preço">
               <input
                 type="number"
                 min="0"
                 step="0.01"
-                placeholder="Preço"
-                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
+                className={inputClass}
                 value={form.price}
                 onChange={(e) => setForm({ ...form, price: e.target.value })}
                 required
               />
+            </Field>
 
+            <Field label="SKU (opcional)" className="sm:col-span-2">
               <input
-                placeholder="SKU (opcional)"
-                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-2"
+                className={inputClass}
                 value={form.sku}
                 onChange={(e) => setForm({ ...form, sku: e.target.value })}
               />
+            </Field>
 
+            <Field label="Descrição" className="sm:col-span-2">
               <textarea
-                placeholder="Descrição"
-                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-2"
+                className={inputClass}
+                rows={3}
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
               />
+            </Field>
 
-              {editingId && (
-                <label className="flex items-center gap-3 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white md:col-span-2">
-                  <input
-                    type="checkbox"
-                    checked={form.active}
-                    onChange={(e) => setForm({ ...form, active: e.target.checked })}
-                    className="h-4 w-4 accent-cyan-500"
-                  />
-                  Item ativo
-                </label>
-              )}
-            </div>
-
-            <button
-              type="submit"
-              disabled={saving}
-              className="mt-6 w-full rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
-            >
-              {saving ? "Salvando..." : editingId ? "Salvar alterações" : "Cadastrar item"}
-            </button>
-          </form>
-        </div>
-      )}
+            {editingId && (
+              <label className="flex items-center gap-2.5 text-[13px] sm:col-span-2">
+                <input
+                  type="checkbox"
+                  checked={form.active}
+                  onChange={(e) => setForm({ ...form, active: e.target.checked })}
+                  className="h-4 w-4 accent-forest dark:accent-forest-400"
+                />
+                <CheckCircle2 size={15} className="text-muted dark:text-muted-dark" />
+                Item ativo
+              </label>
+            )}
+          </div>
+        </form>
+      </Modal>
 
       <ConfirmDialog
         open={!!deleteTarget}
@@ -330,6 +355,6 @@ export function Products() {
         onConfirm={confirmDeleteProduct}
         onCancel={() => setDeleteTarget(null)}
       />
-    </div>
+    </PageContainer>
   );
 }
