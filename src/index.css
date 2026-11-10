@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  color-scheme: light;
-}
-
 * {
   margin: 0;
   padding: 0;
@@ -19,34 +15,15 @@ body,
 }
 
 body {
-  background-color: #F5FAFF;
-
-  background-image:
-    radial-gradient(circle at 15% 0%, rgba(6, 182, 212, 0.10), transparent 45%),
-    radial-gradient(circle at 100% 20%, rgba(37, 99, 235, 0.08), transparent 40%),
-    linear-gradient(180deg, #F5FAFF 0%, #EEF6FF 100%);
-
-  background-size: cover;
-
-  background-position: center;
-
-  background-attachment: fixed;
-
-  color: #07111f;
-
-  font-family: Inter, sans-serif;
-
+  @apply bg-canvas text-ink dark:bg-canvas-dark dark:text-ink-dark;
+  font-family: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif;
+  font-feature-settings: 'cv11', 'ss01';
   overflow-x: hidden;
-
   -webkit-font-smoothing: antialiased;
 }
 
 button {
   transition: all 0.25s ease;
-}
-
-button:hover {
-  transform: translateY(-2px);
 }
 
 ::-webkit-scrollbar {
@@ -68,9 +45,7 @@ button:hover {
 
 .glass-card {
   background: rgba(255, 255, 255, 0.7);
-
   backdrop-filter: blur(16px);
-
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
@@ -90,10 +65,26 @@ button:hover {
   animation: fadeIn 0.5s ease;
 }
 
+.rise {
+  animation: rise 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
   }
 
   to {
