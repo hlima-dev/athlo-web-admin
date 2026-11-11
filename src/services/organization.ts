@@ -1,5 +1,7 @@
 import { api } from "./api";
 
+export type TaxRegime = "MEI" | "SIMPLES_NACIONAL" | "LUCRO_PRESUMIDO" | "LUCRO_REAL";
+
 export interface OrganizationDetails {
   id: string;
   name: string;
@@ -12,6 +14,7 @@ export interface OrganizationDetails {
   state?: string | null;
   zipCode?: string | null;
   logoUrl?: string | null;
+  taxRegime?: TaxRegime | null;
   status: string;
   subscription?: {
     status: string;

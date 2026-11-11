@@ -319,11 +319,17 @@ export function Td({
   children,
   align = 'left',
   className = '',
+  colSpan,
 }: {
   children: ReactNode
   align?: 'left' | 'right' | 'center'
   className?: string
+  colSpan?: number
 }) {
   const alignClass = align === 'right' ? 'text-right' : align === 'center' ? 'text-center' : 'text-left'
-  return <td className={`px-5 py-3 ${alignClass} ${className}`}>{children}</td>
+  return (
+    <td colSpan={colSpan} className={`px-5 py-3 ${alignClass} ${className}`}>
+      {children}
+    </td>
+  )
 }

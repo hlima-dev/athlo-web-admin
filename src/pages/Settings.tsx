@@ -1,37 +1,32 @@
 import { useEffect, useState } from "react";
-import {
-  Settings as SettingsIcon,
-  Building2,
-  CreditCard,
-  Bell,
-  ShieldCheck,
-  Database,
-  Save,
-  CheckCircle2,
-  Users,
-  Sun,
-  Moon,
-  AlertTriangle,
-} from "lucide-react";
+import { Save, CheckCircle2, Users, Sun, Moon } from "lucide-react";
 import {
   getMyOrganization,
   updateOrganization,
   deleteOrganization,
   type OrganizationDetails,
+  type TaxRegime,
 } from "../services/organization";
 import { getPlans, changePlan, checkoutPlan, openBillingPortal, type Plan } from "../services/plans";
-import { PageHeader } from "../components/PageHeader";
 import { useToast } from "../components/Toast";
 import { useTheme } from "../components/Theme";
 import { clearSession, getStoredUser } from "../services/auth";
 import { maskCpfCnpj, maskPhone } from "../utils/masks";
 import { getErrorMessage } from "../utils/errors";
+import { Button, Card, CardHeader, Field, Modal, PageContainer, inputClass } from "../components/ui";
 
 function formatPrice(value: string | number) {
   const n = Number(value);
   if (n === 0) return "Grátis";
   return n.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
+
+const taxRegimeLabels: Record<TaxRegime, string> = {
+  MEI: "MEI",
+  SIMPLES_NACIONAL: "Simples Nacional",
+  LUCRO_PRESUMIDO: "Lucro Presumido",
+  LUCRO_REAL: "Lucro Real",
+};
 
 export function Settings() {
   const toast = useToast();
@@ -42,7 +37,7 @@ export function Settings() {
   const [saving, setSaving] = useState(false);
   const [changingPlan, setChangingPlan] = useState(false);
   const [message, setMessage] = useState("");
-  const [form, setForm] = useState({ name: "", document: "", email: "", phone: "" });
+  const [form, setForm] = useState({ name: "", document: "", email: "", phone: "", taxRegime: "" });
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleting, setDeleting] = useState(false);
@@ -60,6 +55,7 @@ export function Settings() {
         document: org.document || "",
         email: org.email || "",
         phone: org.phone || "",
+        taxRegime: org.taxRegime || "",
       });
     } catch (err) {
       console.error("Erro ao carregar configurações:", err);
@@ -90,7 +86,7 @@ export function Settings() {
 
     try {
       setSaving(true);
-      await updateOrganization(form);
+      await updateOrganization({ ...form, taxRegime: form.taxRegime || null });
       setMessage("Dados da empresa atualizados com sucesso.");
       await load();
     } catch (err: unknown) {
@@ -157,361 +153,302 @@ export function Settings() {
   const currentPlanSlug = organization?.subscription?.plan?.slug;
 
   return (
-    <div className="space-y-8">
-      <PageHeader
-        icon={SettingsIcon}
-        title="Configurações"
-        description="Gerencie os dados da empresa, o plano de assinatura e preferências."
-      />
-
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-        <div className="flex items-center gap-3">
-          <Building2 className="text-cyan-400" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Dados da empresa</h2>
-        </div>
-
-        {message && (
-          <div className="mt-4 rounded-xl border border-cyan-700 bg-cyan-900/20 p-3 text-sm text-cyan-300">
-            {message}
-          </div>
-        )}
-
-        <form onSubmit={handleSaveOrganization} className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <input
-            placeholder="Nome da empresa"
-            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            required
-          />
-          <input
-            placeholder="CNPJ/CPF"
-            inputMode="numeric"
-            maxLength={18}
-            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
-            value={form.document}
-            onChange={(e) => setForm({ ...form, document: maskCpfCnpj(e.target.value) })}
-          />
-          <input
-            type="email"
-            placeholder="E-mail da empresa"
-            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
-          />
-          <input
-            placeholder="Telefone"
-            inputMode="tel"
-            maxLength={16}
-            className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
-            value={form.phone}
-            onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })}
-          />
-
-          <button
-            type="submit"
-            disabled={saving || loading}
-            className="md:col-span-2 inline-flex items-center justify-center gap-3 rounded-2xl bg-cyan-500 px-8 py-4 font-bold text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
-          >
-            <Save size={20} />
-            {saving ? "Salvando..." : "Salvar alterações"}
-          </button>
-        </form>
-      </section>
-
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-        <div className="flex items-center gap-3">
-          {theme === "dark" ? (
-            <Moon className="text-cyan-400" />
-          ) : (
-            <Sun className="text-cyan-400" />
-          )}
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Aparência</h2>
-        </div>
-
-        <div className="mt-6 flex items-center justify-between rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
-          <div>
-            <h3 className="font-semibold text-slate-700 dark:text-slate-200">Modo escuro</h3>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-              {theme === "dark"
-                ? "Interface escura ativada."
-                : "Interface clara ativada."}
+    <PageContainer>
+      <Card>
+        <CardHeader title="Dados da empresa" />
+        <div className="p-5">
+          {message && (
+            <p className="mb-4 rounded-md bg-forest-100 px-3.5 py-2.5 text-[12.5px] text-forest-600 dark:bg-forest-900 dark:text-forest-400">
+              {message}
             </p>
-          </div>
-
-          <button
-            type="button"
-            role="switch"
-            aria-checked={theme === "dark"}
-            onClick={toggleTheme}
-            className={`relative h-7 w-14 shrink-0 rounded-full p-1 transition-colors ${
-              theme === "dark" ? "bg-cyan-500" : "bg-slate-300"
-            }`}
-          >
-            <div
-              className={`h-5 w-5 rounded-full bg-white shadow transition-transform ${
-                theme === "dark" ? "translate-x-7" : "translate-x-0"
-              }`}
-            />
-          </button>
-        </div>
-      </section>
-
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-        <div className="flex items-center justify-between gap-3">
-          <div className="flex items-center gap-3">
-            <CreditCard className="text-emerald-400" />
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Plano e assinatura</h2>
-          </div>
-
-          {organization?.subscription?.status && currentPlanSlug !== "free" && (
-            <button
-              type="button"
-              onClick={handleOpenPortal}
-              disabled={changingPlan}
-              className="rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-40"
-            >
-              Gerenciar cobrança
-            </button>
           )}
-        </div>
 
-        {loading ? (
-          <p className="mt-6 text-slate-500 dark:text-slate-400">Carregando plano atual...</p>
-        ) : (
-          <>
-            <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-slate-100 dark:bg-slate-800 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <form onSubmit={handleSaveOrganization} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label="Nome da empresa">
+              <input
+                className={inputClass}
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+                required
+              />
+            </Field>
+
+            <Field label="CNPJ/CPF">
+              <input
+                inputMode="numeric"
+                maxLength={18}
+                className={inputClass}
+                value={form.document}
+                onChange={(e) => setForm({ ...form, document: maskCpfCnpj(e.target.value) })}
+              />
+            </Field>
+
+            <Field label="E-mail da empresa">
+              <input
+                type="email"
+                className={inputClass}
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+              />
+            </Field>
+
+            <Field label="Telefone">
+              <input
+                inputMode="tel"
+                maxLength={16}
+                className={inputClass}
+                value={form.phone}
+                onChange={(e) => setForm({ ...form, phone: maskPhone(e.target.value) })}
+              />
+            </Field>
+
+            <Field label="Regime tributário" hint="Usado para lembretes de obrigações fiscais (ex.: DAS).">
+              <select
+                className={inputClass}
+                value={form.taxRegime}
+                onChange={(e) => setForm({ ...form, taxRegime: e.target.value })}
+              >
+                <option value="">Não informado</option>
+                {Object.entries(taxRegimeLabels).map(([value, label]) => (
+                  <option key={value} value={value}>
+                    {label}
+                  </option>
+                ))}
+              </select>
+            </Field>
+
+            <div className="flex items-end sm:col-span-2">
+              <Button type="submit" loading={saving || loading}>
+                <Save size={16} />
+                {saving ? "Salvando..." : "Salvar alterações"}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </Card>
+
+      <Card>
+        <CardHeader title="Aparência" />
+        <div className="p-5">
+          <div className="flex items-center justify-between rounded-md bg-[#F0EEE8] p-4 dark:bg-white/[0.06]">
+            <div className="flex items-center gap-3">
+              {theme === "dark" ? <Moon size={18} /> : <Sun size={18} />}
               <div>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Plano atual</p>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                  {organization?.subscription?.plan?.name || "Sem plano"}
-                </h3>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  Status: {organization?.subscription?.status || "-"}
+                <h3 className="text-[14px] font-semibold">Modo escuro</h3>
+                <p className="text-[12.5px] text-muted dark:text-muted-dark">
+                  {theme === "dark" ? "Interface escura ativada." : "Interface clara ativada."}
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-                <Users size={16} />
-                {organization?._count?.users ?? 0} / {organization?.subscription?.plan?.maxUsers ?? "-"} usuários
-              </div>
             </div>
 
-            <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-              {plans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className={`rounded-2xl border p-5 ${
-                    plan.slug === currentPlanSlug
-                      ? "border-cyan-500 bg-cyan-500/10"
-                      : "border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800"
-                  }`}
-                >
-                  <h3 className="font-bold text-slate-900 dark:text-white">{plan.name}</h3>
-                  <p className="mt-1 text-2xl font-black text-cyan-400">
-                    {formatPrice(plan.priceMonthly)}
-                  </p>
-                  <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                    Até {plan.maxUsers} usuários · {plan.maxContacts.toLocaleString("pt-BR")} contatos
-                  </p>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={theme === "dark"}
+              onClick={toggleTheme}
+              className={`relative h-6 w-11 shrink-0 rounded-full p-0.5 transition-colors ${
+                theme === "dark" ? "bg-forest-600 dark:bg-forest-400" : "bg-[#D8D4C8] dark:bg-white/20"
+              }`}
+            >
+              <div
+                className={`h-5 w-5 rounded-full bg-white shadow transition-transform ${
+                  theme === "dark" ? "translate-x-5" : "translate-x-0"
+                }`}
+              />
+            </button>
+          </div>
+        </div>
+      </Card>
 
-                  <button
-                    disabled={plan.slug === currentPlanSlug || changingPlan}
-                    onClick={() => handleChangePlan(plan.slug)}
-                    className="mt-4 w-full rounded-xl bg-cyan-500 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-cyan-400 disabled:opacity-40"
-                  >
-                    {plan.slug === currentPlanSlug ? "Plano atual" : "Selecionar"}
-                  </button>
+      <Card>
+        <CardHeader
+          title="Plano e assinatura"
+          action={
+            organization?.subscription?.status && currentPlanSlug !== "free" ? (
+              <Button variant="ghost" loading={changingPlan} onClick={handleOpenPortal}>
+                Gerenciar cobrança
+              </Button>
+            ) : undefined
+          }
+        />
+
+        <div className="p-5">
+          {loading ? (
+            <p className="text-[13px] text-muted dark:text-muted-dark">Carregando plano atual...</p>
+          ) : (
+            <>
+              <div className="flex flex-col gap-4 rounded-md bg-[#F0EEE8] p-4 dark:bg-white/[0.06] sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-[12px] text-muted dark:text-muted-dark">Plano atual</p>
+                  <h3 className="text-[16px] font-semibold">{organization?.subscription?.plan?.name || "Sem plano"}</h3>
+                  <p className="mt-0.5 text-[12.5px] text-muted dark:text-muted-dark">
+                    Status: {organization?.subscription?.status || "-"}
+                  </p>
                 </div>
-              ))}
-            </div>
-          </>
-        )}
-      </section>
+                <div className="flex items-center gap-2 text-[12.5px] text-muted dark:text-muted-dark">
+                  <Users size={15} />
+                  {organization?._count?.users ?? 0} / {organization?.subscription?.plan?.maxUsers ?? "-"} usuários
+                </div>
+              </div>
+
+              <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+                {plans.map((plan) => (
+                  <div
+                    key={plan.id}
+                    className={`rounded-md border p-4 ${
+                      plan.slug === currentPlanSlug
+                        ? "border-forest-600/40 bg-forest-100 dark:border-forest-400/40 dark:bg-forest-900"
+                        : "border-line bg-surface dark:border-line-dark dark:bg-surface-dark"
+                    }`}
+                  >
+                    <h3 className="text-[14px] font-semibold">{plan.name}</h3>
+                    <p className="mt-1 font-display text-[24px]">{formatPrice(plan.priceMonthly)}</p>
+                    <p className="mt-1.5 text-[12px] text-muted dark:text-muted-dark">
+                      Até {plan.maxUsers} usuários · {plan.maxContacts.toLocaleString("pt-BR")} contatos
+                    </p>
+
+                    <Button
+                      className="mt-3 w-full justify-center"
+                      size="sm"
+                      disabled={plan.slug === currentPlanSlug || changingPlan}
+                      onClick={() => handleChangePlan(plan.slug)}
+                    >
+                      {plan.slug === currentPlanSlug ? "Plano atual" : "Selecionar"}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+      </Card>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-          <div className="flex items-center gap-3">
-            <Bell className="text-yellow-400" />
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              Notificações
-            </h2>
-          </div>
-
-          <div className="mt-6 space-y-5">
+        <Card>
+          <CardHeader title="Notificações" />
+          <div className="space-y-2.5 p-5">
             {[
               "Receber alertas de agenda",
               "Receber avisos financeiros",
               "Atualizações administrativas",
               "Convites de equipe",
             ].map((item) => (
-              <div
-                key={item}
-                className="flex items-center justify-between rounded-2xl bg-slate-100 dark:bg-slate-800 p-5"
-              >
-                <span className="font-semibold text-slate-700 dark:text-slate-200">
-                  {item}
-                </span>
-
-                <div className="h-7 w-14 rounded-full bg-cyan-500 p-1">
+              <div key={item} className="flex items-center justify-between rounded-md bg-[#F0EEE8] p-4 dark:bg-white/[0.06]">
+                <span className="text-[13px] font-medium">{item}</span>
+                <div className="h-6 w-11 rounded-full bg-forest-600 p-0.5 dark:bg-forest-400">
                   <div className="ml-auto h-5 w-5 rounded-full bg-white" />
                 </div>
               </div>
             ))}
           </div>
-        </div>
+        </Card>
 
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-          <div className="flex items-center gap-3">
-            <ShieldCheck className="text-emerald-400" />
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              Segurança
-            </h2>
-          </div>
-
-          <div className="mt-6 space-y-5">
-            <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
-              <h3 className="font-bold text-slate-900 dark:text-white">
-                Autenticação
-              </h3>
-
-              <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                Sua conta usa autenticação JWT com tokens de acesso e
-                renovação segura.
+        <Card>
+          <CardHeader title="Segurança" />
+          <div className="space-y-4 p-5">
+            <div className="rounded-md bg-[#F0EEE8] p-4 dark:bg-white/[0.06]">
+              <h3 className="text-[14px] font-semibold">Autenticação</h3>
+              <p className="mt-1.5 text-[12.5px] leading-relaxed text-muted dark:text-muted-dark">
+                Sua conta usa autenticação JWT com tokens de acesso e renovação segura.
               </p>
-
-              <span className="mt-4 inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-4 py-2 text-sm font-bold text-emerald-400">
-                <CheckCircle2 size={16} />
-                Segurança ativa
+              <span className="mt-3 inline-flex items-center gap-1.5 rounded px-2 py-1 text-[11.5px] font-medium">
+                <CheckCircle2 size={14} className="text-forest-600 dark:text-forest-400" />
+                <span className="text-forest-600 dark:text-forest-400">Segurança ativa</span>
               </span>
             </div>
 
-            <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
-              <h3 className="font-bold text-slate-900 dark:text-white">
-                Controle de acesso
-              </h3>
-
-              <p className="mt-2 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
-                Papéis de dono, administrador e membro controlam o que cada
-                usuário pode fazer na sua empresa.
+            <div className="rounded-md bg-[#F0EEE8] p-4 dark:bg-white/[0.06]">
+              <h3 className="text-[14px] font-semibold">Controle de acesso</h3>
+              <p className="mt-1.5 text-[12.5px] leading-relaxed text-muted dark:text-muted-dark">
+                Papéis de dono, administrador e membro controlam o que cada usuário pode fazer na sua empresa.
               </p>
             </div>
           </div>
-        </div>
+        </Card>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-        <div className="flex items-center gap-3">
-          <Database className="text-purple-400" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-            Sistema
-          </h2>
-        </div>
-
-        <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
-            <h3 className="font-bold text-slate-900 dark:text-white">
-              Banco de dados
-            </h3>
-
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              Backend Node.js com Prisma ORM e PostgreSQL, isolado por
-              empresa (multi-tenant).
+      <Card>
+        <CardHeader title="Sistema" />
+        <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
+          <div className="rounded-md bg-[#F0EEE8] p-4 dark:bg-white/[0.06]">
+            <h3 className="text-[14px] font-semibold">Banco de dados</h3>
+            <p className="mt-1.5 text-[12.5px] text-muted dark:text-muted-dark">
+              Backend Node.js com Prisma ORM e PostgreSQL, isolado por empresa (multi-tenant).
             </p>
           </div>
 
-          <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
-            <h3 className="font-bold text-slate-900 dark:text-white">
-              Deploy
-            </h3>
-
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+          <div className="rounded-md bg-[#F0EEE8] p-4 dark:bg-white/[0.06]">
+            <h3 className="text-[14px] font-semibold">Deploy</h3>
+            <p className="mt-1.5 text-[12.5px] text-muted dark:text-muted-dark">
               Plataforma hospedada em produção na Vercel + Render.
             </p>
           </div>
         </div>
-      </section>
+      </Card>
 
       {isOwner && (
-        <section className="rounded-2xl border border-red-800/60 bg-red-950/10 dark:bg-red-950/10 p-6">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className="text-red-400" />
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Zona de risco</h2>
-          </div>
-
-          <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-slate-100 dark:bg-slate-800 p-5 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h3 className="font-bold text-slate-900 dark:text-white">Excluir empresa</h3>
-              <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                Remove permanentemente sua empresa e todos os dados associados (contatos,
-                financeiro, produtos, pedidos, agenda e equipe). Essa ação não pode ser desfeita.
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={() => setDeleteModalOpen(true)}
-              className="shrink-0 rounded-xl border border-red-700 px-4 py-2 text-sm font-bold text-red-400 hover:bg-red-900/30"
-            >
-              Excluir empresa
-            </button>
-          </div>
-        </section>
-      )}
-
-      {deleteModalOpen && (
-        <div
-          className="fixed inset-0 z-[60] flex items-center justify-center bg-black/70 px-4"
-          onClick={() => !deleting && setDeleteModalOpen(false)}
-        >
-          <div
-            className="w-full max-w-sm rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start gap-4">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-red-500/10 text-red-400">
-                <AlertTriangle size={22} />
-              </div>
+        <Card className="border-[#E7C9C4] dark:border-danger-dark/40">
+          <CardHeader title="Zona de risco" />
+          <div className="p-5">
+            <div className="flex flex-col gap-4 rounded-md bg-[#F6E4E1] p-4 dark:bg-danger-dark/10 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <h2 className="font-bold text-slate-900 dark:text-white">Excluir empresa</h2>
-                <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                  Essa ação é permanente. Digite sua senha para confirmar a exclusão de{" "}
-                  <strong>{organization?.name}</strong> e de todos os seus dados.
+                <h3 className="text-[14px] font-semibold">Excluir empresa</h3>
+                <p className="mt-1 text-[12.5px] text-muted dark:text-muted-dark">
+                  Remove permanentemente sua empresa e todos os dados associados (contatos, financeiro,
+                  produtos, pedidos, agenda e equipe). Essa ação não pode ser desfeita.
                 </p>
               </div>
-            </div>
-
-            <input
-              type="password"
-              placeholder="Sua senha"
-              autoFocus
-              className="mt-5 w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-red-400"
-              value={deletePassword}
-              onChange={(e) => setDeletePassword(e.target.value)}
-            />
-
-            <div className="mt-6 flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setDeleteModalOpen(false);
-                  setDeletePassword("");
-                }}
-                disabled={deleting}
-                className="rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 disabled:opacity-60"
-              >
-                Cancelar
-              </button>
-              <button
-                type="button"
-                onClick={handleDeleteOrganization}
-                disabled={deleting || !deletePassword}
-                className="rounded-xl bg-red-600 px-4 py-2 text-sm font-bold text-white hover:bg-red-500 disabled:opacity-60"
-              >
-                {deleting ? "Excluindo..." : "Excluir permanentemente"}
-              </button>
+              <Button variant="danger" onClick={() => setDeleteModalOpen(true)}>
+                Excluir empresa
+              </Button>
             </div>
           </div>
-        </div>
+        </Card>
       )}
-    </div>
+
+      <Modal
+        open={deleteModalOpen}
+        onClose={() => {
+          if (!deleting) {
+            setDeleteModalOpen(false);
+            setDeletePassword("");
+          }
+        }}
+        title="Excluir empresa"
+        subtitle={`Essa ação é permanente. Digite sua senha para confirmar a exclusão de ${organization?.name ?? ""} e de todos os seus dados.`}
+        footer={
+          <>
+            <Button
+              variant="ghost"
+              disabled={deleting}
+              onClick={() => {
+                setDeleteModalOpen(false);
+                setDeletePassword("");
+              }}
+            >
+              Cancelar
+            </Button>
+            <Button
+              variant="danger"
+              loading={deleting}
+              disabled={!deletePassword}
+              onClick={handleDeleteOrganization}
+            >
+              {deleting ? "Excluindo..." : "Excluir permanentemente"}
+            </Button>
+          </>
+        }
+      >
+        <Field label="Sua senha">
+          <input
+            type="password"
+            autoFocus
+            className={inputClass}
+            value={deletePassword}
+            onChange={(e) => setDeletePassword(e.target.value)}
+          />
+        </Field>
+      </Modal>
+    </PageContainer>
   );
 }
