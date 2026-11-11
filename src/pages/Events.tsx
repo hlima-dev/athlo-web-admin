@@ -1,16 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import {
-  CalendarDays,
-  Plus,
-  Search,
-  MapPin,
-  Clock,
-  ListChecks,
-  Flag,
-  CheckCircle2,
-  Wand2,
-} from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { CalendarDays, Plus, MapPin, Wand2 } from "lucide-react";
 
 import {
   getEvents,
@@ -21,10 +11,29 @@ import {
   type Event,
 } from "../services/events";
 import { RowActionsMenu } from "../components/RowActionsMenu";
-import { PageHeader } from "../components/PageHeader";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
 import { getErrorMessage } from "../utils/errors";
+import {
+  Badge,
+  type BadgeTone,
+  Button,
+  Card,
+  CardHeader,
+  EmptyState,
+  Field,
+  Modal,
+  PageContainer,
+  SkeletonRows,
+  StatStrip,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr,
+  inputClass,
+} from "../components/ui";
 
 const typeLabels: Record<string, string> = {
   MEETING: "Reunião",
@@ -37,6 +46,12 @@ const statusLabels: Record<string, string> = {
   SCHEDULED: "Agendado",
   COMPLETED: "Concluído",
   CANCELED: "Cancelado",
+};
+
+const statusTones: Record<string, BadgeTone> = {
+  SCHEDULED: "info",
+  COMPLETED: "positive",
+  CANCELED: "neutral",
 };
 
 const emptyForm = {
@@ -60,6 +75,7 @@ function toDatetimeLocal(iso?: string) {
 
 export function Events() {
   const toast = useToast();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -89,6 +105,19 @@ export function Events() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
     loadEvents();
+  }, []);
+
+  // ?novo=1 (link de criação rápida do header) abre o modal de criação —
+  // só na montagem, de propósito (searchParams muda de identidade a cada
+  // render e não deve reexecutar isso)
+  useEffect(() => {
+    if (searchParams.get("novo") === "1") {
+      openCreateModal();
+      const next = new URLSearchParams(searchParams);
+      next.delete("novo");
+      setSearchParams(next, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   function openCreateModal() {
@@ -170,9 +199,7 @@ export function Events() {
       await loadEvents();
       toast.success(editingId ? "Item atualizado com sucesso." : "Item cadastrado com sucesso.");
     } catch (error: unknown) {
-      setError(
-        getErrorMessage(error, "Erro ao salvar item da agenda.")
-      );
+      setError(getErrorMessage(error, "Erro ao salvar item da agenda."));
     } finally {
       setSaving(false);
     }
@@ -211,193 +238,159 @@ export function Events() {
   const tasks = events.filter((event) => event.type === "TASK").length;
   const deadlines = events.filter((event) => event.type === "DEADLINE").length;
 
-  const highlights = [
-    { title: "Agendados", value: scheduled, icon: CalendarDays, color: "text-cyan-400" },
-    { title: "Tarefas", value: tasks, icon: ListChecks, color: "text-emerald-400" },
-    { title: "Prazos", value: deadlines, icon: Flag, color: "text-yellow-400" },
-    { title: "Total de itens", value: events.length, icon: CalendarDays, color: "text-purple-400" },
-  ];
-
   return (
-    <div className="space-y-8">
-      <PageHeader
-        icon={CalendarDays}
-        title="Agenda"
-        description="Organize reuniões, tarefas e prazos da equipe."
-        action={
-          <div className="flex flex-wrap items-center gap-3">
-            <Link
-              to="/calendario"
-              className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-300 dark:border-slate-700 px-5 py-3 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-            >
-              <CalendarDays size={20} />
-              Ver calendário
-            </Link>
-            <button
-              type="button"
-              onClick={openCreateModal}
-              className="inline-flex items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 hover:bg-cyan-400"
-            >
-              <Plus size={20} />
-              Novo item
-            </button>
-          </div>
-        }
-      />
-
-      <section className="rounded-2xl border border-cyan-300 bg-gradient-to-br from-cyan-50 to-white p-6 dark:border-cyan-800/60 dark:from-cyan-950/40 dark:to-slate-900">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400">
-            <Wand2 size={20} />
+    <PageContainer>
+      <Card>
+        <div className="flex items-start gap-3.5 border-b border-line px-5 py-4 dark:border-line-dark">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-forest-100 text-forest-600 dark:bg-forest-900 dark:text-forest-400">
+            <Wand2 size={18} />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Cadastro rápido por texto</h2>
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <h2 className="text-[15px] font-semibold tracking-tight">Cadastro rápido por texto</h2>
+            <p className="mt-0.5 text-[12.5px] text-muted dark:text-muted-dark">
               Descreva o compromisso em uma frase (data, horário e local) e preenchemos o formulário para você revisar.
             </p>
           </div>
         </div>
 
-        <form onSubmit={handleQuickParse} className="mt-4 flex flex-col gap-3 sm:flex-row">
+        <form onSubmit={handleQuickParse} className="flex flex-col gap-3 p-5 sm:flex-row">
           <input
-            placeholder='Ex: "Reunião com o cliente Ana amanhã às 15h no escritório" ou "Entrega para a Padaria Central sexta-feira de manhã"'
-            className="w-full rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:border-cyan-400"
+            placeholder='Ex: "Reunião com o cliente Ana amanhã às 15h no escritório"'
+            className={`${inputClass} flex-1`}
             value={quickPrompt}
             onChange={(e) => setQuickPrompt(e.target.value)}
           />
-          <button
-            type="submit"
-            disabled={quickLoading || !quickPrompt.trim()}
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-3 font-bold text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
-          >
-            <Wand2 size={18} />
+          <Button type="submit" loading={quickLoading} disabled={!quickPrompt.trim()}>
+            <Wand2 size={16} />
             {quickLoading ? "Interpretando..." : "Preencher automaticamente"}
-          </button>
+          </Button>
         </form>
-      </section>
+      </Card>
 
-      <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
-        {highlights.map((item) => {
-          const Icon = item.icon;
+      <StatStrip
+        items={[
+          { label: "Agendados", value: String(scheduled) },
+          { label: "Tarefas", value: String(tasks) },
+          { label: "Prazos", value: String(deadlines) },
+          { label: "Total de itens", value: String(events.length) },
+        ]}
+      />
 
-          return (
-            <div key={item.title} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5">
-              <Icon className={item.color} size={20} />
-              <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{item.title}</p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{item.value}</h2>
+      <Card>
+        <CardHeader
+          title="Próximos compromissos"
+          subtitle="Itens carregados diretamente do backend."
+          action={
+            <div className="flex items-center gap-2">
+              <Link to="/calendario">
+                <Button variant="ghost">
+                  <CalendarDays size={16} />
+                  Ver calendário
+                </Button>
+              </Link>
+              <Button onClick={openCreateModal}>
+                <Plus size={16} />
+                Novo item
+              </Button>
             </div>
-          );
-        })}
-      </section>
+          }
+        />
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-        <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">Próximos compromissos</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400">Itens carregados diretamente do backend.</p>
-        </div>
-
-        <div className="mt-6 flex items-center gap-3 rounded-2xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4">
-          <Search className="text-slate-400 dark:text-slate-500" size={20} />
-          <input
-            placeholder="Buscar na agenda..."
-            className="w-full bg-transparent py-4 text-slate-900 dark:text-white outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
+        {loading ? (
+          <SkeletonRows rows={5} cols={5} />
+        ) : events.length === 0 ? (
+          <EmptyState
+            icon={<CalendarDays size={20} />}
+            title="Nenhum item encontrado"
+            description="Cadastre um compromisso manualmente ou use o cadastro rápido por texto acima."
+            action={
+              <Button onClick={openCreateModal}>
+                <Plus size={16} />
+                Novo item
+              </Button>
+            }
           />
-        </div>
-
-        <div className="mt-6 grid grid-cols-1 gap-5">
-          {loading ? (
-            <p className="text-slate-500 dark:text-slate-400">Carregando agenda...</p>
-          ) : events.length === 0 ? (
-            <p className="text-slate-500 dark:text-slate-400">Nenhum item encontrado.</p>
-          ) : (
-            events.map((event) => (
-              <div key={event.id} className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-100/80 dark:bg-slate-800/60 p-5">
-                <div className="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
-                  <div>
-                    <div className="flex flex-wrap items-center gap-3">
-                      <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-sm font-bold text-cyan-400">
-                        {typeLabels[event.type] || event.type}
-                      </span>
-
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-3 py-1 text-sm font-bold text-emerald-400">
-                        <CheckCircle2 size={14} />
-                        {statusLabels[event.status] || event.status}
-                      </span>
+        ) : (
+          <Table minWidth={760}>
+            <Thead>
+              <Tr>
+                <Th>Título</Th>
+                <Th>Tipo</Th>
+                <Th>Status</Th>
+                <Th>Data</Th>
+                <Th>Local</Th>
+                <Th align="right">Ações</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {events.map((event) => (
+                <Tr key={event.id}>
+                  <Td className="font-medium">{event.title}</Td>
+                  <Td>
+                    <Badge tone="neutral">{typeLabels[event.type] || event.type}</Badge>
+                  </Td>
+                  <Td>
+                    <Badge tone={statusTones[event.status] ?? "neutral"}>
+                      {statusLabels[event.status] || event.status}
+                    </Badge>
+                  </Td>
+                  <Td>
+                    <p>{formatDate(event.startDate)}</p>
+                    <p className="text-[12px] text-muted dark:text-muted-dark">{formatTime(event.startDate)}</p>
+                  </Td>
+                  <Td>
+                    <p className="flex items-center gap-1.5 text-[12.5px] text-muted dark:text-muted-dark">
+                      <MapPin size={13} />
+                      {event.location || (event.isOnline ? "Online" : "Não informado")}
+                    </p>
+                  </Td>
+                  <Td align="right">
+                    <div className="flex justify-end">
+                      <RowActionsMenu
+                        onEdit={() => openEditModal(event)}
+                        onDelete={() => setDeleteTarget(event)}
+                      />
                     </div>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        )}
+      </Card>
 
-                    <h3 className="mt-4 text-base font-bold text-slate-900 dark:text-white">{event.title}</h3>
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        title={editingId ? "Editar item da agenda" : "Novo item da agenda"}
+        subtitle={editingId ? "Atualize os dados do compromisso." : "Cadastre um compromisso no banco de dados."}
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setShowModal(false)}>
+              Cancelar
+            </Button>
+            <Button type="submit" form="event-form" loading={saving}>
+              {editingId ? "Salvar alterações" : "Cadastrar item"}
+            </Button>
+          </>
+        }
+      >
+        <form id="event-form" onSubmit={handleSaveEvent} className="space-y-4">
+          {error && <p className="rounded-md bg-[#F6E4E1] px-3.5 py-2.5 text-[12.5px] text-danger dark:bg-danger-dark/10 dark:text-danger-dark">{error}</p>}
 
-                    <div className="mt-4 grid grid-cols-1 gap-3 text-sm text-slate-500 dark:text-slate-400 md:grid-cols-3">
-                      <p className="flex items-center gap-2">
-                        <CalendarDays size={16} />
-                        {formatDate(event.startDate)}
-                      </p>
-
-                      <p className="flex items-center gap-2">
-                        <Clock size={16} />
-                        {formatTime(event.startDate)}
-                      </p>
-
-                      <p className="flex items-center gap-2">
-                        <MapPin size={16} />
-                        {event.location || (event.isOnline ? "Online" : "Local não informado")}
-                      </p>
-                    </div>
-                  </div>
-
-                  <RowActionsMenu
-                    onEdit={() => openEditModal(event)}
-                    onDelete={() => setDeleteTarget(event)}
-                  />
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </section>
-
-      {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
-          <form
-            onSubmit={handleSaveEvent}
-            className="w-full max-w-2xl rounded-3xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
-          >
-            <div className="mb-6 flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-                  {editingId ? "Editar item da agenda" : "Novo item da agenda"}
-                </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {editingId ? "Atualize os dados do compromisso." : "Cadastre um compromisso no banco de dados."}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setShowModal(false)}
-                className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-              >
-                Fechar
-              </button>
-            </div>
-
-            {error && (
-              <div className="mb-4 rounded-xl border border-red-700 bg-red-900/30 p-3 text-sm text-red-300">
-                {error}
-              </div>
-            )}
-
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label="Título" className="sm:col-span-2">
               <input
-                placeholder="Título"
-                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-2"
+                className={inputClass}
                 value={form.title}
                 onChange={(e) => setForm({ ...form, title: e.target.value })}
                 required
               />
+            </Field>
 
+            <Field label="Tipo">
               <select
-                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
+                className={inputClass}
                 value={form.type}
                 onChange={(e) => setForm({ ...form, type: e.target.value })}
               >
@@ -406,10 +399,12 @@ export function Events() {
                 <option value="DEADLINE">Prazo</option>
                 <option value="OTHER">Outro</option>
               </select>
+            </Field>
 
-              {editingId && (
+            {editingId && (
+              <Field label="Status">
                 <select
-                  className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
+                  className={inputClass}
                   value={form.status}
                   onChange={(e) => setForm({ ...form, status: e.target.value })}
                 >
@@ -417,49 +412,48 @@ export function Events() {
                   <option value="COMPLETED">Concluído</option>
                   <option value="CANCELED">Cancelado</option>
                 </select>
-              )}
+              </Field>
+            )}
 
+            <Field label="Local" className={editingId ? "" : "sm:col-span-2"}>
               <input
-                placeholder="Local"
-                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
+                className={inputClass}
                 value={form.location}
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
               />
+            </Field>
 
+            <Field label="Início">
               <input
                 type="datetime-local"
-                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
+                className={inputClass}
                 value={form.startDate}
                 onChange={(e) => setForm({ ...form, startDate: e.target.value })}
                 required
               />
+            </Field>
 
+            <Field label="Fim">
               <input
                 type="datetime-local"
-                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
+                className={inputClass}
                 value={form.endDate}
                 onChange={(e) => setForm({ ...form, endDate: e.target.value })}
                 required
               />
+            </Field>
 
+            <Field label="Descrição" className="sm:col-span-2">
               <textarea
-                placeholder="Descrição"
-                className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400 md:col-span-2"
+                className={inputClass}
+                rows={3}
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
               />
-            </div>
-
-            <button
-              type="submit"
-              disabled={saving}
-              className="mt-6 w-full rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
-            >
-              {saving ? "Salvando..." : editingId ? "Salvar alterações" : "Cadastrar item"}
-            </button>
-          </form>
-        </div>
-      )}
+            </Field>
+          </div>
+        </form>
+      </Modal>
 
       <ConfirmDialog
         open={!!deleteTarget}
@@ -470,6 +464,6 @@ export function Events() {
         onConfirm={confirmDeleteEvent}
         onCancel={() => setDeleteTarget(null)}
       />
-    </div>
+    </PageContainer>
   );
 }

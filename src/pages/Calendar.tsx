@@ -9,6 +9,7 @@ import {
   Plus,
 } from "lucide-react"
 import { getEvents, type Event } from "../services/events"
+import { Badge, Button, Card, CardHeader, EmptyState, PageContainer } from "../components/ui"
 
 const MONTHS = [
   "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
@@ -85,114 +86,124 @@ export function Calendar() {
   }
 
   return (
-    <div className="space-y-8">
-      <section className="rounded-[32px] bg-gradient-to-br from-cyan-500 via-blue-600 to-slate-900 p-6 shadow-2xl md:p-10">
-        <span className="inline-flex items-center gap-2 rounded-full bg-white/15 px-4 py-2 text-sm font-bold text-white">
-          <CalendarDays size={16} />
+    <PageContainer>
+      <section className="relative overflow-hidden rounded-card border border-line bg-forest p-6 text-white dark:border-line-dark md:p-8">
+        <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1.5 text-[11.5px] font-medium">
+          <CalendarDays size={14} />
           Agenda inteligente
         </span>
-        <h1 className="mt-6 text-3xl font-black text-white md:text-5xl">
+        <h1 className="mt-5 font-display text-2xl leading-tight md:text-4xl">
           Visualize compromissos da sua empresa.
         </h1>
-        <p className="mt-4 max-w-2xl text-white/80 md:text-lg">
+        <p className="mt-3 max-w-2xl text-[13.5px] text-white/75 md:text-[14.5px]">
           Acompanhe rapidamente as atividades do mês com dados reais do banco.
         </p>
 
         <Link
           to="/eventos"
-          className="mt-6 inline-flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-sm font-bold text-slate-950 hover:bg-slate-100"
+          className="mt-6 inline-flex items-center gap-2 rounded-md bg-white px-4 py-2.5 text-[13px] font-medium text-forest"
         >
-          <Plus size={18} />
+          <Plus size={16} />
           Novo compromisso
         </Link>
       </section>
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 xl:col-span-2">
-          <div className="mb-8 flex items-center justify-between">
-            <div>
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-                {MONTHS[currentMonth]} {currentYear}
-              </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">Agenda da sua empresa</p>
+        <Card className="xl:col-span-2">
+          <CardHeader
+            title={`${MONTHS[currentMonth]} ${currentYear}`}
+            subtitle="Agenda da sua empresa"
+            action={
+              <div className="flex items-center gap-1.5">
+                <Button variant="ghost" size="sm" onClick={prevMonth}>
+                  <ChevronLeft size={16} />
+                </Button>
+                <Button variant="ghost" size="sm" onClick={nextMonth}>
+                  <ChevronRight size={16} />
+                </Button>
+              </div>
+            }
+          />
+
+          <div className="p-5">
+            <div className="grid grid-cols-7 gap-2 text-center text-[11.5px] font-medium text-faint dark:text-faint-dark">
+              {WEEKDAYS.map((d) => <div key={d}>{d}</div>)}
             </div>
-            <div className="flex items-center gap-3">
-              <button onClick={prevMonth} className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
-                <ChevronLeft />
-              </button>
-              <button onClick={nextMonth} className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700">
-                <ChevronRight />
-              </button>
-            </div>
-          </div>
 
-          <div className="grid grid-cols-7 gap-3 text-center text-sm font-bold text-slate-500 dark:text-slate-400">
-            {WEEKDAYS.map((d) => <div key={d}>{d}</div>)}
-          </div>
+            <div className="mt-2.5 grid grid-cols-7 gap-2">
+              {Array.from({ length: firstWeekday }).map((_, i) => (
+                <div key={`empty-${i}`} className="min-h-[76px]" />
+              ))}
+              {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
+                const dayEvents = eventsOnDay(day)
+                const hasEvent = dayEvents.length > 0
+                const isToday = today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === day
 
-          <div className="mt-4 grid grid-cols-7 gap-3">
-            {Array.from({ length: firstWeekday }).map((_, i) => (
-              <div key={`empty-${i}`} className="min-h-[90px]" />
-            ))}
-            {Array.from({ length: daysInMonth }, (_, i) => i + 1).map((day) => {
-              const dayEvents = eventsOnDay(day)
-              const hasEvent = dayEvents.length > 0
-              const isToday = today.getFullYear() === currentYear && today.getMonth() === currentMonth && today.getDate() === day
-
-              return (
-                <div
-                  key={day}
-                  className={`min-h-[90px] rounded-2xl border p-3 transition ${
-                    isToday ? "border-cyan-400 bg-cyan-500/20" :
-                    hasEvent ? "border-cyan-500 bg-cyan-500/10" :
-                    "border-slate-200 dark:border-slate-800 bg-slate-100 dark:bg-slate-800"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span className={`text-sm font-bold ${isToday ? "text-cyan-300" : hasEvent ? "text-cyan-400" : "text-slate-600 dark:text-slate-300"}`}>
-                      {day}
-                    </span>
-                    {hasEvent && <div className="h-2 w-2 rounded-full bg-cyan-400" />}
+                return (
+                  <div
+                    key={day}
+                    className={`min-h-[76px] rounded-md border p-2 transition ${
+                      isToday
+                        ? "border-forest-600/40 bg-forest-100 dark:border-forest-400/40 dark:bg-forest-900"
+                        : hasEvent
+                          ? "border-line bg-[#F0EEE8] dark:border-line-dark dark:bg-white/[0.06]"
+                          : "border-line bg-surface dark:border-line-dark dark:bg-surface-dark"
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span
+                        className={`text-[12.5px] font-medium ${
+                          isToday ? "text-forest-600 dark:text-forest-400" : ""
+                        }`}
+                      >
+                        {day}
+                      </span>
+                      {hasEvent && <div className="h-1.5 w-1.5 rounded-full bg-forest-600 dark:bg-forest-400" />}
+                    </div>
+                    {hasEvent && (
+                      <p className="mt-1.5 truncate text-[11px] font-medium leading-tight">
+                        {dayEvents[0].title}
+                        {dayEvents.length > 1 && (
+                          <span className="text-faint dark:text-faint-dark"> +{dayEvents.length - 1}</span>
+                        )}
+                      </p>
+                    )}
                   </div>
-                  {hasEvent && (
-                    <p className="mt-2 text-xs font-semibold text-slate-900 dark:text-white leading-tight">
-                      {dayEvents[0].title}
-                      {dayEvents.length > 1 && <span className="text-cyan-400"> +{dayEvents.length - 1}</span>}
-                    </p>
-                  )}
-                </div>
-              )
-            })}
+                )
+              })}
+            </div>
           </div>
-        </div>
+        </Card>
 
-        <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-          <h2 className="text-2xl font-black text-slate-900 dark:text-white">Compromissos do mês</h2>
+        <Card>
+          <CardHeader title="Compromissos do mês" />
 
-          <div className="mt-6 space-y-4">
+          <div className="space-y-3 p-5">
             {loading ? (
-              <p className="text-slate-500 dark:text-slate-400">Carregando agenda...</p>
+              <p className="text-[13px] text-muted dark:text-muted-dark">Carregando agenda...</p>
             ) : monthEvents.length === 0 ? (
-              <p className="text-slate-500 dark:text-slate-400">Nenhum item neste mês.</p>
+              <EmptyState
+                icon={<CalendarDays size={20} />}
+                title="Nenhum item neste mês"
+                description="Compromissos agendados para este mês aparecem aqui."
+              />
             ) : (
               monthEvents.map((event) => (
-                <div key={event.id} className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
+                <div key={event.id} className="rounded-md bg-[#F0EEE8] px-4 py-3 dark:bg-white/[0.06]">
                   <div className="flex items-center justify-between">
-                    <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-sm font-bold text-cyan-400">
-                      {typeLabels[event.type] || event.type}
-                    </span>
-                    <CalendarDays size={18} className="text-cyan-400" />
+                    <Badge tone="neutral">{typeLabels[event.type] || event.type}</Badge>
+                    <CalendarDays size={16} className="text-faint dark:text-faint-dark" />
                   </div>
 
-                  <h3 className="mt-4 text-lg font-black text-slate-900 dark:text-white">{event.title}</h3>
+                  <h3 className="mt-3 text-[14px] font-semibold">{event.title}</h3>
 
-                  <div className="mt-4 space-y-3 text-sm text-slate-500 dark:text-slate-400">
-                    <p className="flex items-center gap-2">
-                      <Clock3 size={16} />
+                  <div className="mt-2.5 space-y-1.5 text-[12.5px] text-muted dark:text-muted-dark">
+                    <p className="flex items-center gap-1.5">
+                      <Clock3 size={14} />
                       {formatTime(event.startDate)}
                     </p>
-                    <p className="flex items-center gap-2">
-                      <MapPin size={16} />
+                    <p className="flex items-center gap-1.5">
+                      <MapPin size={14} />
                       {event.location || (event.isOnline ? "Online" : "Local não informado")}
                     </p>
                   </div>
@@ -200,8 +211,8 @@ export function Calendar() {
               ))
             )}
           </div>
-        </div>
+        </Card>
       </section>
-    </div>
+    </PageContainer>
   )
 }
