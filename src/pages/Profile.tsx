@@ -1,20 +1,10 @@
 import { useState } from "react";
-import {
-  User,
-  Mail,
-  ShieldCheck,
-  CalendarDays,
-  Building2,
-  Edit,
-  Lock,
-  Activity,
-  CheckCircle2,
-} from "lucide-react";
+import { Mail, ShieldCheck, CalendarDays, Building2, Edit, Lock, Activity, CheckCircle2 } from "lucide-react";
 import { changePassword, getStoredOrganization, getStoredUser, updateProfile } from "../services/auth";
-import { PageHeader } from "../components/PageHeader";
 import { useToast } from "../components/Toast";
 import { maskPhone } from "../utils/masks";
 import { getErrorMessage, getFirstFieldError } from "../utils/errors";
+import { Badge, Button, Card, CardHeader, Field, Modal, PageContainer, inputClass } from "../components/ui";
 
 const roleLabels: Record<string, string> = {
   OWNER: "Dono da empresa",
@@ -39,7 +29,6 @@ export function Profile() {
   const [passwordForm, setPasswordForm] = useState(emptyPasswordForm);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
 
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [profileForm, setProfileForm] = useState({ name: "", phone: "" });
@@ -49,7 +38,6 @@ export function Profile() {
   function openPasswordModal() {
     setPasswordForm(emptyPasswordForm);
     setError("");
-    setSuccess("");
     setShowPasswordModal(true);
   }
 
@@ -70,7 +58,6 @@ export function Profile() {
       setUser(merged);
       localStorage.setItem("@athlo:user", JSON.stringify(merged));
       setShowProfileModal(false);
-      setSuccess("Perfil atualizado com sucesso.");
       toast.success("Perfil atualizado com sucesso.");
     } catch (err: unknown) {
       const firstFieldError = getFirstFieldError(err);
@@ -93,7 +80,6 @@ export function Profile() {
       setSaving(true);
       await changePassword(passwordForm.currentPassword, passwordForm.newPassword);
       setShowPasswordModal(false);
-      setSuccess("Senha alterada com sucesso.");
       toast.success("Senha alterada com sucesso.");
     } catch (err: unknown) {
       const firstFieldError = getFirstFieldError(err);
@@ -104,23 +90,11 @@ export function Profile() {
   }
 
   return (
-    <div className="space-y-8">
-      <PageHeader
-        icon={User}
-        title="Perfil"
-        description="Dados da conta, função na empresa e segurança."
-      />
-
-      {success && (
-        <div className="rounded-2xl border border-emerald-700 bg-emerald-900/30 p-4 text-sm text-emerald-300">
-          {success}
-        </div>
-      )}
-
+    <PageContainer>
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-3">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6 xl:col-span-1">
-          <div className="flex flex-col items-center text-center">
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl bg-cyan-500/10 text-2xl font-bold text-cyan-400">
+        <Card className="xl:col-span-1">
+          <div className="flex flex-col items-center p-6 text-center">
+            <div className="grid h-16 w-16 place-items-center rounded-full bg-forest-100 font-display text-xl text-forest-600 dark:bg-forest-900 dark:text-forest-400">
               {(user?.name || "Usuário")
                 .split(" ")
                 .map((n: string) => n[0])
@@ -128,248 +102,188 @@ export function Profile() {
                 .join("")}
             </div>
 
-            <h2 className="mt-5 text-xl font-bold text-slate-900 dark:text-white">
-              {user?.name || "Usuário"}
-            </h2>
+            <h2 className="mt-4 text-[16px] font-semibold">{user?.name || "Usuário"}</h2>
+            <p className="mt-0.5 text-[12.5px] text-muted dark:text-muted-dark">{user?.email || ""}</p>
 
-            <p className="mt-1 text-slate-500 dark:text-slate-400">
-              {user?.email || ""}
-            </p>
+            <div className="mt-4">
+              <Badge tone="positive">{roleLabels[user?.orgRole] || "Membro"} ativo</Badge>
+            </div>
 
-            <span className="mt-5 rounded-full bg-emerald-500/10 px-4 py-2 text-sm font-bold text-emerald-400">
-              {roleLabels[user?.orgRole] || "Membro"} ativo
-            </span>
+            <Button className="mt-6 w-full" onClick={openProfileModal}>
+              <Edit size={16} />
+              Editar perfil
+            </Button>
           </div>
-
-          <button
-            onClick={openProfileModal}
-            className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-cyan-500 px-5 py-4 font-bold text-slate-950 hover:bg-cyan-400"
-          >
-            <Edit size={20} />
-            Editar perfil
-          </button>
-        </div>
+        </Card>
 
         <div className="space-y-6 xl:col-span-2">
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              Informações da conta
-            </h2>
-
-            <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
-                <Mail className="text-cyan-400" />
-                <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">E-mail</p>
-                <h3 className="mt-1 font-bold text-slate-900 dark:text-white">
-                  {user?.email || "-"}
-                </h3>
+          <Card>
+            <CardHeader title="Informações da conta" />
+            <div className="grid grid-cols-1 gap-4 p-5 sm:grid-cols-2">
+              <div className="rounded-md bg-[#F0EEE8] p-4 dark:bg-white/[0.06]">
+                <Mail size={18} className="text-muted dark:text-muted-dark" />
+                <p className="mt-3 text-[12px] text-muted dark:text-muted-dark">E-mail</p>
+                <h3 className="mt-0.5 text-[13.5px] font-medium">{user?.email || "-"}</h3>
               </div>
 
-              <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
-                <ShieldCheck className="text-emerald-400" />
-                <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Permissão</p>
-                <h3 className="mt-1 font-bold text-slate-900 dark:text-white">
-                  {roleLabels[user?.orgRole] || "Membro"}
-                </h3>
+              <div className="rounded-md bg-[#F0EEE8] p-4 dark:bg-white/[0.06]">
+                <ShieldCheck size={18} className="text-muted dark:text-muted-dark" />
+                <p className="mt-3 text-[12px] text-muted dark:text-muted-dark">Permissão</p>
+                <h3 className="mt-0.5 text-[13.5px] font-medium">{roleLabels[user?.orgRole] || "Membro"}</h3>
               </div>
 
-              <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
-                <Building2 className="text-purple-400" />
-                <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Empresa</p>
-                <h3 className="mt-1 font-bold text-slate-900 dark:text-white">
-                  {organization?.name || "-"}
-                </h3>
+              <div className="rounded-md bg-[#F0EEE8] p-4 dark:bg-white/[0.06]">
+                <Building2 size={18} className="text-muted dark:text-muted-dark" />
+                <p className="mt-3 text-[12px] text-muted dark:text-muted-dark">Empresa</p>
+                <h3 className="mt-0.5 text-[13.5px] font-medium">{organization?.name || "-"}</h3>
               </div>
 
-              <div className="rounded-2xl bg-slate-100 dark:bg-slate-800 p-5">
-                <CalendarDays className="text-yellow-400" />
-                <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">Status da conta</p>
-                <h3 className="mt-1 font-bold text-slate-900 dark:text-white">
+              <div className="rounded-md bg-[#F0EEE8] p-4 dark:bg-white/[0.06]">
+                <CalendarDays size={18} className="text-muted dark:text-muted-dark" />
+                <p className="mt-3 text-[12px] text-muted dark:text-muted-dark">Status da conta</p>
+                <h3 className="mt-0.5 text-[13.5px] font-medium">
                   {user?.status === "ACTIVE" ? "Ativa" : user?.status || "-"}
                 </h3>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              Segurança
-            </h2>
-
-            <div className="mt-6 flex flex-col gap-4 rounded-2xl bg-slate-100 dark:bg-slate-800 p-5 md:flex-row md:items-center md:justify-between">
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400">
-                  <Lock />
+          <Card>
+            <CardHeader title="Segurança" />
+            <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-center gap-3.5">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-forest-100 text-forest-600 dark:bg-forest-900 dark:text-forest-400">
+                  <Lock size={18} />
                 </div>
-
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-white">Senha da conta</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                  <h3 className="text-[14px] font-semibold">Senha da conta</h3>
+                  <p className="text-[12.5px] text-muted dark:text-muted-dark">
                     Atualize sua senha periodicamente para manter a segurança.
                   </p>
                 </div>
               </div>
 
-              <button
-                onClick={openPasswordModal}
-                className="rounded-2xl border border-slate-300 dark:border-slate-700 px-5 py-3 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-              >
+              <Button variant="ghost" onClick={openPasswordModal}>
                 Alterar senha
-              </button>
+              </Button>
             </div>
-          </div>
+          </Card>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-        <div className="flex items-center gap-3">
-          <Activity className="text-cyan-400" />
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-            Atividades recentes
-          </h2>
-        </div>
-
-        <div className="mt-6 space-y-4">
+      <Card>
+        <CardHeader
+          title="Atividades recentes"
+          action={<Activity size={18} className="text-muted dark:text-muted-dark" />}
+        />
+        <div className="space-y-2.5 p-5">
           {activities.map((item) => (
-            <div
-              key={item}
-              className="flex items-center gap-4 rounded-2xl bg-slate-100 dark:bg-slate-800 p-5"
-            >
-              <CheckCircle2 className="text-emerald-400" />
-              <p className="text-slate-600 dark:text-slate-300">{item}</p>
+            <div key={item} className="flex items-center gap-3 rounded-md bg-[#F0EEE8] px-4 py-3 dark:bg-white/[0.06]">
+              <CheckCircle2 size={16} className="text-forest-600 dark:text-forest-400" />
+              <p className="text-[13px]">{item}</p>
             </div>
           ))}
         </div>
-      </section>
+      </Card>
 
-      {showPasswordModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
-          <form
-            onSubmit={handleChangePassword}
-            className="w-full max-w-md rounded-3xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
-          >
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white">Alterar senha</h2>
-              <button
-                type="button"
-                onClick={() => setShowPasswordModal(false)}
-                className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-              >
-                Fechar
-              </button>
-            </div>
+      <Modal
+        open={showPasswordModal}
+        onClose={() => setShowPasswordModal(false)}
+        title="Alterar senha"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setShowPasswordModal(false)}>
+              Cancelar
+            </Button>
+            <Button type="submit" form="password-form" loading={saving}>
+              Salvar nova senha
+            </Button>
+          </>
+        }
+      >
+        <form id="password-form" onSubmit={handleChangePassword} className="space-y-4">
+          {error && <p className="rounded-md bg-[#F6E4E1] px-3.5 py-2.5 text-[12.5px] text-danger dark:bg-danger-dark/10 dark:text-danger-dark">{error}</p>}
 
-            {error && (
-              <div className="mb-4 rounded-xl border border-red-700 bg-red-900/30 p-3 text-sm text-red-300">
-                {error}
-              </div>
-            )}
+          <Field label="Senha atual">
+            <input
+              type="password"
+              autoComplete="current-password"
+              className={inputClass}
+              value={passwordForm.currentPassword}
+              onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
+              required
+            />
+          </Field>
 
-            <div className="space-y-4">
-              <input
-                type="password"
-                placeholder="Senha atual"
-                autoComplete="current-password"
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
-                value={passwordForm.currentPassword}
-                onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                required
-              />
+          <Field label="Nova senha" hint="Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número.">
+            <input
+              type="password"
+              autoComplete="new-password"
+              className={inputClass}
+              value={passwordForm.newPassword}
+              onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
+              minLength={8}
+              pattern="(?=.*[A-Z])(?=.*[0-9]).{8,}"
+              title="Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número"
+              required
+            />
+          </Field>
 
-              <input
-                type="password"
-                placeholder="Nova senha"
-                autoComplete="new-password"
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
-                value={passwordForm.newPassword}
-                onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                minLength={8}
-                pattern="(?=.*[A-Z])(?=.*[0-9]).{8,}"
-                title="Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número"
-                required
-              />
-              <p className="-mt-2 text-xs text-slate-400 dark:text-slate-500">
-                Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número.
-              </p>
+          <Field label="Confirmar nova senha">
+            <input
+              type="password"
+              autoComplete="new-password"
+              className={inputClass}
+              value={passwordForm.confirmPassword}
+              onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
+              minLength={8}
+              required
+            />
+          </Field>
+        </form>
+      </Modal>
 
-              <input
-                type="password"
-                placeholder="Confirmar nova senha"
-                autoComplete="new-password"
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
-                value={passwordForm.confirmPassword}
-                onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                minLength={8}
-                required
-              />
-            </div>
+      <Modal
+        open={showProfileModal}
+        onClose={() => setShowProfileModal(false)}
+        title="Editar perfil"
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setShowProfileModal(false)}>
+              Cancelar
+            </Button>
+            <Button type="submit" form="profile-form" loading={savingProfile}>
+              Salvar alterações
+            </Button>
+          </>
+        }
+      >
+        <form id="profile-form" onSubmit={handleSaveProfile} className="space-y-4">
+          {profileError && <p className="rounded-md bg-[#F6E4E1] px-3.5 py-2.5 text-[12.5px] text-danger dark:bg-danger-dark/10 dark:text-danger-dark">{profileError}</p>}
 
-            <button
-              type="submit"
-              disabled={saving}
-              className="mt-6 w-full rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
-            >
-              {saving ? "Salvando..." : "Salvar nova senha"}
-            </button>
-          </form>
-        </div>
-      )}
+          <Field label="Nome completo">
+            <input
+              autoComplete="name"
+              className={inputClass}
+              value={profileForm.name}
+              onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
+              minLength={2}
+              required
+            />
+          </Field>
 
-      {showProfileModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4">
-          <form
-            onSubmit={handleSaveProfile}
-            className="w-full max-w-md rounded-3xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl"
-          >
-            <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white">Editar perfil</h2>
-              <button
-                type="button"
-                onClick={() => setShowProfileModal(false)}
-                className="rounded-xl bg-slate-100 dark:bg-slate-800 px-4 py-2 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-              >
-                Fechar
-              </button>
-            </div>
-
-            {profileError && (
-              <div className="mb-4 rounded-xl border border-red-700 bg-red-900/30 p-3 text-sm text-red-300">
-                {profileError}
-              </div>
-            )}
-
-            <div className="space-y-4">
-              <input
-                placeholder="Nome completo"
-                autoComplete="name"
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
-                value={profileForm.name}
-                onChange={(e) => setProfileForm({ ...profileForm, name: e.target.value })}
-                minLength={2}
-                required
-              />
-
-              <input
-                placeholder="Telefone"
-                autoComplete="tel"
-                inputMode="tel"
-                maxLength={16}
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-slate-900 dark:text-white outline-none focus:border-cyan-400"
-                value={profileForm.phone}
-                onChange={(e) => setProfileForm({ ...profileForm, phone: maskPhone(e.target.value) })}
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={savingProfile}
-              className="mt-6 w-full rounded-2xl bg-cyan-500 px-5 py-3 font-black text-slate-950 hover:bg-cyan-400 disabled:opacity-60"
-            >
-              {savingProfile ? "Salvando..." : "Salvar alterações"}
-            </button>
-          </form>
-        </div>
-      )}
-    </div>
+          <Field label="Telefone">
+            <input
+              autoComplete="tel"
+              inputMode="tel"
+              maxLength={16}
+              className={inputClass}
+              value={profileForm.phone}
+              onChange={(e) => setProfileForm({ ...profileForm, phone: maskPhone(e.target.value) })}
+            />
+          </Field>
+        </form>
+      </Modal>
+    </PageContainer>
   );
 }

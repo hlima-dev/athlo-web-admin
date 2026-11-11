@@ -12,6 +12,7 @@ import {
   Menu,
   Package,
   Plus,
+  ScrollText,
   Search,
   Settings,
   Shield,
@@ -79,6 +80,7 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
   '/calendario': { title: 'Calendário', subtitle: 'Visão mensal da agenda' },
   '/relatorios': { title: 'Relatórios', subtitle: 'Indicadores e metas' },
   '/equipe': { title: 'Equipe', subtitle: 'Membros e permissões' },
+  '/auditoria': { title: 'Auditoria', subtitle: 'Trilha de ações da empresa' },
   '/notificacoes': { title: 'Notificações', subtitle: 'Alertas e avisos' },
   '/perfil': { title: 'Perfil', subtitle: 'Seus dados de acesso' },
   '/configuracoes': { title: 'Configurações', subtitle: 'Empresa, plano e preferências' },
@@ -99,6 +101,7 @@ interface SidebarProps {
   user: StoredUser
   organization: StoredOrganization
   isPlatformAdmin: boolean
+  canViewAudit: boolean
   unresolvedErrorCount: number
   onNavigate: () => void
   onClose: () => void
@@ -109,6 +112,7 @@ function SidebarContent({
   user,
   organization,
   isPlatformAdmin,
+  canViewAudit,
   unresolvedErrorCount,
   onNavigate,
   onClose,
@@ -116,6 +120,21 @@ function SidebarContent({
 }: SidebarProps) {
   const daysLeft = trialDaysLeft(organization?.subscription?.trialEndsAt)
   const showTrialBanner = organization?.subscription?.status === 'TRIALING' && daysLeft !== null
+
+  // Auditoria só aparece pra OWNER/ADMIN (o endpoint já é gated assim no
+  // backend — isso só evita mostrar um link que levaria a um 403).
+  const sections = navSections.map((section) =>
+    section.title === 'Empresa' && canViewAudit
+      ? {
+          ...section,
+          items: [
+            section.items[0],
+            { label: 'Auditoria', path: '/auditoria', icon: ScrollText },
+            ...section.items.slice(1),
+          ],
+        }
+      : section
+  )
 
   return (
     <div className="flex h-full flex-col bg-forest text-[#DCE7E0] dark:bg-forest-900">
@@ -155,7 +174,7 @@ function SidebarContent({
       </button>
 
       <nav className="flex-1 space-y-6 overflow-y-auto px-3">
-        {navSections.map((section, index) => (
+        {sections.map((section, index) => (
           <div key={section.title ?? index}>
             {section.title ? (
               <p className="px-3 pb-2 text-[11px] uppercase tracking-wider text-[#7E9B8D]">{section.title}</p>
@@ -256,6 +275,7 @@ export function AppLayout() {
   const user = getStoredUser()
   const organization = getStoredOrganization()
   const isPlatformAdmin = !!user?.isPlatformAdmin
+  const canViewAudit = user?.orgRole === 'OWNER' || user?.orgRole === 'ADMIN'
   const [unresolvedErrorCount, setUnresolvedErrorCount] = useState(0)
 
   const meta = pageTitles[location.pathname] ?? { title: 'ATHLO', subtitle: 'Gestão' }
@@ -324,6 +344,7 @@ export function AppLayout() {
     user,
     organization,
     isPlatformAdmin,
+    canViewAudit,
     unresolvedErrorCount,
     onNavigate: () => setMobileOpen(false),
     onClose: () => setMobileOpen(false),

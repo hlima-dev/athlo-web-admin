@@ -49,6 +49,26 @@ export async function getMembers(): Promise<Member[]> {
   return response.data.data ?? [];
 }
 
+export type OrgModule = "CONTACTS" | "INVOICES" | "PRODUCTS" | "ORDERS" | "EVENTS";
+
+export interface ModulePermission {
+  module: OrgModule;
+  enabled: boolean;
+}
+
+export async function getMemberPermissions(userId: string): Promise<ModulePermission[]> {
+  const response = await api.get(`/organization/members/${userId}/permissions`);
+  return response.data.data ?? [];
+}
+
+export async function updateMemberPermissions(
+  userId: string,
+  permissions: ModulePermission[]
+): Promise<ModulePermission[]> {
+  const response = await api.patch(`/organization/members/${userId}/permissions`, { permissions });
+  return response.data.data ?? [];
+}
+
 // LGPD — exclusão definitiva da empresa e de todos os dados associados.
 // Exige a senha do usuário OWNER como confirmação.
 export async function deleteOrganization(password: string) {

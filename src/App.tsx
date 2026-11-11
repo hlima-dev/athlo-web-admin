@@ -15,6 +15,7 @@ import { Events } from "./pages/Events";
 import { Calendar } from "./pages/Calendar";
 import { Reports } from "./pages/Reports";
 import { Team } from "./pages/Team";
+import { Auditoria } from "./pages/Auditoria";
 import { Notifications } from "./pages/Notifications";
 import { Profile } from "./pages/Profile";
 import { Settings } from "./pages/Settings";
@@ -63,6 +64,7 @@ export default function App() {
           <Route path="/calendario" element={<Calendar />} />
           <Route path="/relatorios" element={<Reports />} />
           <Route path="/equipe" element={<Team />} />
+          <Route path="/auditoria" element={<Auditoria />} />
           <Route path="/notificacoes" element={<Notifications />} />
           <Route path="/perfil" element={<Profile />} />
           <Route path="/configuracoes" element={<Settings />} />
