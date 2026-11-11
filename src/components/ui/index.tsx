@@ -108,6 +108,7 @@ export function Modal({
   onClose,
   children,
   footer,
+  size = 'md',
 }: {
   open: boolean
   title: string
@@ -115,6 +116,9 @@ export function Modal({
   onClose: () => void
   children: ReactNode
   footer?: ReactNode
+  // 'lg' é pra formulários mais largos (ex.: editor de itens de Pedidos,
+  // que precisa de mais colunas que cabem num grid de 12)
+  size?: 'md' | 'lg'
 }) {
   useEffect(() => {
     if (!open) return
@@ -138,7 +142,9 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="relative max-h-[92vh] w-full overflow-y-auto rounded-t-xl border border-line bg-surface sm:max-w-lg sm:rounded-card dark:border-line-dark dark:bg-surface-dark"
+        className={`relative max-h-[92vh] w-full overflow-y-auto rounded-t-xl border border-line bg-surface sm:rounded-card dark:border-line-dark dark:bg-surface-dark ${
+          size === 'lg' ? 'sm:max-w-2xl' : 'sm:max-w-lg'
+        }`}
       >
         <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4 dark:border-line-dark">
           <div>
