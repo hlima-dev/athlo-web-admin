@@ -1,12 +1,13 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Plus, FileDown, Wallet } from "lucide-react";
+import { Plus, FileDown, FileUp, Wallet } from "lucide-react";
 import {
   getInvoices,
   createInvoice,
   updateInvoice,
   markInvoicePaid,
   deleteInvoice,
+  importInvoiceXml,
   type Invoice,
 } from "../services/invoices";
 import { RowActionsMenu } from "../components/RowActionsMenu";
@@ -76,7 +77,15 @@ const emptyForm = {
   amount: "",
   dueDate: "",
   method: "PIX",
+  notes: "",
 };
+
+function toDateInput(value?: string) {
+  if (!value) return "";
+  const d = new Date(value);
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toISOString().slice(0, 10);
+}
 
 export function Financeiro() {
   const toast = useToast();
@@ -90,6 +99,9 @@ export function Financeiro() {
   const [deleteTarget, setDeleteTarget] = useState<Invoice | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [markingPaidId, setMarkingPaidId] = useState<string | null>(null);
+  const [importingXml, setImportingXml] = useState(false);
+  const [importedAccessKey, setImportedAccessKey] = useState<string | null>(null);
+  const xmlInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState(emptyForm);
 
@@ -128,6 +140,7 @@ export function Financeiro() {
   function openCreateModal() {
     setEditingId(null);
     setForm(emptyForm);
+    setImportedAccessKey(null);
     setError("");
     setShowModal(true);
   }
@@ -140,9 +153,37 @@ export function Financeiro() {
       amount: String(invoice.amount ?? ""),
       dueDate: invoice.dueDate ? invoice.dueDate.slice(0, 10) : "",
       method: invoice.method || "PIX",
+      notes: invoice.notes || "",
     });
+    setImportedAccessKey(null);
     setError("");
     setShowModal(true);
+  }
+
+  async function handleImportXmlFile(file: File) {
+    setError("");
+    try {
+      setImportingXml(true);
+      const xmlText = await file.text();
+      const draft = await importInvoiceXml(xmlText);
+
+      setEditingId(null);
+      setForm({
+        type: draft.suggestedType,
+        description: `NF-e ${draft.issuerName}`,
+        amount: String(draft.totalValue),
+        dueDate: toDateInput(draft.issueDate) || new Date().toISOString().slice(0, 10),
+        method: "PIX",
+        notes: draft.itemsSummary ? `Itens: ${draft.itemsSummary}` : "",
+      });
+      setImportedAccessKey(draft.accessKey);
+      setShowModal(true);
+      toast.success("Nota fiscal lida com sucesso! Revise os dados e salve.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao ler o XML da nota fiscal."));
+    } finally {
+      setImportingXml(false);
+    }
   }
 
   async function handleSaveInvoice(e: React.FormEvent) {
@@ -157,6 +198,8 @@ export function Financeiro() {
         amount: Number(form.amount),
         dueDate: form.dueDate,
         method: form.method,
+        notes: form.notes,
+        ...(!editingId && importedAccessKey ? { accessKey: importedAccessKey } : {}),
       };
 
       if (editingId) {
@@ -168,6 +211,7 @@ export function Financeiro() {
       setShowModal(false);
       setForm(emptyForm);
       setEditingId(null);
+      setImportedAccessKey(null);
       await loadInvoices();
       toast.success(editingId ? "Fatura atualizada com sucesso." : "Fatura cadastrada com sucesso.");
     } catch (err: unknown) {
@@ -241,10 +285,31 @@ export function Financeiro() {
           title="Faturas"
           subtitle="Contas a pagar e a receber salvas no banco."
           action={
-            <Button onClick={openCreateModal}>
-              <Plus size={16} />
-              Nova fatura
-            </Button>
+            <div className="flex items-center gap-2">
+              <input
+                ref={xmlInputRef}
+                type="file"
+                accept=".xml,text/xml,application/xml"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleImportXmlFile(file);
+                  e.target.value = "";
+                }}
+              />
+              <Button
+                variant="ghost"
+                loading={importingXml}
+                onClick={() => xmlInputRef.current?.click()}
+              >
+                <FileUp size={16} />
+                {importingXml ? "Lendo XML..." : "Importar NF-e (XML)"}
+              </Button>
+              <Button onClick={openCreateModal}>
+                <Plus size={16} />
+                Nova fatura
+              </Button>
+            </div>
           }
         />
 
@@ -284,6 +349,11 @@ export function Financeiro() {
                     {invoice.method && (
                       <p className="mt-0.5 text-[12px] text-muted dark:text-muted-dark">
                         {methodLabels[invoice.method] || invoice.method}
+                      </p>
+                    )}
+                    {invoice.accessKey && (
+                      <p className="mt-0.5 truncate font-mono text-[11px] text-faint dark:text-faint-dark">
+                        NF-e: {invoice.accessKey}
                       </p>
                     )}
                   </Td>
@@ -362,6 +432,13 @@ export function Financeiro() {
         <form id="invoice-form" onSubmit={handleSaveInvoice} className="space-y-4">
           {error && <p className="rounded-md bg-[#F6E4E1] px-3.5 py-2.5 text-[12.5px] text-danger dark:bg-danger-dark/10 dark:text-danger-dark">{error}</p>}
 
+          {importedAccessKey && (
+            <p className="rounded-md bg-forest-100 px-3.5 py-2.5 text-[12px] text-forest-600 dark:bg-forest-900 dark:text-forest-400">
+              Importado da nota fiscal — chave de acesso:{" "}
+              <span className="font-mono">{importedAccessKey}</span>
+            </p>
+          )}
+
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label="Tipo">
               <select
@@ -418,6 +495,15 @@ export function Financeiro() {
                 <option value="CASH">Dinheiro</option>
                 <option value="OTHER">Outro</option>
               </select>
+            </Field>
+
+            <Field label="Observações" className="sm:col-span-2">
+              <textarea
+                className={inputClass}
+                rows={2}
+                value={form.notes}
+                onChange={(e) => setForm({ ...form, notes: e.target.value })}
+              />
             </Field>
           </div>
         </form>

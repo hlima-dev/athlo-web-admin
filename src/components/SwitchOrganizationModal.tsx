@@ -10,6 +10,7 @@ import {
 } from "../services/auth";
 import { useToast } from "./Toast";
 import { getErrorMessage } from "../utils/errors";
+import { Button, inputClass } from "./ui";
 
 interface Props {
   open: boolean;
@@ -81,22 +82,22 @@ export function SwitchOrganizationModal({ open, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-center justify-center bg-black/70 px-4"
+      className="fixed inset-0 z-[70] flex items-center justify-center bg-ink/40 px-4"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md rounded-2xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 p-6 shadow-2xl max-h-[85vh] overflow-y-auto"
+        className="max-h-[85vh] w-full max-w-md overflow-y-auto rounded-card border border-line bg-surface p-6 shadow-2xl dark:border-line-dark dark:bg-surface-dark"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between">
-          <h2 className="font-bold text-slate-900 dark:text-white">Trocar unidade</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <h2 className="text-[15px] font-semibold tracking-tight">Trocar unidade</h2>
+          <button onClick={onClose} className="text-faint transition hover:text-ink dark:text-faint-dark dark:hover:text-ink-dark">
             <X size={20} />
           </button>
         </div>
 
         {loading ? (
-          <p className="mt-6 text-sm text-slate-500 dark:text-slate-400">Carregando empresas...</p>
+          <p className="mt-6 text-[13px] text-muted dark:text-muted-dark">Carregando empresas...</p>
         ) : (
           <div className="mt-5 space-y-2">
             {organizations.map((org) => {
@@ -107,22 +108,22 @@ export function SwitchOrganizationModal({ open, onClose }: Props) {
                   type="button"
                   onClick={() => handleSwitch(org.id)}
                   disabled={switchingId !== null}
-                  className={`w-full flex items-center gap-3 rounded-xl border px-4 py-3 text-left transition disabled:opacity-50 ${
+                  className={`flex w-full items-center gap-3 rounded-md border px-4 py-3 text-left transition disabled:opacity-50 ${
                     isCurrent
-                      ? "border-cyan-500 bg-cyan-500/10"
-                      : "border-slate-200 dark:border-slate-700 hover:border-cyan-400"
+                      ? "border-forest-600 bg-forest-100 dark:border-forest-400 dark:bg-forest-900"
+                      : "border-line hover:border-forest-600/50 dark:border-line-dark dark:hover:border-forest-400/50"
                   }`}
                 >
-                  <Building2 size={18} className="shrink-0 text-cyan-400" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-white truncate">{org.name}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <Building2 size={18} className="shrink-0 text-forest-600 dark:text-forest-400" />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-[13.5px] font-semibold">{org.name}</p>
+                    <p className="text-[12px] text-muted dark:text-muted-dark">
                       {roleLabels[org.orgRole] ?? org.orgRole}
                     </p>
                   </div>
-                  {isCurrent && <Check size={16} className="shrink-0 text-cyan-400" />}
+                  {isCurrent && <Check size={16} className="shrink-0 text-forest-600 dark:text-forest-400" />}
                   {switchingId === org.id && (
-                    <RefreshCw size={16} className="shrink-0 animate-spin text-cyan-400" />
+                    <RefreshCw size={16} className="shrink-0 animate-spin text-forest-600 dark:text-forest-400" />
                   )}
                 </button>
               );
@@ -130,12 +131,12 @@ export function SwitchOrganizationModal({ open, onClose }: Props) {
           </div>
         )}
 
-        <div className="mt-5 border-t border-slate-200 dark:border-slate-800 pt-5">
+        <div className="mt-5 border-t border-line pt-5 dark:border-line-dark">
           {!showCreate ? (
             <button
               type="button"
               onClick={() => setShowCreate(true)}
-              className="flex w-full items-center gap-2 rounded-xl border border-dashed border-slate-300 dark:border-slate-700 px-4 py-3 text-sm font-semibold text-slate-600 dark:text-slate-300 hover:border-cyan-400 hover:text-cyan-500"
+              className="flex w-full items-center gap-2 rounded-md border border-dashed border-line px-4 py-3 text-[13px] font-medium text-muted transition hover:border-forest-600/50 hover:text-forest-600 dark:border-line-dark dark:text-muted-dark dark:hover:border-forest-400/50 dark:hover:text-forest-400"
             >
               <Plus size={16} />
               Criar nova empresa
@@ -147,24 +148,15 @@ export function SwitchOrganizationModal({ open, onClose }: Props) {
                 placeholder="Nome da nova empresa"
                 value={newOrgName}
                 onChange={(e) => setNewOrgName(e.target.value)}
-                className="w-full rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 px-4 py-3 text-sm text-slate-900 dark:text-white outline-none focus:border-cyan-400"
+                className={inputClass}
               />
               <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowCreate(false)}
-                  disabled={creating}
-                  className="flex-1 rounded-xl border border-slate-300 dark:border-slate-700 px-4 py-2 text-sm font-semibold text-slate-600 dark:text-slate-300"
-                >
+                <Button type="button" variant="ghost" onClick={() => setShowCreate(false)} disabled={creating} className="flex-1 justify-center">
                   Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={creating || !newOrgName.trim()}
-                  className="flex-1 rounded-xl bg-cyan-500 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-cyan-400 disabled:opacity-50"
-                >
+                </Button>
+                <Button type="submit" disabled={!newOrgName.trim()} loading={creating} className="flex-1 justify-center">
                   {creating ? "Criando..." : "Criar e entrar"}
-                </button>
+                </Button>
               </div>
             </form>
           )}

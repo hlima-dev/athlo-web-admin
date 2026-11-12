@@ -49,12 +49,6 @@ button {
   border: 1px solid rgba(255, 255, 255, 0.4);
 }
 
-.glow-cyan {
-  box-shadow:
-    0 0 20px rgba(0, 212, 255, 0.15),
-    0 0 40px rgba(0, 212, 255, 0.06);
-}
-
 .glow-purple {
   box-shadow:
     0 0 20px rgba(168, 85, 247, 0.15),

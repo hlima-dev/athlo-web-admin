@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { CalendarDays, Plus, MapPin, Wand2 } from "lucide-react";
+import { CalendarDays, Check, Plus, MapPin, Wand2 } from "lucide-react";
 
 import {
   getEvents,
@@ -16,7 +16,6 @@ import { useToast } from "../components/Toast";
 import { getErrorMessage } from "../utils/errors";
 import {
   Badge,
-  type BadgeTone,
   Button,
   Card,
   CardHeader,
@@ -26,12 +25,6 @@ import {
   PageContainer,
   SkeletonRows,
   StatStrip,
-  Table,
-  Tbody,
-  Td,
-  Th,
-  Thead,
-  Tr,
   inputClass,
 } from "../components/ui";
 
@@ -40,18 +33,6 @@ const typeLabels: Record<string, string> = {
   TASK: "Tarefa",
   DEADLINE: "Prazo",
   OTHER: "Outro",
-};
-
-const statusLabels: Record<string, string> = {
-  SCHEDULED: "Agendado",
-  COMPLETED: "Concluído",
-  CANCELED: "Cancelado",
-};
-
-const statusTones: Record<string, BadgeTone> = {
-  SCHEDULED: "info",
-  COMPLETED: "positive",
-  CANCELED: "neutral",
 };
 
 const emptyForm = {
@@ -221,17 +202,46 @@ export function Events() {
     }
   }
 
-  function formatDate(date?: string) {
-    if (!date) return "Data não informada";
-    return new Date(date).toLocaleDateString("pt-BR");
-  }
-
   function formatTime(date?: string) {
     if (!date) return "--:--";
     return new Date(date).toLocaleTimeString("pt-BR", {
       hour: "2-digit",
       minute: "2-digit",
     });
+  }
+
+  const todayKey = new Date().toISOString().slice(0, 10);
+
+  const groupedEvents = useMemo(() => {
+    const map = new Map<string, Event[]>();
+    for (const event of events) {
+      const key = (event.startDate || "").slice(0, 10);
+      const bucket = map.get(key) ?? [];
+      bucket.push(event);
+      map.set(key, bucket);
+    }
+    for (const bucket of map.values()) {
+      bucket.sort((a, b) => a.startDate.localeCompare(b.startDate));
+    }
+    return [...map.entries()].sort((a, b) => a[0].localeCompare(b[0]));
+  }, [events]);
+
+  function formatDayHeader(key: string) {
+    const date = new Date(`${key}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return "Data não informada";
+    const label = date.toLocaleDateString("pt-BR", { weekday: "long", day: "2-digit", month: "long" });
+    return label.charAt(0).toUpperCase() + label.slice(1);
+  }
+
+  async function toggleEventStatus(event: Event) {
+    if (event.status === "CANCELED") return;
+    const nextStatus = event.status === "COMPLETED" ? "SCHEDULED" : "COMPLETED";
+    try {
+      await updateEvent(event.id, { status: nextStatus });
+      await loadEvents();
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao atualizar o status do compromisso."));
+    }
   }
 
   const scheduled = events.filter((event) => event.status === "SCHEDULED").length;
@@ -276,29 +286,33 @@ export function Events() {
         ]}
       />
 
-      <Card>
-        <CardHeader
-          title="Próximos compromissos"
-          subtitle="Itens carregados diretamente do backend."
-          action={
-            <div className="flex items-center gap-2">
-              <Link to="/calendario">
-                <Button variant="ghost">
-                  <CalendarDays size={16} />
-                  Ver calendário
-                </Button>
-              </Link>
-              <Button onClick={openCreateModal}>
-                <Plus size={16} />
-                Novo item
-              </Button>
-            </div>
-          }
-        />
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-[15px] font-semibold tracking-tight">Próximos compromissos</h2>
+          <p className="mt-0.5 text-[12.5px] text-muted dark:text-muted-dark">
+            Itens carregados diretamente do backend.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <Link to="/calendario">
+            <Button variant="ghost">
+              <CalendarDays size={16} />
+              Ver calendário
+            </Button>
+          </Link>
+          <Button onClick={openCreateModal}>
+            <Plus size={16} />
+            Novo item
+          </Button>
+        </div>
+      </div>
 
-        {loading ? (
+      {loading ? (
+        <Card>
           <SkeletonRows rows={5} cols={5} />
-        ) : events.length === 0 ? (
+        </Card>
+      ) : events.length === 0 ? (
+        <Card>
           <EmptyState
             icon={<CalendarDays size={20} />}
             title="Nenhum item encontrado"
@@ -310,54 +324,68 @@ export function Events() {
               </Button>
             }
           />
-        ) : (
-          <Table minWidth={760}>
-            <Thead>
-              <Tr>
-                <Th>Título</Th>
-                <Th>Tipo</Th>
-                <Th>Status</Th>
-                <Th>Data</Th>
-                <Th>Local</Th>
-                <Th align="right">Ações</Th>
-              </Tr>
-            </Thead>
-            <Tbody>
-              {events.map((event) => (
-                <Tr key={event.id}>
-                  <Td className="font-medium">{event.title}</Td>
-                  <Td>
-                    <Badge tone="neutral">{typeLabels[event.type] || event.type}</Badge>
-                  </Td>
-                  <Td>
-                    <Badge tone={statusTones[event.status] ?? "neutral"}>
-                      {statusLabels[event.status] || event.status}
-                    </Badge>
-                  </Td>
-                  <Td>
-                    <p>{formatDate(event.startDate)}</p>
-                    <p className="text-[12px] text-muted dark:text-muted-dark">{formatTime(event.startDate)}</p>
-                  </Td>
-                  <Td>
-                    <p className="flex items-center gap-1.5 text-[12.5px] text-muted dark:text-muted-dark">
-                      <MapPin size={13} />
-                      {event.location || (event.isOnline ? "Online" : "Não informado")}
-                    </p>
-                  </Td>
-                  <Td align="right">
-                    <div className="flex justify-end">
-                      <RowActionsMenu
-                        onEdit={() => openEditModal(event)}
-                        onDelete={() => setDeleteTarget(event)}
-                      />
+        </Card>
+      ) : (
+        <div className="space-y-5">
+          {groupedEvents.map(([dayKeyValue, dayEvents]) => (
+            <Card key={dayKeyValue}>
+              <CardHeader
+                title={formatDayHeader(dayKeyValue)}
+                subtitle={
+                  dayKeyValue === todayKey
+                    ? "Hoje"
+                    : `${dayEvents.length} compromisso${dayEvents.length > 1 ? "s" : ""}`
+                }
+              />
+              <ul className="divide-y divide-line dark:divide-line-dark">
+                {dayEvents.map((event) => (
+                  <li key={event.id} className="flex items-center gap-3 px-5 py-3">
+                    <button
+                      type="button"
+                      onClick={() => toggleEventStatus(event)}
+                      disabled={event.status === "CANCELED"}
+                      aria-label={event.status === "COMPLETED" ? "Marcar como agendado" : "Marcar como concluído"}
+                      className={`grid h-5 w-5 shrink-0 place-items-center rounded border transition disabled:opacity-40 ${
+                        event.status === "COMPLETED"
+                          ? "border-forest-600 bg-forest-600 text-white dark:border-forest-400 dark:bg-forest-400"
+                          : "border-line bg-surface text-transparent hover:border-forest-600/50 dark:border-line-dark dark:bg-surface-dark dark:hover:border-forest-400/50"
+                      }`}
+                    >
+                      <Check size={12} />
+                    </button>
+
+                    <span className="w-12 shrink-0 text-[12.5px] font-medium text-muted dark:text-muted-dark tabular-nums">
+                      {formatTime(event.startDate)}
+                    </span>
+
+                    <div className="min-w-0 flex-1">
+                      <p
+                        className={`truncate text-[13px] font-medium ${
+                          event.status === "COMPLETED" ? "text-faint dark:text-faint-dark line-through" : ""
+                        }`}
+                      >
+                        {event.title}
+                      </p>
+                      <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12px] text-muted dark:text-muted-dark">
+                        <Badge tone="neutral">{typeLabels[event.type] || event.type}</Badge>
+                        {event.status === "CANCELED" && <Badge tone="negative">Cancelado</Badge>}
+                        {(event.location || event.isOnline) && (
+                          <span className="flex items-center gap-1">
+                            <MapPin size={11} />
+                            {event.location || "Online"}
+                          </span>
+                        )}
+                      </div>
                     </div>
-                  </Td>
-                </Tr>
-              ))}
-            </Tbody>
-          </Table>
-        )}
-      </Card>
+
+                    <RowActionsMenu onEdit={() => openEditModal(event)} onDelete={() => setDeleteTarget(event)} />
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          ))}
+        </div>
+      )}
 
       <Modal
         open={showModal}
