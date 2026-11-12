@@ -1,5 +1,7 @@
 import { api } from "./api";
 
+export type TaxRegime = "MEI" | "SIMPLES_NACIONAL" | "LUCRO_PRESUMIDO" | "LUCRO_REAL";
+
 export interface OrganizationDetails {
   id: string;
   name: string;
@@ -12,6 +14,7 @@ export interface OrganizationDetails {
   state?: string | null;
   zipCode?: string | null;
   logoUrl?: string | null;
+  taxRegime?: TaxRegime | null;
   status: string;
   subscription?: {
     status: string;
@@ -46,6 +49,26 @@ export async function updateOrganization(data: Record<string, unknown>) {
 
 export async function getMembers(): Promise<Member[]> {
   const response = await api.get("/organization/members");
+  return response.data.data ?? [];
+}
+
+export type OrgModule = "CONTACTS" | "INVOICES" | "PRODUCTS" | "ORDERS" | "EVENTS";
+
+export interface ModulePermission {
+  module: OrgModule;
+  enabled: boolean;
+}
+
+export async function getMemberPermissions(userId: string): Promise<ModulePermission[]> {
+  const response = await api.get(`/organization/members/${userId}/permissions`);
+  return response.data.data ?? [];
+}
+
+export async function updateMemberPermissions(
+  userId: string,
+  permissions: ModulePermission[]
+): Promise<ModulePermission[]> {
+  const response = await api.patch(`/organization/members/${userId}/permissions`, { permissions });
   return response.data.data ?? [];
 }
 

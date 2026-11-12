@@ -6,8 +6,6 @@ import {
   Wallet,
   Users,
   AlertCircle,
-  Clock3,
-  Filter,
   MailCheck,
   BellRing,
   BellOff,
@@ -27,8 +25,17 @@ import {
   enablePushNotifications,
   disablePushNotifications,
 } from "../services/push";
-import { PageHeader } from "../components/PageHeader";
 import { useToast } from "../components/Toast";
+import {
+  Badge,
+  Button,
+  Card,
+  CardHeader,
+  EmptyState,
+  PageContainer,
+  SkeletonRows,
+  StatStrip,
+} from "../components/ui";
 
 export function Notifications() {
   const toast = useToast();
@@ -117,44 +124,14 @@ export function Notifications() {
   }
 
   const alertsCount = notifications.filter(
-    (notification) =>
-      notification.type === "WARNING" ||
-      notification.type === "ERROR"
+    (notification) => notification.type === "WARNING" || notification.type === "ERROR"
   ).length;
 
   const todayCount = notifications.filter((notification) => {
     const created = new Date(notification.createdAt);
     const today = new Date();
-
     return created.toDateString() === today.toDateString();
   }).length;
-
-  const summary = [
-    {
-      title: "Notificações",
-      value: notifications.length,
-      icon: Bell,
-      color: "text-cyan-400",
-    },
-    {
-      title: "Não lidas",
-      value: unreadCount,
-      icon: MailCheck,
-      color: "text-yellow-400",
-    },
-    {
-      title: "Alertas",
-      value: alertsCount,
-      icon: AlertCircle,
-      color: "text-red-400",
-    },
-    {
-      title: "Hoje",
-      value: todayCount,
-      icon: Clock3,
-      color: "text-emerald-400",
-    },
-  ];
 
   function formatType(type: string) {
     const typeMap: Record<string, string> = {
@@ -182,20 +159,13 @@ export function Notifications() {
     return Bell;
   }
 
-  function getColor(type: string) {
-    const colorMap: Record<string, string> = {
-      INFO: "text-cyan-400",
-      WARNING: "text-yellow-400",
-      SUCCESS: "text-emerald-400",
-      ERROR: "text-red-400",
-      EVENT_REMINDER: "text-cyan-400",
-      TEAM_INVITE: "text-purple-400",
-      INVOICE_DUE: "text-yellow-400",
-      INVOICE_PAID: "text-emerald-400",
-      SYSTEM: "text-slate-500 dark:text-slate-400",
-    };
-
-    return colorMap[type] || "text-cyan-400";
+  function getTone(type: string): "positive" | "warn" | "negative" | "info" | "purple" | "neutral" {
+    if (type === "WARNING") return "warn";
+    if (type === "ERROR") return "negative";
+    if (type === "SUCCESS" || type === "INVOICE_PAID") return "positive";
+    if (type === "TEAM_INVITE") return "purple";
+    if (type === "SYSTEM") return "neutral";
+    return "info";
   }
 
   function formatDate(date: string) {
@@ -208,51 +178,25 @@ export function Notifications() {
   }
 
   return (
-    <div className="space-y-8">
-      <PageHeader
-        icon={Bell}
-        title="Notificações"
-        description="Receba alertas sobre faturas, agenda, equipe e atividades da empresa."
-        action={
-          <button
-            type="button"
-            onClick={handleMarkAllRead}
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-100 dark:bg-slate-800 px-5 py-3 font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700"
-          >
-            <Filter size={20} />
-            Marcar todas como lidas
-          </button>
-        }
+    <PageContainer>
+      <StatStrip
+        items={[
+          { label: "Notificações", value: String(notifications.length) },
+          { label: "Não lidas", value: String(unreadCount), tone: unreadCount > 0 ? "warn" : "default" },
+          { label: "Alertas", value: String(alertsCount), tone: alertsCount > 0 ? "danger" : "default" },
+          { label: "Hoje", value: String(todayCount) },
+        ]}
       />
 
-      <section className="grid grid-cols-1 gap-5 md:grid-cols-4">
-        {summary.map((item) => {
-          const Icon = item.icon;
-
-          return (
-            <div
-              key={item.title}
-              className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-5"
-            >
-              <Icon className={item.color} size={20} />
-              <p className="mt-4 text-sm text-slate-500 dark:text-slate-400">{item.title}</p>
-              <h2 className="mt-1 text-2xl font-bold text-slate-900 dark:text-white">{item.value}</h2>
-            </div>
-          );
-        })}
-      </section>
-
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-cyan-500/10 text-cyan-400">
-              <Smartphone size={22} />
+      <Card>
+        <div className="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3.5">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-forest-100 text-forest-600 dark:bg-forest-900 dark:text-forest-400">
+              <Smartphone size={18} />
             </div>
             <div>
-              <h2 className="font-bold text-slate-900 dark:text-white">
-                Notificações neste dispositivo
-              </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
+              <h2 className="text-[14px] font-semibold">Notificações neste dispositivo</h2>
+              <p className="text-[12.5px] text-muted dark:text-muted-dark">
                 {pushSupported
                   ? "Receba um aviso mesmo com o ATHLO fechado, quando um compromisso da agenda estiver chegando."
                   : "Este navegador não suporta notificações push."}
@@ -261,39 +205,35 @@ export function Notifications() {
           </div>
 
           {pushSupported && (
-            <button
-              type="button"
-              onClick={handleTogglePush}
-              disabled={pushBusy}
-              className={`inline-flex shrink-0 items-center justify-center gap-2 rounded-2xl px-5 py-3 font-bold disabled:opacity-60 ${
-                pushEnabled
-                  ? "border border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                  : "bg-cyan-500 text-slate-950 hover:bg-cyan-400"
-              }`}
-            >
-              {pushEnabled ? <BellOff size={18} /> : <BellRing size={18} />}
-              {pushBusy ? "Aguarde..." : pushEnabled ? "Desativar" : "Ativar notificações"}
-            </button>
+            <Button variant={pushEnabled ? "ghost" : "primary"} loading={pushBusy} onClick={handleTogglePush}>
+              {pushEnabled ? <BellOff size={16} /> : <BellRing size={16} />}
+              {pushEnabled ? "Desativar" : "Ativar notificações"}
+            </Button>
           )}
         </div>
-      </section>
+      </Card>
 
-      <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-        <div>
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-            Atividades recentes
-          </h2>
+      <Card>
+        <CardHeader
+          title="Atividades recentes"
+          subtitle="Histórico de avisos e atualizações da plataforma."
+          action={
+            <Button variant="ghost" onClick={handleMarkAllRead}>
+              <MailCheck size={16} />
+              Marcar todas como lidas
+            </Button>
+          }
+        />
 
-          <p className="text-sm text-slate-500 dark:text-slate-400">
-            Histórico de avisos e atualizações da plataforma.
-          </p>
-        </div>
-
-        <div className="mt-6 space-y-4">
+        <div className="space-y-2.5 p-5">
           {loading ? (
-            <p className="text-slate-500 dark:text-slate-400">Carregando notificações...</p>
+            <SkeletonRows rows={4} cols={1} />
           ) : notifications.length === 0 ? (
-            <p className="text-slate-500 dark:text-slate-400">Nenhuma notificação encontrada.</p>
+            <EmptyState
+              icon={<Bell size={20} />}
+              title="Nenhuma notificação encontrada"
+              description="Avisos sobre faturas, agenda e equipe aparecem aqui."
+            />
           ) : (
             notifications.map((notification) => {
               const Icon = getIcon(notification.type);
@@ -302,54 +242,40 @@ export function Notifications() {
               return (
                 <div
                   key={notification.id}
-                  className={`rounded-3xl border p-5 ${
+                  className={`rounded-md border p-4 ${
                     isUnread
-                      ? "border-cyan-500/40 bg-slate-100 dark:bg-slate-800"
-                      : "border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-800/70"
+                      ? "border-forest-600/30 bg-[#F0EEE8] dark:border-forest-400/30 dark:bg-white/[0.06]"
+                      : "border-line bg-surface dark:border-line-dark dark:bg-surface-dark"
                   }`}
                 >
-                  <div className="flex flex-col gap-5 md:flex-row md:items-start md:justify-between">
-                    <div className="flex gap-4">
-                      <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-white dark:bg-slate-900">
-                        <Icon className={getColor(notification.type)} size={26} />
+                  <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex gap-3.5">
+                      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-[#F0EEE8] dark:bg-white/[0.06]">
+                        <Icon size={18} className="text-muted dark:text-muted-dark" />
                       </div>
 
                       <div>
-                        <div className="flex flex-wrap items-center gap-3">
-                          <h3 className="text-base font-bold text-slate-900 dark:text-white">
-                            {notification.title}
-                          </h3>
-
-                          <span className="rounded-full bg-cyan-500/10 px-3 py-1 text-xs font-bold text-cyan-400">
-                            {formatType(notification.type)}
-                          </span>
-
-                          {isUnread && (
-                            <span className="rounded-full bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-400">
-                              Nova
-                            </span>
-                          )}
+                        <div className="flex flex-wrap items-center gap-2">
+                          <h3 className="text-[14px] font-semibold">{notification.title}</h3>
+                          <Badge tone={getTone(notification.type)}>{formatType(notification.type)}</Badge>
+                          {isUnread && <Badge tone="positive">Nova</Badge>}
                         </div>
 
-                        <p className="mt-2 leading-relaxed text-slate-500 dark:text-slate-400">
+                        <p className="mt-1.5 text-[12.5px] leading-relaxed text-muted dark:text-muted-dark">
                           {notification.body}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex flex-col items-start gap-2 md:items-end">
-                      <span className="text-sm font-semibold text-slate-400 dark:text-slate-500">
+                    <div className="flex flex-col items-start gap-2 sm:items-end">
+                      <span className="whitespace-nowrap text-[11.5px] text-faint dark:text-faint-dark">
                         {formatDate(notification.createdAt)}
                       </span>
 
                       {isUnread && (
-                        <button
-                          type="button"
-                          onClick={() => handleMarkRead(notification.id)}
-                          className="rounded-xl bg-cyan-500 px-3 py-2 text-xs font-bold text-slate-950 hover:bg-cyan-400"
-                        >
+                        <Button size="sm" variant="ghost" onClick={() => handleMarkRead(notification.id)}>
                           Marcar como lida
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </div>
@@ -358,7 +284,7 @@ export function Notifications() {
             })
           )}
         </div>
-      </section>
-    </div>
+      </Card>
+    </PageContainer>
   );
 }

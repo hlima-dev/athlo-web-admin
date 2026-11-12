@@ -1,12 +1,9 @@
 import { useEffect, useState } from "react";
-import { AlertTriangle, CheckCircle2, ChevronDown, ChevronRight, Search } from "lucide-react";
+import { CheckCircle2, ChevronDown, ChevronRight, Search } from "lucide-react";
 import { useToast } from "./Toast";
 import { getErrorMessage } from "../utils/errors";
-import {
-  listAdminErrors,
-  resolveAdminError,
-  type AdminErrorLog,
-} from "../services/admin";
+import { listAdminErrors, resolveAdminError, type AdminErrorLog } from "../services/admin";
+import { Button, Card, CardHeader, EmptyState, inputClass } from "./ui";
 
 type Filter = "unresolved" | "resolved" | "all";
 
@@ -69,44 +66,36 @@ export function AdminErrorsPanel() {
   ];
 
   return (
-    <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm shadow-slate-200/40 dark:shadow-none p-6">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-2">
-          <AlertTriangle className="text-amber-400" size={20} />
-          <h2 className="font-bold text-slate-900 dark:text-white">Erros do sistema</h2>
-        </div>
+    <Card>
+      <CardHeader
+        title="Erros do sistema"
+        action={
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <div className="relative">
+              <Search size={15} className="pointer-events-none absolute left-2.5 top-1/2 -translate-y-1/2 text-faint dark:text-faint-dark" />
+              <input
+                placeholder="Buscar por mensagem ou rota..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className={`${inputClass} py-1.5 pl-8`}
+              />
+            </div>
+            <Button type="submit" size="sm">
+              Buscar
+            </Button>
+          </form>
+        }
+      />
 
-        <form onSubmit={handleSearch} className="flex gap-2">
-          <div className="relative">
-            <Search
-              size={16}
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-            />
-            <input
-              placeholder="Buscar por mensagem ou rota..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 py-2 pl-9 pr-4 text-sm text-slate-900 dark:text-white outline-none focus:border-cyan-400"
-            />
-          </div>
-          <button
-            type="submit"
-            className="rounded-xl bg-cyan-500 px-4 py-2 text-sm font-bold text-slate-950 hover:bg-cyan-400"
-          >
-            Buscar
-          </button>
-        </form>
-      </div>
-
-      <div className="mt-4 flex gap-2">
+      <div className="flex gap-1.5 border-b border-line px-5 py-3.5 dark:border-line-dark">
         {filterOptions.map((opt) => (
           <button
             key={opt.key}
             onClick={() => setFilter(opt.key)}
-            className={`rounded-full px-3 py-1 text-xs font-bold transition ${
+            className={`rounded-md px-3 py-1.5 text-[12.5px] font-medium transition ${
               filter === opt.key
-                ? "bg-cyan-500 text-slate-950"
-                : "bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200"
+                ? "bg-forest text-white dark:bg-forest-400"
+                : "text-muted hover:bg-[#F0EEE8] dark:text-muted-dark dark:hover:bg-white/[0.06]"
             }`}
           >
             {opt.label}
@@ -114,40 +103,34 @@ export function AdminErrorsPanel() {
         ))}
       </div>
 
-      <div className="mt-6 space-y-3">
+      <div className="space-y-2.5 p-5">
         {loading ? (
-          <p className="text-sm text-slate-500 dark:text-slate-400">Carregando...</p>
+          <p className="text-[13px] text-muted dark:text-muted-dark">Carregando...</p>
         ) : errors.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-slate-300 dark:border-slate-700 p-8 text-center">
-            <CheckCircle2 className="mx-auto text-emerald-400" size={24} />
-            <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
-              {filter === "unresolved" ? "Nenhum erro pendente." : "Nenhum registro encontrado."}
-            </p>
-          </div>
+          <EmptyState
+            icon={<CheckCircle2 size={20} />}
+            title={filter === "unresolved" ? "Nenhum erro pendente." : "Nenhum registro encontrado."}
+            description="Erros reportados pelo backend aparecem aqui."
+          />
         ) : (
           errors.map((log) => {
             const expanded = expandedId === log.id;
             return (
-              <div
-                key={log.id}
-                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50 p-4"
-              >
+              <div key={log.id} className="rounded-md border border-line p-4 dark:border-line-dark">
                 <div className="flex items-start justify-between gap-3">
                   <button
                     onClick={() => setExpandedId(expanded ? null : log.id)}
                     className="flex flex-1 items-start gap-2 text-left"
                   >
                     {expanded ? (
-                      <ChevronDown size={16} className="mt-0.5 shrink-0 text-slate-400" />
+                      <ChevronDown size={15} className="mt-0.5 shrink-0 text-faint dark:text-faint-dark" />
                     ) : (
-                      <ChevronRight size={16} className="mt-0.5 shrink-0 text-slate-400" />
+                      <ChevronRight size={15} className="mt-0.5 shrink-0 text-faint dark:text-faint-dark" />
                     )}
                     <div className="min-w-0">
-                      <p className="font-semibold text-slate-900 dark:text-white break-words">
-                        {log.message}
-                      </p>
-                      <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-                        <span className="rounded-full bg-slate-200 dark:bg-slate-700 px-2 py-0.5 font-mono">
+                      <p className="break-words text-[13.5px] font-medium">{log.message}</p>
+                      <div className="mt-1 flex flex-wrap items-center gap-2 text-[11.5px] text-muted dark:text-muted-dark">
+                        <span className="rounded bg-[#F0EEE8] px-1.5 py-0.5 font-mono dark:bg-white/[0.06]">
                           {log.method} {log.path}
                         </span>
                         <span>{formatDate(log.createdAt)}</span>
@@ -158,19 +141,20 @@ export function AdminErrorsPanel() {
                   </button>
 
                   {!log.resolvedAt && (
-                    <button
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      loading={resolvingId === log.id}
                       onClick={() => handleResolve(log)}
-                      disabled={resolvingId === log.id}
-                      className="shrink-0 inline-flex items-center gap-1.5 rounded-xl bg-emerald-500/10 px-3 py-1.5 text-xs font-bold text-emerald-400 hover:bg-emerald-500/20 disabled:opacity-40"
                     >
-                      <CheckCircle2 size={13} />
+                      <CheckCircle2 size={14} />
                       Resolver
-                    </button>
+                    </Button>
                   )}
                 </div>
 
                 {expanded && log.stack && (
-                  <pre className="mt-3 max-h-64 overflow-auto rounded-lg bg-slate-950 p-3 text-xs text-slate-300 whitespace-pre-wrap">
+                  <pre className="mt-3 max-h-64 overflow-auto whitespace-pre-wrap rounded-md bg-[#11140F] p-3 text-[11.5px] text-[#C6D6CD]">
                     {log.stack}
                   </pre>
                 )}
@@ -179,6 +163,6 @@ export function AdminErrorsPanel() {
           })
         )}
       </div>
-    </div>
+    </Card>
   );
 }

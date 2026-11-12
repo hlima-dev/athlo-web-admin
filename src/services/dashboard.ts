@@ -10,6 +10,9 @@ export interface DashboardData {
   growthData: { month: string; contatos: number }[];
   revenueData: { month: string; valor: number }[];
   upcomingEvents: { id: string; title: string; type: string; startDate: string }[];
+  // Fluxo líquido projetado (90 dias) a partir das faturas pendentes —
+  // não é saldo bancário real, ver DashboardController.buildCashFlowProjection.
+  cashFlowProjection: { date: string; in: number; out: number; balance: number }[];
 }
 
 export async function getDashboard(): Promise<DashboardData> {

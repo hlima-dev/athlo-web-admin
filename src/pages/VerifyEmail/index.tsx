@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { CheckCircle2, XCircle, Loader2, Mail } from 'lucide-react'
 import { api } from '../../services/api'
+import { AuthLayout } from '../../components/AuthLayout'
+import { Button } from '../../components/ui'
 
 type Status = 'loading' | 'success' | 'error' | 'missing-token'
 
@@ -38,46 +40,45 @@ export function VerifyEmail() {
     }
   }
 
+  const title =
+    status === 'loading'
+      ? 'Verificando seu e-mail...'
+      : status === 'success'
+        ? 'E-mail verificado!'
+        : status === 'error'
+          ? 'Link inválido ou expirado'
+          : 'Confirme seu e-mail'
+
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 px-4">
-      <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl text-center">
+    <AuthLayout title={title}>
+      <div className="text-center">
         {status === 'loading' && (
-          <>
-            <Loader2 className="mx-auto animate-spin text-cyan-400" size={40} />
-            <h1 className="mt-4 text-2xl font-bold text-slate-900 dark:text-white">Verificando seu e-mail...</h1>
-          </>
+          <Loader2 className="mx-auto animate-spin text-muted dark:text-muted-dark" size={32} />
         )}
 
         {status === 'success' && (
           <>
-            <CheckCircle2 className="mx-auto text-emerald-400" size={40} />
-            <h1 className="mt-4 text-2xl font-bold text-slate-900 dark:text-white">E-mail verificado!</h1>
-            <p className="mt-2 text-slate-500 dark:text-slate-400">
-              Sua conta foi confirmada com sucesso.
-            </p>
-            <Link
-              to="/login"
-              className="mt-6 inline-block w-full rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3 transition"
-            >
-              Ir para o login
+            <div className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-forest-100 text-forest-600 dark:bg-forest-900 dark:text-forest-400">
+              <CheckCircle2 size={20} />
+            </div>
+            <p className="mt-4 text-[13px] text-muted dark:text-muted-dark">Sua conta foi confirmada com sucesso.</p>
+            <Link to="/login">
+              <Button className="mt-6 w-full justify-center">Ir para o login</Button>
             </Link>
           </>
         )}
 
         {status === 'error' && (
           <>
-            <XCircle className="mx-auto text-red-400" size={40} />
-            <h1 className="mt-4 text-2xl font-bold text-slate-900 dark:text-white">Link inválido ou expirado</h1>
-            <p className="mt-2 text-slate-500 dark:text-slate-400">{message}</p>
-            <button
-              onClick={handleResend}
-              disabled={resending || resent}
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:opacity-60 text-slate-950 font-bold py-3 transition"
-            >
-              <Mail size={18} />
+            <div className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-[#F6E4E1] text-danger dark:bg-danger-dark/15 dark:text-danger-dark">
+              <XCircle size={20} />
+            </div>
+            <p className="mt-4 text-[13px] text-muted dark:text-muted-dark">{message}</p>
+            <Button className="mt-6 w-full justify-center" loading={resending} disabled={resent} onClick={handleResend}>
+              <Mail size={16} />
               {resent ? 'E-mail reenviado' : resending ? 'Enviando...' : 'Reenviar e-mail de verificação'}
-            </button>
-            <Link to="/login" className="block text-center text-cyan-400 mt-5">
+            </Button>
+            <Link to="/login" className="mt-5 block text-center text-[12.5px] text-forest-600 dark:text-forest-400">
               Voltar para Login
             </Link>
           </>
@@ -85,26 +86,23 @@ export function VerifyEmail() {
 
         {status === 'missing-token' && (
           <>
-            <Mail className="mx-auto text-cyan-400" size={40} />
-            <h1 className="mt-4 text-2xl font-bold text-slate-900 dark:text-white">Confirme seu e-mail</h1>
-            <p className="mt-2 text-slate-500 dark:text-slate-400">
+            <div className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-forest-100 text-forest-600 dark:bg-forest-900 dark:text-forest-400">
+              <Mail size={20} />
+            </div>
+            <p className="mt-4 text-[13px] text-muted dark:text-muted-dark">
               Enviamos um link de confirmação para o seu e-mail. Clique nele para ativar sua conta.
             </p>
-            <button
-              onClick={handleResend}
-              disabled={resending || resent}
-              className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cyan-500 hover:bg-cyan-400 disabled:opacity-60 text-slate-950 font-bold py-3 transition"
-            >
-              <Mail size={18} />
+            <Button className="mt-6 w-full justify-center" loading={resending} disabled={resent} onClick={handleResend}>
+              <Mail size={16} />
               {resent ? 'E-mail reenviado' : resending ? 'Enviando...' : 'Reenviar e-mail de verificação'}
-            </button>
-            {message && <p className="mt-3 text-sm text-red-400">{message}</p>}
-            <Link to="/login" className="block text-center text-cyan-400 mt-5">
+            </Button>
+            {message && <p className="mt-3 text-[12.5px] text-danger dark:text-danger-dark">{message}</p>}
+            <Link to="/login" className="mt-5 block text-center text-[12.5px] text-forest-600 dark:text-forest-400">
               Voltar para Login
             </Link>
           </>
         )}
       </div>
-    </main>
+    </AuthLayout>
   )
 }
