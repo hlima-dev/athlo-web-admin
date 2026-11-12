@@ -10,8 +10,21 @@ export interface Invoice {
   method?: string | null;
   paidAt?: string | null;
   notes?: string | null;
+  accessKey?: string | null;
   contact?: { id: string; name: string } | null;
   createdAt: string;
+}
+
+export interface ParsedNfeDraft {
+  accessKey: string;
+  model: string;
+  issuerName: string;
+  issuerDocument: string;
+  recipientDocument?: string;
+  totalValue: number;
+  issueDate: string;
+  itemsSummary: string;
+  suggestedType: "RECEIVABLE" | "PAYABLE";
 }
 
 export async function getInvoices(params?: Record<string, string>) {
@@ -19,10 +32,19 @@ export async function getInvoices(params?: Record<string, string>) {
   return extractList<Invoice>(response.data);
 }
 
- 
+
 export async function createInvoice(data: Record<string, unknown>) {
   const response = await api.post("/invoices", data);
   return response.data;
+}
+
+// Lê o XML de uma NF-e/NFC-e que a empresa já recebeu (não consulta a
+// SEFAZ) e devolve um rascunho pra revisar antes de salvar como fatura.
+export async function importInvoiceXml(xml: string): Promise<ParsedNfeDraft> {
+  const response = await api.post("/invoices/import-xml", xml, {
+    headers: { "Content-Type": "text/xml" },
+  });
+  return response.data?.data as ParsedNfeDraft;
 }
 
  
