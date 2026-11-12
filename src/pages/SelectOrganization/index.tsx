@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Building2, ArrowRight } from 'lucide-react'
 import { selectOrganization, saveSession, type OrganizationOption } from '../../services/auth'
 import { getErrorMessage } from '../../utils/errors'
+import { AuthLayout } from '../../components/AuthLayout'
 
 interface LocationState {
   preAuthToken?: string
@@ -44,49 +45,45 @@ export function SelectOrganization() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 px-4">
-      <div className="w-full max-w-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl">
-        <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Selecione a empresa</h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-2 mb-6">
-          Seu login tem acesso a mais de uma empresa no ATHLO. Escolha qual deseja usar agora —
-          você pode trocar depois a qualquer momento.
+    <AuthLayout
+      title="Selecione a empresa"
+      subtitle="Seu login tem acesso a mais de uma empresa no ATHLO. Escolha qual deseja usar agora — você pode trocar depois a qualquer momento."
+      maxWidth="max-w-lg"
+    >
+      {error && (
+        <p className="mb-4 rounded-md bg-[#F6E4E1] px-3.5 py-2.5 text-[12.5px] text-danger dark:bg-danger-dark/10 dark:text-danger-dark">
+          {error}
         </p>
+      )}
 
-        {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-900/30 border border-red-700 text-red-300 text-sm">
-            {error}
-          </div>
-        )}
+      <div className="space-y-2.5">
+        {state.organizations.map((org) => (
+          <button
+            key={org.id}
+            type="button"
+            onClick={() => handleSelect(org.id)}
+            disabled={loadingId !== null}
+            className="flex w-full items-center gap-3.5 rounded-md border border-line px-4 py-3.5 text-left transition hover:border-forest-600/40 hover:bg-[#F0EEE8] disabled:opacity-50 dark:border-line-dark dark:hover:border-forest-400/50 dark:hover:bg-white/[0.06]"
+          >
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md bg-forest-100 text-forest-600 dark:bg-forest-900 dark:text-forest-400">
+              <Building2 size={18} />
+            </div>
 
-        <div className="space-y-3">
-          {state.organizations.map((org) => (
-            <button
-              key={org.id}
-              type="button"
-              onClick={() => handleSelect(org.id)}
-              disabled={loadingId !== null}
-              className="w-full flex items-center gap-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-5 py-4 text-left hover:border-cyan-400 hover:bg-cyan-500/5 transition disabled:opacity-50"
-            >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400">
-                <Building2 size={20} />
-              </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate text-[14px] font-semibold">{org.name}</p>
+              <p className="text-[12.5px] text-muted dark:text-muted-dark">
+                {roleLabels[org.orgRole] ?? org.orgRole} · {org.slug}
+              </p>
+            </div>
 
-              <div className="flex-1 min-w-0">
-                <p className="font-bold text-slate-900 dark:text-white truncate">{org.name}</p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {roleLabels[org.orgRole] ?? org.orgRole} · {org.slug}
-                </p>
-              </div>
-
-              {loadingId === org.id ? (
-                <span className="text-xs text-cyan-400 font-semibold">Entrando...</span>
-              ) : (
-                <ArrowRight size={18} className="text-slate-400 shrink-0" />
-              )}
-            </button>
-          ))}
-        </div>
+            {loadingId === org.id ? (
+              <span className="text-[11.5px] font-medium text-forest-600 dark:text-forest-400">Entrando...</span>
+            ) : (
+              <ArrowRight size={16} className="shrink-0 text-faint dark:text-faint-dark" />
+            )}
+          </button>
+        ))}
       </div>
-    </main>
+    </AuthLayout>
   )
 }

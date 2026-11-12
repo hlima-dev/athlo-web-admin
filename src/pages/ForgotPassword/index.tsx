@@ -1,7 +1,10 @@
 ﻿import { Link } from 'react-router-dom'
 import { useState } from 'react'
+import { Mail } from 'lucide-react'
 import { api } from '../../services/api'
 import { getErrorMessage } from '../../utils/errors'
+import { AuthLayout } from '../../components/AuthLayout'
+import { Button, Field, inputClass } from '../../components/ui'
 
 export function ForgotPassword() {
   const [email, setEmail] = useState('')
@@ -26,61 +29,52 @@ export function ForgotPassword() {
 
   if (sent) {
     return (
-      <main className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 px-4">
-        <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl text-center">
-          <div className="text-5xl mb-4">📬</div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">E-mail enviado</h1>
-          <p className="text-slate-500 dark:text-slate-400 mb-6">
-            Se o endereço <strong className="text-slate-900 dark:text-white">{email}</strong> estiver cadastrado,
-            você receberá um e-mail com o link para redefinir sua senha.
+      <AuthLayout title="E-mail enviado">
+        <div className="text-center">
+          <div className="mx-auto grid h-11 w-11 place-items-center rounded-full bg-forest-100 text-forest-600 dark:bg-forest-900 dark:text-forest-400">
+            <Mail size={20} />
+          </div>
+          <p className="mt-4 text-[13px] leading-relaxed text-muted dark:text-muted-dark">
+            Se o endereço <strong className="text-ink dark:text-ink-dark">{email}</strong> estiver cadastrado, você
+            receberá um e-mail com o link para redefinir sua senha.
           </p>
-          <Link to="/login" className="text-cyan-400 hover:text-cyan-300 font-semibold">
+          <Link to="/login" className="mt-5 inline-block text-[12.5px] font-medium text-forest-600 dark:text-forest-400">
             Voltar para o login
           </Link>
         </div>
-      </main>
+      </AuthLayout>
     )
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl"
-      >
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Recuperar senha</h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-2 mb-6">
-          Informe seu e-mail e enviaremos um link para criar uma nova senha.
-        </p>
-
+    <AuthLayout title="Recuperar senha" subtitle="Informe seu e-mail e enviaremos um link para criar uma nova senha.">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-900/30 border border-red-700 text-red-300 text-sm">
+          <p className="rounded-md bg-[#F6E4E1] px-3.5 py-2.5 text-[12.5px] text-danger dark:bg-danger-dark/10 dark:text-danger-dark">
             {error}
-          </div>
+          </p>
         )}
 
-        <input
-          type="email"
-          placeholder="Seu e-mail"
-          autoComplete="email"
-          className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          required
-        />
+        <Field label="Seu e-mail">
+          <input
+            type="email"
+            placeholder="Seu e-mail"
+            autoComplete="email"
+            className={inputClass}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </Field>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full mt-6 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-60 text-slate-950 font-bold py-3 rounded-xl transition"
-        >
+        <Button type="submit" className="w-full justify-center" loading={loading}>
           {loading ? 'Enviando...' : 'Enviar link de recuperação'}
-        </button>
+        </Button>
 
-        <Link to="/login" className="block text-center text-cyan-400 mt-5">
+        <Link to="/login" className="block text-center text-[12.5px] text-forest-600 dark:text-forest-400">
           Voltar para Login
         </Link>
       </form>
-    </main>
+    </AuthLayout>
   )
 }

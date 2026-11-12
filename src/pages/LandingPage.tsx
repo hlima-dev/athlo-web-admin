@@ -76,17 +76,21 @@ export function LandingPage() {
       .finally(() => setLoadingPlans(false));
   }, []);
 
+  // bg-canvas fixo (sem par dark:) de propósito — a página não tem modo
+  // escuro (só o app autenticado tem); sem isso ela herdaria o fundo escuro
+  // do body quando o tema global estiver no escuro, deixando os títulos
+  // (cor fixa) ilegíveis.
   return (
-    <div className="min-h-screen text-[#081B3A] overflow-x-hidden">
+    <div className="min-h-screen bg-canvas text-ink overflow-x-hidden">
       <header className="sticky top-0 z-50 bg-white/85 backdrop-blur-xl border-b border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center shadow-lg shadow-cyan-600/20">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-forest to-forest-700 flex items-center justify-center shadow-lg shadow-forest/20">
               <Rocket className="text-white" size={26} />
             </div>
 
             <div>
-              <h1 className="text-2xl sm:text-4xl font-black text-cyan-600 leading-none">
+              <h1 className="text-2xl sm:text-4xl font-black text-forest-600 leading-none">
                 ATHLO
               </h1>
 
@@ -96,14 +100,14 @@ export function LandingPage() {
             </div>
           </div>
 
-          <nav className="hidden lg:flex items-center gap-10 text-[#081B3A] font-semibold">
-            <a href="#recursos" className="hover:text-cyan-600 transition">
+          <nav className="hidden lg:flex items-center gap-10 text-ink font-semibold">
+            <a href="#recursos" className="hover:text-forest-600 transition">
               Recursos
             </a>
-            <a href="#planos" className="hover:text-cyan-600 transition">
+            <a href="#planos" className="hover:text-forest-600 transition">
               Planos
             </a>
-            <a href="#vantagens" className="hover:text-cyan-600 transition">
+            <a href="#vantagens" className="hover:text-forest-600 transition">
               Vantagens
             </a>
           </nav>
@@ -111,13 +115,13 @@ export function LandingPage() {
           <div className="flex items-center gap-3">
             <a
               href="/login"
-              className="hidden sm:inline-flex text-[#081B3A] font-bold px-4 py-3 hover:text-cyan-600 transition"
+              className="hidden sm:inline-flex text-ink font-bold px-4 py-3 hover:text-forest-600 transition"
             >
               Entrar
             </a>
             <a
               href="/cadastro"
-              className="bg-cyan-600 hover:bg-cyan-500 text-white font-black px-5 sm:px-8 py-3 sm:py-4 rounded-2xl shadow-lg shadow-cyan-600/20 transition text-sm sm:text-base"
+              className="bg-forest hover:bg-forest-600 text-white font-black px-5 sm:px-8 py-3 sm:py-4 rounded-2xl shadow-lg shadow-forest/20 transition text-sm sm:text-base"
             >
               Começar grátis
             </a>
@@ -128,13 +132,13 @@ export function LandingPage() {
       <section className="relative overflow-hidden">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-20 grid grid-cols-1 xl:grid-cols-2 gap-12 xl:gap-16 items-center">
           <div>
-            <span className="inline-flex border border-cyan-500 text-cyan-600 rounded-full px-4 py-2 text-xs sm:text-sm font-black uppercase bg-white/70 backdrop-blur-sm">
+            <span className="inline-flex border border-forest-600 text-forest-600 rounded-full px-4 py-2 text-xs sm:text-sm font-black uppercase bg-white/70 backdrop-blur-sm">
               SaaS para pequenas e médias empresas
             </span>
 
-            <h1 className="text-4xl sm:text-5xl xl:text-7xl font-black leading-tight mt-8 text-[#071B3A]">
+            <h1 className="font-display text-4xl sm:text-5xl xl:text-7xl leading-tight mt-8 text-ink">
               Sua empresa organizada em{" "}
-              <span className="text-cyan-600 italic font-black">
+              <span className="text-forest-600 italic">
                 um só lugar
               </span>
             </h1>
@@ -148,7 +152,7 @@ export function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 mt-8 sm:mt-10">
               <a
                 href="/cadastro"
-                className="inline-flex items-center justify-center gap-3 bg-cyan-600 hover:bg-cyan-500 text-white font-black px-6 sm:px-8 py-4 sm:py-5 rounded-2xl shadow-lg shadow-cyan-600/25 transition"
+                className="inline-flex items-center justify-center gap-3 bg-forest hover:bg-forest-600 text-white font-black px-6 sm:px-8 py-4 sm:py-5 rounded-2xl shadow-lg shadow-forest/25 transition"
               >
                 <Rocket size={20} />
                 Criar minha empresa grátis
@@ -156,7 +160,7 @@ export function LandingPage() {
 
               <a
                 href="#planos"
-                className="inline-flex items-center justify-center gap-3 bg-white/85 backdrop-blur-sm hover:bg-white border border-slate-300 text-[#071B3A] font-black px-6 sm:px-8 py-4 sm:py-5 rounded-2xl transition"
+                className="inline-flex items-center justify-center gap-3 bg-white/85 backdrop-blur-sm hover:bg-white border border-slate-300 text-ink font-black px-6 sm:px-8 py-4 sm:py-5 rounded-2xl transition"
               >
                 Ver planos
                 <ArrowRight size={20} />
@@ -165,9 +169,9 @@ export function LandingPage() {
           </div>
 
           <div className="relative">
-            <div className="rounded-[28px] sm:rounded-[36px] overflow-hidden bg-slate-900 shadow-2xl shadow-cyan-900/10 border border-white/10 p-6 sm:p-8">
+            <div className="rounded-[28px] sm:rounded-[36px] overflow-hidden bg-slate-900 shadow-2xl shadow-forest-700/10 border border-white/10 p-6 sm:p-8">
               <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 flex items-center justify-center text-cyan-400">
+                <div className="w-10 h-10 rounded-xl bg-forest-400/10 flex items-center justify-center text-forest-400">
                   <BarChart3 size={20} />
                 </div>
                 <div>
@@ -184,7 +188,7 @@ export function LandingPage() {
                       key={feature.title}
                       className="rounded-2xl border border-slate-800 bg-slate-800/60 p-4"
                     >
-                      <Icon className="text-cyan-400" size={22} />
+                      <Icon className="text-forest-400" size={22} />
                       <p className="mt-3 text-sm font-bold text-white leading-tight">
                         {feature.title}
                       </p>
@@ -199,7 +203,7 @@ export function LandingPage() {
 
       <section id="recursos" className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <h2 className="text-3xl sm:text-4xl font-black text-[#071B3A]">
+          <h2 className="text-3xl sm:text-4xl font-black text-ink">
             Tudo que sua empresa precisa, em um painel só
           </h2>
           <p className="text-slate-600 mt-4 text-base sm:text-lg">
@@ -215,10 +219,10 @@ export function LandingPage() {
                 key={feature.title}
                 className="rounded-3xl bg-white/90 backdrop-blur-md border border-white/40 shadow-sm p-6 sm:p-7"
               >
-                <div className="w-14 h-14 rounded-2xl bg-cyan-50 flex items-center justify-center text-cyan-600">
+                <div className="w-14 h-14 rounded-2xl bg-forest-100 flex items-center justify-center text-forest-600">
                   <Icon size={28} />
                 </div>
-                <h3 className="mt-5 text-lg sm:text-xl font-black text-[#071B3A]">
+                <h3 className="mt-5 text-lg sm:text-xl font-black text-ink">
                   {feature.title}
                 </h3>
                 <p className="mt-2 text-slate-500 leading-relaxed text-sm sm:text-base">
@@ -237,12 +241,12 @@ export function LandingPage() {
 
             return (
               <div key={benefit.title} className="flex gap-5">
-                <div className="w-14 h-14 rounded-2xl bg-cyan-50 flex items-center justify-center text-cyan-600 shrink-0">
+                <div className="w-14 h-14 rounded-2xl bg-forest-100 flex items-center justify-center text-forest-600 shrink-0">
                   <Icon size={30} />
                 </div>
 
                 <div>
-                  <h3 className="text-lg sm:text-xl font-black text-[#071B3A]">
+                  <h3 className="text-lg sm:text-xl font-black text-ink">
                     {benefit.title}
                   </h3>
 
@@ -258,7 +262,7 @@ export function LandingPage() {
 
       <section id="planos" className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
         <div className="text-center max-w-3xl mx-auto mb-10">
-          <h2 className="text-3xl sm:text-4xl font-black text-[#071B3A]">
+          <h2 className="text-3xl sm:text-4xl font-black text-ink">
             Planos para cada fase da sua empresa
           </h2>
           <p className="text-slate-600 mt-4 text-base sm:text-lg">
@@ -283,14 +287,14 @@ export function LandingPage() {
                   key={plan.id}
                   className={`rounded-[28px] p-6 sm:p-8 shadow-xl border ${
                     highlighted
-                      ? "bg-gradient-to-br from-cyan-600 to-blue-700 text-white border-transparent scale-[1.02]"
-                      : "bg-white/90 backdrop-blur-md border-white/40 text-[#071B3A]"
+                      ? "bg-gradient-to-br from-forest to-forest-700 text-white border-transparent scale-[1.02]"
+                      : "bg-white/90 backdrop-blur-md border-white/40 text-ink"
                   }`}
                 >
                   <h3 className="text-2xl font-black">{plan.name}</h3>
                   <p
                     className={`mt-3 text-3xl font-black ${
-                      highlighted ? "text-white" : "text-cyan-600"
+                      highlighted ? "text-white" : "text-forest-600"
                     }`}
                   >
                     {formatPrice(plan.priceMonthly)}
@@ -301,16 +305,16 @@ export function LandingPage() {
 
                   <ul className="mt-6 space-y-3">
                     <li className="flex items-center gap-2 text-sm sm:text-base">
-                      <Check size={18} className={highlighted ? "text-white" : "text-cyan-600"} />
+                      <Check size={18} className={highlighted ? "text-white" : "text-forest-600"} />
                       Até {plan.maxUsers} usuários
                     </li>
                     <li className="flex items-center gap-2 text-sm sm:text-base">
-                      <Check size={18} className={highlighted ? "text-white" : "text-cyan-600"} />
+                      <Check size={18} className={highlighted ? "text-white" : "text-forest-600"} />
                       Até {plan.maxContacts.toLocaleString("pt-BR")} contatos
                     </li>
                     {(plan.features ?? []).map((f) => (
                       <li key={f} className="flex items-center gap-2 text-sm sm:text-base">
-                        <Check size={18} className={highlighted ? "text-white" : "text-cyan-600"} />
+                        <Check size={18} className={highlighted ? "text-white" : "text-forest-600"} />
                         {f}
                       </li>
                     ))}
@@ -320,8 +324,8 @@ export function LandingPage() {
                     href="/cadastro"
                     className={`mt-8 inline-flex w-full items-center justify-center gap-2 font-black px-6 py-4 rounded-2xl transition ${
                       highlighted
-                        ? "bg-white text-cyan-700 hover:bg-slate-100"
-                        : "bg-cyan-600 text-white hover:bg-cyan-500"
+                        ? "bg-white text-forest-700 hover:bg-slate-100"
+                        : "bg-forest text-white hover:bg-forest-600"
                     }`}
                   >
                     Começar com {plan.name}
@@ -334,8 +338,8 @@ export function LandingPage() {
       </section>
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div className="rounded-[28px] sm:rounded-[36px] bg-gradient-to-r from-cyan-600 to-blue-700 p-6 sm:p-12 text-white shadow-xl text-center">
-          <h2 className="text-3xl sm:text-5xl font-black max-w-3xl mx-auto leading-tight">
+        <div className="rounded-[28px] sm:rounded-[36px] bg-gradient-to-r from-forest to-forest-700 p-6 sm:p-12 text-white shadow-xl text-center">
+          <h2 className="font-display text-3xl sm:text-5xl max-w-3xl mx-auto leading-tight">
             Pronto para organizar sua empresa?
           </h2>
 
@@ -346,7 +350,7 @@ export function LandingPage() {
 
           <a
             href="/cadastro"
-            className="mt-8 inline-flex items-center justify-center gap-3 bg-white text-cyan-700 hover:bg-slate-100 font-black px-8 sm:px-10 py-4 sm:py-5 rounded-2xl transition"
+            className="mt-8 inline-flex items-center justify-center gap-3 bg-white text-forest-700 hover:bg-slate-100 font-black px-8 sm:px-10 py-4 sm:py-5 rounded-2xl transition"
           >
             <Rocket size={20} />
             Criar minha empresa grátis
@@ -358,12 +362,12 @@ export function LandingPage() {
         <div className="max-w-7xl mx-auto flex flex-col gap-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-5 text-center md:text-left">
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-700 flex items-center justify-center">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-forest to-forest-700 flex items-center justify-center">
                 <Rocket className="text-white" size={22} />
               </div>
 
               <div>
-                <h2 className="text-2xl sm:text-3xl font-black text-cyan-600">
+                <h2 className="text-2xl sm:text-3xl font-black text-forest-600">
                   ATHLO
                 </h2>
 

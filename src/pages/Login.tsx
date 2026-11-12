@@ -2,6 +2,8 @@
 import { useState } from 'react'
 import { login, saveSession } from '../services/auth'
 import { getErrorMessage } from '../utils/errors'
+import { AuthLayout } from '../components/AuthLayout'
+import { Button, Field, inputClass } from '../components/ui'
 
 export function Login() {
   const navigate = useNavigate()
@@ -39,63 +41,55 @@ export function Login() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 px-4">
-      <form
-        onSubmit={handleLogin}
-        className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl"
-      >
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Bem-vindo ao ATHLO</h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-2 mb-6">Acesse o painel de gestão da sua empresa.</p>
-
+    <AuthLayout title="Bem-vindo ao ATHLO" subtitle="Acesse o painel de gestão da sua empresa.">
+      <form onSubmit={handleLogin} className="space-y-4">
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-900/30 border border-red-700 text-red-300 text-sm">
+          <p className="rounded-md bg-[#F6E4E1] px-3.5 py-2.5 text-[12.5px] text-danger dark:bg-danger-dark/10 dark:text-danger-dark">
             {error}
-          </div>
+          </p>
         )}
 
-        <div className="space-y-4">
+        <Field label="E-mail">
           <input
             type="email"
             placeholder="E-mail"
             autoComplete="email"
-            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
+            className={inputClass}
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
+        </Field>
+
+        <Field label="Senha">
           <input
             type="password"
             placeholder="Senha"
             autoComplete="current-password"
-            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
+            className={inputClass}
             value={senha}
             onChange={(e) => setSenha(e.target.value)}
             required
           />
-        </div>
+        </Field>
 
-        <div className="flex justify-end mt-3">
-          <Link to="/forgot-password" className="text-sm text-cyan-400 hover:text-cyan-300">
+        <div className="flex justify-end">
+          <Link to="/forgot-password" className="text-[12.5px] text-forest-600 hover:underline dark:text-forest-400">
             Esqueci minha senha
           </Link>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full mt-6 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-60 text-slate-950 font-bold py-3 rounded-xl transition"
-        >
+        <Button type="submit" className="w-full justify-center" loading={loading}>
           {loading ? 'Entrando...' : 'Entrar'}
-        </button>
+        </Button>
 
-        <p className="text-slate-500 dark:text-slate-400 text-sm mt-5 text-center">
+        <p className="text-center text-[12.5px] text-muted dark:text-muted-dark">
           Ainda não tem conta?{' '}
-          <Link to="/cadastro" className="text-cyan-400 font-semibold">
+          <Link to="/cadastro" className="font-medium text-forest-600 dark:text-forest-400">
             Criar cadastro
           </Link>
         </p>
       </form>
-    </main>
+    </AuthLayout>
   )
 }
-

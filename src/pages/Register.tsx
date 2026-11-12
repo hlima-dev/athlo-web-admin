@@ -3,6 +3,8 @@ import { useState } from 'react'
 import { isAxiosError } from 'axios'
 import { register, saveSession } from '../services/auth'
 import { getErrorMessage } from '../utils/errors'
+import { AuthLayout } from '../components/AuthLayout'
+import { Button, Field, inputClass } from '../components/ui'
 
 export function Register() {
   const navigate = useNavigate()
@@ -40,61 +42,65 @@ export function Register() {
   }
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-slate-100 dark:bg-slate-950 px-4">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 shadow-2xl"
-      >
-        <h1 className="text-3xl font-bold text-slate-900 dark:text-white">
-          {inviteToken ? 'Aceitar convite' : 'Criar sua empresa no ATHLO'}
-        </h1>
-        <p className="text-slate-500 dark:text-slate-400 mt-2 mb-6">
-          {inviteToken
-            ? 'Complete seu cadastro para entrar na equipe.'
-            : 'Comece grátis e gerencie contatos, financeiro e agenda em um só lugar.'}
-        </p>
-
+    <AuthLayout
+      title={inviteToken ? 'Aceitar convite' : 'Criar sua empresa no ATHLO'}
+      subtitle={
+        inviteToken
+          ? 'Complete seu cadastro para entrar na equipe.'
+          : 'Comece grátis e gerencie contatos, financeiro e agenda em um só lugar.'
+      }
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
         {error && (
-          <div className="mb-4 p-3 rounded-xl bg-red-900/30 border border-red-700 text-red-300 text-sm">
+          <p className="rounded-md bg-[#F6E4E1] px-3.5 py-2.5 text-[12.5px] text-danger dark:bg-danger-dark/10 dark:text-danger-dark">
             {error}
-          </div>
+          </p>
         )}
 
-        <div className="space-y-4">
-          {!inviteToken && (
+        {!inviteToken && (
+          <Field label="Nome da empresa">
             <input
               type="text"
               placeholder="Nome da empresa"
               autoComplete="organization"
-              className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
+              className={inputClass}
               value={form.empresa}
               onChange={(e) => setForm({ ...form, empresa: e.target.value })}
               required
             />
-          )}
+          </Field>
+        )}
+
+        <Field label="Seu nome completo">
           <input
             type="text"
             placeholder="Seu nome completo"
             autoComplete="name"
-            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
+            className={inputClass}
             value={form.nome}
             onChange={(e) => setForm({ ...form, nome: e.target.value })}
             required
           />
+        </Field>
+
+        <Field label="E-mail">
           <input
             type="email"
             placeholder="E-mail"
             autoComplete="email"
-            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
+            className={inputClass}
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             required
           />
+        </Field>
+
+        <Field label="Senha" hint="Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número.">
           <input
             type="password"
             placeholder="Senha"
             autoComplete="new-password"
-            className="w-full rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white px-4 py-3 outline-none focus:border-cyan-400"
+            className={inputClass}
             value={form.senha}
             onChange={(e) => setForm({ ...form, senha: e.target.value })}
             minLength={8}
@@ -102,26 +108,19 @@ export function Register() {
             title="Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número"
             required
           />
-          <p className="text-xs text-slate-400 dark:text-slate-500 -mt-2">
-            Mínimo 8 caracteres, com ao menos 1 letra maiúscula e 1 número.
-          </p>
-        </div>
+        </Field>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full mt-6 bg-cyan-500 hover:bg-cyan-400 disabled:opacity-60 text-slate-950 font-bold py-3 rounded-xl transition"
-        >
+        <Button type="submit" className="w-full justify-center" loading={loading}>
           {loading ? 'Cadastrando...' : inviteToken ? 'Entrar na equipe' : 'Criar minha empresa'}
-        </button>
+        </Button>
 
-        <p className="text-slate-500 dark:text-slate-400 text-sm mt-5 text-center">
+        <p className="text-center text-[12.5px] text-muted dark:text-muted-dark">
           Já tem conta?{' '}
-          <Link to="/login" className="text-cyan-400 font-semibold">
+          <Link to="/login" className="font-medium text-forest-600 dark:text-forest-400">
             Entrar
           </Link>
         </p>
       </form>
-    </main>
+    </AuthLayout>
   )
 }
