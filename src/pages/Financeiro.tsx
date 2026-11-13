@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Plus, FileDown, FileUp, Wallet } from "lucide-react";
+import { Plus, FileCode, FileDown, FileUp, Wallet } from "lucide-react";
 import {
   getInvoices,
   createInvoice,
@@ -15,7 +15,7 @@ import type { PageMeta } from "../services/api";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
-import { openPdf } from "../services/api";
+import { downloadFile, openPdf } from "../services/api";
 import { getErrorMessage } from "../utils/errors";
 import {
   Badge,
@@ -107,6 +107,7 @@ export function Financeiro() {
   const [markingPaidId, setMarkingPaidId] = useState<string | null>(null);
   const [importingXml, setImportingXml] = useState(false);
   const [importedAccessKey, setImportedAccessKey] = useState<string | null>(null);
+  const [importedXml, setImportedXml] = useState<string | null>(null);
   const xmlInputRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState(emptyForm);
@@ -151,6 +152,7 @@ export function Financeiro() {
     setEditingId(null);
     setForm(emptyForm);
     setImportedAccessKey(null);
+    setImportedXml(null);
     setError("");
     setShowModal(true);
   }
@@ -166,6 +168,7 @@ export function Financeiro() {
       notes: invoice.notes || "",
     });
     setImportedAccessKey(null);
+    setImportedXml(null);
     setError("");
     setShowModal(true);
   }
@@ -187,6 +190,7 @@ export function Financeiro() {
         notes: draft.itemsSummary ? `Itens: ${draft.itemsSummary}` : "",
       });
       setImportedAccessKey(draft.accessKey);
+      setImportedXml(xmlText);
       setShowModal(true);
       toast.success("Nota fiscal lida com sucesso! Revise os dados e salve.");
     } catch (err: unknown) {
@@ -210,6 +214,7 @@ export function Financeiro() {
         method: form.method,
         notes: form.notes,
         ...(!editingId && importedAccessKey ? { accessKey: importedAccessKey } : {}),
+        ...(!editingId && importedXml ? { xmlRaw: importedXml } : {}),
       };
 
       if (editingId) {
@@ -222,6 +227,7 @@ export function Financeiro() {
       setForm(emptyForm);
       setEditingId(null);
       setImportedAccessKey(null);
+      setImportedXml(null);
       await loadInvoices();
       toast.success(editingId ? "Fatura atualizada com sucesso." : "Fatura cadastrada com sucesso.");
     } catch (err: unknown) {
@@ -401,6 +407,18 @@ export function Financeiro() {
                                 toast.error("Erro ao gerar o PDF da fatura.")
                               ),
                           },
+                          ...(invoice.accessKey
+                            ? [
+                                {
+                                  label: "Baixar XML da nota",
+                                  icon: FileCode,
+                                  onClick: () =>
+                                    downloadFile(`/invoices/${invoice.id}/xml`, `nfe-${invoice.accessKey}.xml`).catch(
+                                      () => toast.error("Erro ao baixar o XML da nota fiscal.")
+                                    ),
+                                },
+                              ]
+                            : []),
                         ]}
                       />
                     </div>
