@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   ClipboardList,
   Plus,
@@ -8,6 +8,7 @@ import {
   PackageCheck,
   Trash2,
   FileDown,
+  Receipt,
 } from "lucide-react";
 
 import {
@@ -532,6 +533,15 @@ export function Orders() {
                     <p className="text-[12px] text-muted dark:text-muted-dark">
                       {paymentStatusLabels[order.paymentStatus]}
                     </p>
+                    {order.invoice && (
+                      <Link
+                        to="/financeiro"
+                        className="mt-0.5 flex items-center gap-1 text-[11.5px] text-forest-600 hover:underline dark:text-forest-400"
+                      >
+                        <Receipt size={11} />
+                        Fatura gerada
+                      </Link>
+                    )}
                   </Td>
                   <Td>
                     <Badge tone="neutral">{originLabels[order.origin]}</Badge>
