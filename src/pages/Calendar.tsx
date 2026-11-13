@@ -44,8 +44,11 @@ export function Calendar() {
     async function load() {
       try {
         setLoading(true)
-        const list = await getEvents()
-        setEvents(list)
+        // Calendário mostra o mês inteiro — pede o teto de itens por página
+        // (100) em vez do padrão de 20, senão meses com mais compromissos
+        // ficam com dias faltando no grid sem nenhum aviso.
+        const result = await getEvents({ limit: "100" })
+        setEvents(result.items)
       } catch (err) {
         console.error("Erro ao carregar agenda:", err)
       } finally {

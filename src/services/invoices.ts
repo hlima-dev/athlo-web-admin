@@ -1,4 +1,4 @@
-import { api, extractList } from "./api";
+import { api, extractPaginated, type PaginatedResult } from "./api";
 
 export interface Invoice {
   id: string;
@@ -27,9 +27,16 @@ export interface ParsedNfeDraft {
   suggestedType: "RECEIVABLE" | "PAYABLE";
 }
 
-export async function getInvoices(params?: Record<string, string>) {
+export interface InvoicesSummary {
+  totalReceivable: number;
+  totalPayable: number;
+  pending: number;
+  overdue: number;
+}
+
+export async function getInvoices(params?: Record<string, string>): Promise<PaginatedResult<Invoice, InvoicesSummary>> {
   const response = await api.get("/invoices", { params });
-  return extractList<Invoice>(response.data);
+  return extractPaginated<Invoice, InvoicesSummary>(response.data);
 }
 
 

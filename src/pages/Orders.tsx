@@ -17,8 +17,10 @@ import {
   updateOrderStatus,
   deleteOrder,
   type Order,
+  type OrdersSummary,
 } from "../services/orders";
 import { getProducts, type Product } from "../services/products";
+import type { PageMeta } from "../services/api";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
@@ -34,6 +36,7 @@ import {
   Field,
   Modal,
   PageContainer,
+  Pagination,
   SkeletonRows,
   StatStrip,
   Table,
@@ -166,6 +169,9 @@ export function Orders() {
   const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [orders, setOrders] = useState<Order[]>([]);
+  const [meta, setMeta] = useState<PageMeta | null>(null);
+  const [summary, setSummary] = useState<OrdersSummary | null>(null);
+  const [page, setPage] = useState(1);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<PeriodKey>("ALL");
@@ -182,18 +188,21 @@ export function Orders() {
 
   const [form, setForm] = useState(emptyForm);
 
-  async function loadOrders() {
+  async function loadOrders(targetPage = page) {
     try {
       setLoading(true);
       const range = getPeriodRange(period);
-      const params: Record<string, string> = {};
+      const params: Record<string, string> = { page: String(targetPage) };
       if (range.from) params.from = range.from;
       if (range.to) params.to = range.to;
       if (statusFilter) params.status = statusFilter;
       if (search) params.search = search;
 
-      const list = await getOrders(params);
-      setOrders(list);
+      const result = await getOrders(params);
+      setOrders(result.items);
+      setMeta(result.meta ?? null);
+      setSummary(result.summary ?? null);
+      setPage(targetPage);
     } catch (err) {
       console.error("Erro ao carregar pedidos:", err);
     } finally {
@@ -202,19 +211,19 @@ export function Orders() {
   }
 
   useEffect(() => {
-    getProducts({ active: "true" })
-      .then(setProducts)
+    getProducts({ active: "true", limit: "100" })
+      .then((result) => setProducts(result.items))
       .catch((err) => console.error("Erro ao carregar produtos:", err));
   }, []);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- refaz a busca quando o período/status do filtro muda
-    loadOrders();
+    loadOrders(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [period, statusFilter]);
 
   useEffect(() => {
-    const timeout = setTimeout(loadOrders, 400);
+    const timeout = setTimeout(() => loadOrders(1), 400);
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
@@ -387,15 +396,9 @@ export function Orders() {
     }
   }
 
-  const stats = useMemo(() => {
-    const open = orders.filter((o) => o.status !== "DELIVERED" && o.status !== "CANCELED").length;
-    const delivered = orders.filter((o) => o.status === "DELIVERED").length;
-    const revenue = orders
-      .filter((o) => o.paymentStatus === "PAID")
-      .reduce((sum, o) => sum + Number(o.total || 0), 0);
-
-    return { total: orders.length, open, delivered, revenue };
-  }, [orders]);
+  // Vem do backend, já respeitando o filtro de período/status atual — não
+  // soma só os 20 pedidos carregados na página.
+  const stats = summary ?? { total: 0, open: 0, delivered: 0, revenue: 0 };
 
   return (
     <PageContainer>
@@ -556,6 +559,9 @@ export function Orders() {
               ))}
             </Tbody>
           </Table>
+        )}
+        {meta && (
+          <Pagination page={meta.page} totalPages={meta.totalPages} total={meta.total} onPageChange={loadOrders} />
         )}
       </Card>
 

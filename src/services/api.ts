@@ -115,6 +115,32 @@ export function extractList<T>(data: any): T[] {
   return []
 }
 
+export interface PageMeta {
+  total: number
+  page: number
+  limit: number
+  totalPages: number
+  hasNext: boolean
+  hasPrev: boolean
+}
+
+export interface PaginatedResult<T, S = undefined> {
+  items: T[]
+  meta?: PageMeta
+  summary?: S
+}
+
+// Igual ao extractList, mas também preserva meta (total/página) e o
+// resumo agregado que o backend calcula sobre a organização inteira —
+// os dois ficavam descartados antes, obrigando a UI a recalcular
+// indicadores só com a página de 20 itens carregada.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function extractPaginated<T, S = undefined>(data: any): PaginatedResult<T, S> {
+  const inner = data?.data ?? data
+  const items = extractList<T>(data)
+  return { items, meta: inner?.meta, summary: inner?.summary }
+}
+
 // Baixa um PDF gerado pelo backend (autenticado via cookie) e abre numa
 // nova aba.
 export async function openPdf(path: string): Promise<void> {

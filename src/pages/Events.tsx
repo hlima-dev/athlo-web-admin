@@ -9,7 +9,9 @@ import {
   deleteEvent,
   parseEventFromText,
   type Event,
+  type EventsSummary,
 } from "../services/events";
+import type { PageMeta } from "../services/api";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
@@ -23,6 +25,7 @@ import {
   Field,
   Modal,
   PageContainer,
+  Pagination,
   SkeletonRows,
   StatStrip,
   inputClass,
@@ -58,6 +61,9 @@ export function Events() {
   const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [events, setEvents] = useState<Event[]>([]);
+  const [meta, setMeta] = useState<PageMeta | null>(null);
+  const [summary, setSummary] = useState<EventsSummary | null>(null);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -71,11 +77,14 @@ export function Events() {
 
   const [form, setForm] = useState(emptyForm);
 
-  async function loadEvents() {
+  async function loadEvents(targetPage = page) {
     try {
       setLoading(true);
-      const list = await getEvents();
-      setEvents(list);
+      const result = await getEvents({ page: String(targetPage) });
+      setEvents(result.items);
+      setMeta(result.meta ?? null);
+      setSummary(result.summary ?? null);
+      setPage(targetPage);
     } catch (error) {
       console.error("Erro ao carregar eventos:", error);
     } finally {
@@ -86,6 +95,7 @@ export function Events() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
     loadEvents();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ?novo=1 (link de criação rápida do header) abre o modal de criação —
@@ -244,9 +254,14 @@ export function Events() {
     }
   }
 
-  const scheduled = events.filter((event) => event.status === "SCHEDULED").length;
-  const tasks = events.filter((event) => event.type === "TASK").length;
-  const deadlines = events.filter((event) => event.type === "DEADLINE").length;
+  // Vem do backend (agregado da organização inteira) — não some quando a
+  // página atual não tem nenhum item de um tipo específico.
+  const { scheduled, tasks, deadlines, total: totalEvents } = summary ?? {
+    scheduled: 0,
+    tasks: 0,
+    deadlines: 0,
+    total: 0,
+  };
 
   return (
     <PageContainer>
@@ -282,7 +297,7 @@ export function Events() {
           { label: "Agendados", value: String(scheduled) },
           { label: "Tarefas", value: String(tasks) },
           { label: "Prazos", value: String(deadlines) },
-          { label: "Total de itens", value: String(events.length) },
+          { label: "Total de itens", value: String(totalEvents) },
         ]}
       />
 
@@ -385,6 +400,12 @@ export function Events() {
             </Card>
           ))}
         </div>
+      )}
+
+      {meta && (
+        <Card>
+          <Pagination page={meta.page} totalPages={meta.totalPages} total={meta.total} onPageChange={loadEvents} />
+        </Card>
       )}
 
       <Modal
