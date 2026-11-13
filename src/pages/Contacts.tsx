@@ -8,7 +8,9 @@ import {
   updateContact,
   deleteContact,
   type Contact,
+  type ContactsSummary,
 } from "../services/contacts";
+import type { PageMeta } from "../services/api";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
@@ -20,9 +22,11 @@ import {
   Card,
   CardHeader,
   EmptyState,
+  ErrorNote,
   Field,
   Modal,
   PageContainer,
+  Pagination,
   SkeletonRows,
   StatStrip,
   Table,
@@ -59,6 +63,9 @@ export function Contacts() {
   const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [meta, setMeta] = useState<PageMeta | null>(null);
+  const [summary, setSummary] = useState<ContactsSummary | null>(null);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState(searchParams.get("q") ?? "");
   const [lastQ, setLastQ] = useState(searchParams.get("q") ?? "");
@@ -79,13 +86,20 @@ export function Contacts() {
     setSearch(currentQ);
   }
 
-  async function loadContacts(term: string) {
+  async function loadContacts(term: string, targetPage = page) {
     try {
       setLoading(true);
-      const list = await getContacts(term ? { search: term } : undefined);
-      setContacts(list);
+      setError("");
+      const params: Record<string, string> = { page: String(targetPage) };
+      if (term) params.search = term;
+      const result = await getContacts(params);
+      setContacts(result.items);
+      setMeta(result.meta ?? null);
+      setSummary(result.summary ?? null);
+      setPage(targetPage);
     } catch (err) {
       console.error("Erro ao carregar contatos:", err);
+      setError(getErrorMessage(err, "Erro ao carregar contatos."));
     } finally {
       setLoading(false);
     }
@@ -98,8 +112,9 @@ export function Contacts() {
   }, []);
 
   useEffect(() => {
-    const timeout = setTimeout(() => loadContacts(search), 400);
+    const timeout = setTimeout(() => loadContacts(search, 1), 400);
     return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
   // ?novo=1 (link de criação rápida do header) abre o modal de criação —
@@ -176,9 +191,14 @@ export function Contacts() {
     }
   }
 
-  const customers = contacts.filter((c) => c.type === "CUSTOMER").length;
-  const leads = contacts.filter((c) => c.type === "LEAD").length;
-  const suppliers = contacts.filter((c) => c.type === "SUPPLIER").length;
+  // Vem do backend (agregado da organização inteira) — não some quando a
+  // busca filtra a lista, nem fica errado quando há mais de 20 contatos.
+  const { total: totalCount, customers, leads, suppliers } = summary ?? {
+    total: 0,
+    customers: 0,
+    leads: 0,
+    suppliers: 0,
+  };
 
   const typeTones: Record<string, "info" | "positive" | "accent"> = {
     LEAD: "info",
@@ -190,7 +210,7 @@ export function Contacts() {
     <PageContainer>
       <StatStrip
         items={[
-          { label: "Contatos cadastrados", value: String(contacts.length) },
+          { label: "Contatos cadastrados", value: String(totalCount) },
           { label: "Clientes", value: String(customers) },
           { label: "Fornecedores", value: String(suppliers) },
           { label: "Leads", value: String(leads) },
@@ -208,6 +228,8 @@ export function Contacts() {
             </Button>
           }
         />
+
+        {error ? <ErrorNote message={error} onRetry={() => loadContacts(search)} /> : null}
 
         <div className="flex items-center gap-2.5 border-b border-line px-5 py-3.5 dark:border-line-dark">
           <Search size={16} className="text-faint dark:text-faint-dark" />
@@ -287,6 +309,14 @@ export function Contacts() {
               ))}
             </Tbody>
           </Table>
+        )}
+        {meta && (
+          <Pagination
+            page={meta.page}
+            totalPages={meta.totalPages}
+            total={meta.total}
+            onPageChange={(p) => loadContacts(search, p)}
+          />
         )}
       </Card>
 

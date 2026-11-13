@@ -1,4 +1,4 @@
-import { api, extractList } from "./api";
+import { api, extractPaginated, type PaginatedResult } from "./api";
 
 export interface Contact {
   id: string;
@@ -18,9 +18,16 @@ export interface Contact {
   createdAt: string;
 }
 
-export async function getContacts(params?: Record<string, string>) {
+export interface ContactsSummary {
+  total: number;
+  customers: number;
+  leads: number;
+  suppliers: number;
+}
+
+export async function getContacts(params?: Record<string, string>): Promise<PaginatedResult<Contact, ContactsSummary>> {
   const response = await api.get("/contacts", { params });
-  return extractList<Contact>(response.data);
+  return extractPaginated<Contact, ContactsSummary>(response.data);
 }
 
 export async function getContactById(id: string) {
