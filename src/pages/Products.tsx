@@ -7,7 +7,9 @@ import {
   updateProduct,
   deleteProduct,
   type Product,
+  type ProductsSummary,
 } from "../services/products";
+import type { PageMeta } from "../services/api";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
@@ -21,6 +23,7 @@ import {
   Field,
   Modal,
   PageContainer,
+  Pagination,
   SkeletonRows,
   StatStrip,
   Table,
@@ -49,6 +52,9 @@ export function Products() {
   const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
+  const [meta, setMeta] = useState<PageMeta | null>(null);
+  const [summary, setSummary] = useState<ProductsSummary | null>(null);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [showModal, setShowModal] = useState(false);
@@ -60,11 +66,16 @@ export function Products() {
 
   const [form, setForm] = useState(emptyForm);
 
-  async function loadProducts() {
+  async function loadProducts(targetPage = page) {
     try {
       setLoading(true);
-      const list = await getProducts(search ? { search } : undefined);
-      setProducts(list);
+      const params: Record<string, string> = { page: String(targetPage) };
+      if (search) params.search = search;
+      const result = await getProducts(params);
+      setProducts(result.items);
+      setMeta(result.meta ?? null);
+      setSummary(result.summary ?? null);
+      setPage(targetPage);
     } catch (err) {
       console.error("Erro ao carregar produtos:", err);
     } finally {
@@ -79,7 +90,7 @@ export function Products() {
   }, []);
 
   useEffect(() => {
-    const timeout = setTimeout(loadProducts, 400);
+    const timeout = setTimeout(() => loadProducts(1), 400);
     return () => clearTimeout(timeout);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
@@ -158,14 +169,19 @@ export function Products() {
     }
   }
 
-  const activeCount = products.filter((p) => p.active).length;
-  const servicesCount = products.filter((p) => p.type === "SERVICE").length;
+  // Vem do backend (agregado da organização inteira) — não some quando a
+  // busca filtra a lista, nem fica errado quando há mais de 20 produtos.
+  const { total: totalCount, active: activeCount, services: servicesCount } = summary ?? {
+    total: 0,
+    active: 0,
+    services: 0,
+  };
 
   return (
     <PageContainer>
       <StatStrip
         items={[
-          { label: "Itens cadastrados", value: String(products.length) },
+          { label: "Itens cadastrados", value: String(totalCount) },
           { label: "Ativos", value: String(activeCount) },
           { label: "Serviços", value: String(servicesCount) },
         ]}
@@ -258,6 +274,9 @@ export function Products() {
               ))}
             </Tbody>
           </Table>
+        )}
+        {meta && (
+          <Pagination page={meta.page} totalPages={meta.totalPages} total={meta.total} onPageChange={loadProducts} />
         )}
       </Card>
 

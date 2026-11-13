@@ -1,4 +1,4 @@
-import { api, extractList } from "./api";
+import { api, extractPaginated, type PaginatedResult } from "./api";
 
 export interface OrderItem {
   id?: string;
@@ -33,9 +33,16 @@ export interface Order {
   createdAt: string;
 }
 
-export async function getOrders(params?: Record<string, string>) {
+export interface OrdersSummary {
+  total: number;
+  open: number;
+  delivered: number;
+  revenue: number;
+}
+
+export async function getOrders(params?: Record<string, string>): Promise<PaginatedResult<Order, OrdersSummary>> {
   const response = await api.get("/orders", { params });
-  return extractList<Order>(response.data);
+  return extractPaginated<Order, OrdersSummary>(response.data);
 }
 
 export async function getOrderById(id: string) {

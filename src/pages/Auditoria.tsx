@@ -36,6 +36,9 @@ const entityTypeLabels: Record<string, string> = {
   Product: "Produto",
   Order: "Pedido",
   Event: "Agenda",
+  Permission: "Permissões",
+  Organization: "Empresa",
+  Invite: "Convite",
 };
 
 function formatDateTime(value: string) {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Plus, FileDown, FileUp, Wallet } from "lucide-react";
 import {
@@ -9,7 +9,9 @@ import {
   deleteInvoice,
   importInvoiceXml,
   type Invoice,
+  type InvoicesSummary,
 } from "../services/invoices";
+import type { PageMeta } from "../services/api";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
@@ -26,6 +28,7 @@ import {
   Field,
   Modal,
   PageContainer,
+  Pagination,
   SkeletonRows,
   StatStrip,
   Table,
@@ -91,6 +94,9 @@ export function Financeiro() {
   const toast = useToast();
   const [searchParams, setSearchParams] = useSearchParams();
   const [invoices, setInvoices] = useState<Invoice[]>([]);
+  const [meta, setMeta] = useState<PageMeta | null>(null);
+  const [summary, setSummary] = useState<InvoicesSummary | null>(null);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -105,12 +111,15 @@ export function Financeiro() {
 
   const [form, setForm] = useState(emptyForm);
 
-  async function loadInvoices() {
+  async function loadInvoices(targetPage = page) {
     try {
       setLoading(true);
       setError("");
-      const list = await getInvoices();
-      setInvoices(list);
+      const result = await getInvoices({ page: String(targetPage) });
+      setInvoices(result.items);
+      setMeta(result.meta ?? null);
+      setSummary(result.summary ?? null);
+      setPage(targetPage);
     } catch (err) {
       console.error(err);
       setError("Erro ao carregar faturas.");
@@ -122,6 +131,7 @@ export function Financeiro() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
     loadInvoices();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ?novo=1 (link de criação rápida do header) abre o modal de criação —
@@ -250,20 +260,9 @@ export function Financeiro() {
     }
   }
 
-  const stats = useMemo(() => {
-    const receivable = invoices.filter((i) => i.type === "RECEIVABLE");
-    const payable = invoices.filter((i) => i.type === "PAYABLE");
-    const totalReceivable = receivable
-      .filter((i) => i.status === "PAID")
-      .reduce((sum, i) => sum + Number(i.amount || 0), 0);
-    const totalPayable = payable
-      .filter((i) => i.status === "PAID")
-      .reduce((sum, i) => sum + Number(i.amount || 0), 0);
-    const pending = invoices.filter((i) => i.status === "PENDING").length;
-    const overdue = invoices.filter((i) => i.status === "OVERDUE").length;
-
-    return { totalReceivable, totalPayable, pending, overdue };
-  }, [invoices]);
+  // Vem do backend (agregado da organização inteira) — não soma só os
+  // 20 itens carregados na página atual, ao contrário do que a UI fazia antes.
+  const stats = summary ?? { totalReceivable: 0, totalPayable: 0, pending: 0, overdue: 0 };
 
   return (
     <PageContainer>
@@ -410,6 +409,9 @@ export function Financeiro() {
               ))}
             </Tbody>
           </Table>
+        )}
+        {meta && (
+          <Pagination page={meta.page} totalPages={meta.totalPages} total={meta.total} onPageChange={loadInvoices} />
         )}
       </Card>
 

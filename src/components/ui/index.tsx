@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react'
 import { useEffect } from 'react'
-import { Loader2, X } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Loader2, X } from 'lucide-react'
 
 export function Card({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
@@ -331,5 +331,37 @@ export function Td({
     <td colSpan={colSpan} className={`px-5 py-3 ${alignClass} ${className}`}>
       {children}
     </td>
+  )
+}
+
+export function Pagination({
+  page,
+  totalPages,
+  total,
+  onPageChange,
+}: {
+  page: number
+  totalPages: number
+  total: number
+  onPageChange: (page: number) => void
+}) {
+  if (totalPages <= 1) return null
+
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line px-5 py-3 dark:border-line-dark">
+      <p className="text-[12.5px] text-muted dark:text-muted-dark">
+        Página {page} de {totalPages} · {total} {total === 1 ? 'registro' : 'registros'}
+      </p>
+      <div className="flex items-center gap-2">
+        <Button variant="ghost" size="sm" disabled={page <= 1} onClick={() => onPageChange(page - 1)}>
+          <ChevronLeft size={15} />
+          Anterior
+        </Button>
+        <Button variant="ghost" size="sm" disabled={page >= totalPages} onClick={() => onPageChange(page + 1)}>
+          Próxima
+          <ChevronRight size={15} />
+        </Button>
+      </div>
+    </div>
   )
 }

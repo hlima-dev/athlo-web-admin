@@ -1,4 +1,4 @@
-import { api, extractList } from "./api";
+import { api, extractPaginated, type PaginatedResult } from "./api";
 
 export interface Event {
   id: string;
@@ -17,9 +17,16 @@ export interface Event {
   assignedTo?: { id: string; name: string } | null;
 }
 
-export async function getEvents(params?: Record<string, string>) {
+export interface EventsSummary {
+  scheduled: number;
+  tasks: number;
+  deadlines: number;
+  total: number;
+}
+
+export async function getEvents(params?: Record<string, string>): Promise<PaginatedResult<Event, EventsSummary>> {
   const response = await api.get("/events", { params });
-  return extractList<Event>(response.data);
+  return extractPaginated<Event, EventsSummary>(response.data);
 }
 
  
