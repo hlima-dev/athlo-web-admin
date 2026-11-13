@@ -34,6 +34,7 @@ import {
   Card,
   CardHeader,
   EmptyState,
+  ErrorNote,
   Field,
   Modal,
   PageContainer,
@@ -192,6 +193,7 @@ export function Orders() {
   async function loadOrders(targetPage = page) {
     try {
       setLoading(true);
+      setError("");
       const range = getPeriodRange(period);
       const params: Record<string, string> = { page: String(targetPage) };
       if (range.from) params.from = range.from;
@@ -206,6 +208,7 @@ export function Orders() {
       setPage(targetPage);
     } catch (err) {
       console.error("Erro ao carregar pedidos:", err);
+      setError(getErrorMessage(err, "Erro ao carregar pedidos."));
     } finally {
       setLoading(false);
     }
@@ -423,6 +426,8 @@ export function Orders() {
             </Button>
           }
         />
+
+        {error ? <ErrorNote message={error} onRetry={() => loadOrders()} /> : null}
 
         <div className="flex flex-wrap items-center gap-1.5 border-b border-line px-5 py-3.5 dark:border-line-dark">
           {periodOptions.map((option) => (

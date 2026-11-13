@@ -123,7 +123,7 @@ export function Financeiro() {
       setPage(targetPage);
     } catch (err) {
       console.error(err);
-      setError("Erro ao carregar faturas.");
+      setError(getErrorMessage(err, "Erro ao carregar faturas."));
     } finally {
       setLoading(false);
     }

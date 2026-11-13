@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { logout as logoutRequest, getStoredOrganization, getStoredUser } from '../services/auth'
 import { getAdminErrorsSummary } from '../services/admin'
+import { getMyPermissions, type OrgModule } from '../services/organization'
 import { PaymentRequiredBanner } from '../components/PaymentRequiredBanner'
 import { SwitchOrganizationModal } from '../components/SwitchOrganizationModal'
 import { Badge } from '../components/ui'
@@ -61,6 +62,17 @@ const navSections: { title: string | null; items: { label: string; path: string;
     ],
   },
 ]
+
+// Só os 5 módulos com permissão granular (ver OrgModule no backend) —
+// os demais itens de menu (Painel, Calendário, Equipe, etc.) não têm
+// gate nenhum e aparecem pra qualquer membro autenticado.
+const navItemModule: Record<string, OrgModule> = {
+  '/contatos': 'CONTACTS',
+  '/financeiro': 'INVOICES',
+  '/produtos': 'PRODUCTS',
+  '/pedidos': 'ORDERS',
+  '/eventos': 'EVENTS',
+}
 
 const quickCreateItems = [
   { label: 'Novo contato', to: '/contatos?novo=1' },
@@ -102,6 +114,7 @@ interface SidebarProps {
   organization: StoredOrganization
   isPlatformAdmin: boolean
   canViewAudit: boolean
+  enabledModules: Set<OrgModule> | null
   unresolvedErrorCount: number
   onNavigate: () => void
   onClose: () => void
@@ -113,6 +126,7 @@ function SidebarContent({
   organization,
   isPlatformAdmin,
   canViewAudit,
+  enabledModules,
   unresolvedErrorCount,
   onNavigate,
   onClose,
@@ -123,7 +137,7 @@ function SidebarContent({
 
   // Auditoria só aparece pra OWNER/ADMIN (o endpoint já é gated assim no
   // backend — isso só evita mostrar um link que levaria a um 403).
-  const sections = navSections.map((section) =>
+  const sectionsWithAudit = navSections.map((section) =>
     section.title === 'Empresa' && canViewAudit
       ? {
           ...section,
@@ -135,6 +149,19 @@ function SidebarContent({
         }
       : section
   )
+
+  // Esconde do menu os módulos que o MEMBER não tem liberado — enquanto
+  // a permissão ainda não carregou (enabledModules === null), mostra
+  // tudo pra não "piscar" itens somem-e-voltam.
+  const sections = sectionsWithAudit
+    .map((section) => ({
+      ...section,
+      items: section.items.filter((item) => {
+        const module = navItemModule[item.path]
+        return !module || !enabledModules || enabledModules.has(module)
+      }),
+    }))
+    .filter((section) => section.items.length > 0)
 
   return (
     <div className="flex h-full flex-col bg-forest text-[#DCE7E0] dark:bg-forest-900">
@@ -277,6 +304,15 @@ export function AppLayout() {
   const isPlatformAdmin = !!user?.isPlatformAdmin
   const canViewAudit = user?.orgRole === 'OWNER' || user?.orgRole === 'ADMIN'
   const [unresolvedErrorCount, setUnresolvedErrorCount] = useState(0)
+  const [enabledModules, setEnabledModules] = useState<Set<OrgModule> | null>(null)
+
+  useEffect(() => {
+    getMyPermissions()
+      .then((permissions) => {
+        setEnabledModules(new Set(permissions.filter((p) => p.enabled).map((p) => p.module)))
+      })
+      .catch(() => {})
+  }, [])
 
   const meta = pageTitles[location.pathname] ?? { title: 'ATHLO', subtitle: 'Gestão' }
 
@@ -345,6 +381,7 @@ export function AppLayout() {
     organization,
     isPlatformAdmin,
     canViewAudit,
+    enabledModules,
     unresolvedErrorCount,
     onNavigate: () => setMobileOpen(false),
     onClose: () => setMobileOpen(false),
@@ -430,17 +467,22 @@ export function AppLayout() {
                     role="menu"
                     className="absolute right-0 top-[calc(100%+6px)] w-52 overflow-hidden rounded-card border border-line bg-surface py-1 shadow-lg dark:border-line-dark dark:bg-surface-dark"
                   >
-                    {quickCreateItems.map((item) => (
-                      <Link
-                        key={item.to}
-                        to={item.to}
-                        role="menuitem"
-                        onClick={() => setMenuOpen(false)}
-                        className="block px-3.5 py-2 text-[13px] transition hover:bg-[#F7F5EF] dark:hover:bg-white/[0.06]"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
+                    {quickCreateItems
+                      .filter((item) => {
+                        const module = navItemModule[item.to.split('?')[0]]
+                        return !module || !enabledModules || enabledModules.has(module)
+                      })
+                      .map((item) => (
+                        <Link
+                          key={item.to}
+                          to={item.to}
+                          role="menuitem"
+                          onClick={() => setMenuOpen(false)}
+                          className="block px-3.5 py-2 text-[13px] transition hover:bg-[#F7F5EF] dark:hover:bg-white/[0.06]"
+                        >
+                          {item.label}
+                        </Link>
+                      ))}
                   </div>
                 ) : null}
               </div>

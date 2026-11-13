@@ -64,6 +64,14 @@ export async function getMemberPermissions(userId: string): Promise<ModulePermis
   return response.data.data ?? [];
 }
 
+// Permissões do próprio usuário logado — usado pra filtrar menu/atalhos
+// sem exigir papel de OWNER/ADMIN (diferente de getMemberPermissions,
+// que só eles podem consultar sobre outra pessoa).
+export async function getMyPermissions(): Promise<ModulePermission[]> {
+  const response = await api.get("/organization/me/permissions");
+  return response.data.data ?? [];
+}
+
 export async function updateMemberPermissions(
   userId: string,
   permissions: ModulePermission[]

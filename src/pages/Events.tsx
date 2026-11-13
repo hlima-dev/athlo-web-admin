@@ -22,6 +22,7 @@ import {
   Card,
   CardHeader,
   EmptyState,
+  ErrorNote,
   Field,
   Modal,
   PageContainer,
@@ -80,13 +81,15 @@ export function Events() {
   async function loadEvents(targetPage = page) {
     try {
       setLoading(true);
+      setError("");
       const result = await getEvents({ page: String(targetPage) });
       setEvents(result.items);
       setMeta(result.meta ?? null);
       setSummary(result.summary ?? null);
       setPage(targetPage);
-    } catch (error) {
-      console.error("Erro ao carregar eventos:", error);
+    } catch (err) {
+      console.error("Erro ao carregar eventos:", err);
+      setError(getErrorMessage(err, "Erro ao carregar os itens da agenda."));
     } finally {
       setLoading(false);
     }
@@ -321,6 +324,12 @@ export function Events() {
           </Button>
         </div>
       </div>
+
+      {error ? (
+        <Card>
+          <ErrorNote message={error} onRetry={() => loadEvents()} />
+        </Card>
+      ) : null}
 
       {loading ? (
         <Card>

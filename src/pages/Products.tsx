@@ -20,6 +20,7 @@ import {
   Card,
   CardHeader,
   EmptyState,
+  ErrorNote,
   Field,
   Modal,
   PageContainer,
@@ -69,6 +70,7 @@ export function Products() {
   async function loadProducts(targetPage = page) {
     try {
       setLoading(true);
+      setError("");
       const params: Record<string, string> = { page: String(targetPage) };
       if (search) params.search = search;
       const result = await getProducts(params);
@@ -78,6 +80,7 @@ export function Products() {
       setPage(targetPage);
     } catch (err) {
       console.error("Erro ao carregar produtos:", err);
+      setError(getErrorMessage(err, "Erro ao carregar produtos."));
     } finally {
       setLoading(false);
     }
@@ -198,6 +201,8 @@ export function Products() {
             </Button>
           }
         />
+
+        {error ? <ErrorNote message={error} onRetry={() => loadProducts()} /> : null}
 
         <div className="flex items-center gap-2.5 border-b border-line px-5 py-3.5 dark:border-line-dark">
           <Search size={16} className="text-faint dark:text-faint-dark" />
