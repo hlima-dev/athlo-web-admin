@@ -30,6 +30,7 @@ export interface Order {
   total: string | number;
   operator?: { id: string; name: string } | null;
   items: OrderItem[];
+  invoice?: { id: string } | null;
   createdAt: string;
 }
 
