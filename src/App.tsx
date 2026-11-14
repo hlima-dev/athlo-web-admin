@@ -9,6 +9,7 @@ import { ResetPassword } from "./pages/ResetPassword";
 import { Dashboard } from "./pages/Dashboard";
 import { Financeiro } from "./pages/Financeiro";
 import { Contacts } from "./pages/Contacts";
+import { ContactDetail } from "./pages/ContactDetail";
 import { Products } from "./pages/Products";
 import { Orders } from "./pages/Orders";
 import { Events } from "./pages/Events";
@@ -58,6 +59,7 @@ export default function App() {
           <Route path="/home" element={<Navigate to="/dashboard" replace />} />
           <Route path="/financeiro" element={<Financeiro />} />
           <Route path="/contatos" element={<Contacts />} />
+          <Route path="/contatos/:id" element={<ContactDetail />} />
           <Route path="/produtos" element={<Products />} />
           <Route path="/pedidos" element={<Orders />} />
           <Route path="/eventos" element={<Events />} />

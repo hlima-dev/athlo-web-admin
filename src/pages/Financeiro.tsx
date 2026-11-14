@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { Bell, Plus, FileCode, FileDown, FileUp, Wallet } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
+import { Bell, Plus, FileCode, FileDown, FileUp, User, Wallet } from "lucide-react";
 import {
   getInvoices,
   createInvoice,
@@ -12,6 +12,7 @@ import {
   type InvoicesSummary,
 } from "../services/invoices";
 import type { PageMeta } from "../services/api";
+import { getContacts, type Contact } from "../services/contacts";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
@@ -81,6 +82,7 @@ const emptyForm = {
   dueDate: "",
   method: "PIX",
   notes: "",
+  contactId: "",
 };
 
 function toDateInput(value?: string) {
@@ -109,8 +111,15 @@ export function Financeiro() {
   const [importedAccessKey, setImportedAccessKey] = useState<string | null>(null);
   const [importedXml, setImportedXml] = useState<string | null>(null);
   const xmlInputRef = useRef<HTMLInputElement>(null);
+  const [contacts, setContacts] = useState<Contact[]>([]);
 
   const [form, setForm] = useState(emptyForm);
+
+  useEffect(() => {
+    getContacts({ limit: "100" })
+      .then((result) => setContacts(result.items))
+      .catch((err) => console.error("Erro ao carregar contatos:", err));
+  }, []);
 
   async function loadInvoices(targetPage = page) {
     try {
@@ -166,6 +175,7 @@ export function Financeiro() {
       dueDate: invoice.dueDate ? invoice.dueDate.slice(0, 10) : "",
       method: invoice.method || "PIX",
       notes: invoice.notes || "",
+      contactId: invoice.contact?.id || "",
     });
     setImportedAccessKey(null);
     setImportedXml(null);
@@ -188,6 +198,7 @@ export function Financeiro() {
         dueDate: toDateInput(draft.issueDate) || new Date().toISOString().slice(0, 10),
         method: "PIX",
         notes: draft.itemsSummary ? `Itens: ${draft.itemsSummary}` : "",
+        contactId: "",
       });
       setImportedAccessKey(draft.accessKey);
       setImportedXml(xmlText);
@@ -213,6 +224,7 @@ export function Financeiro() {
         dueDate: form.dueDate,
         method: form.method,
         notes: form.notes,
+        contactId: form.contactId || undefined,
         ...(!editingId && importedAccessKey ? { accessKey: importedAccessKey } : {}),
         ...(!editingId && importedXml ? { xmlRaw: importedXml } : {}),
       };
@@ -351,6 +363,15 @@ export function Financeiro() {
                 <Tr key={invoice.id}>
                   <Td>
                     <p className="font-medium">{invoice.description}</p>
+                    {invoice.contact && (
+                      <Link
+                        to={`/contatos/${invoice.contact.id}`}
+                        className="mt-0.5 flex items-center gap-1 text-[12px] text-forest-600 hover:underline dark:text-forest-400"
+                      >
+                        <User size={11} />
+                        {invoice.contact.name}
+                      </Link>
+                    )}
                     {invoice.method && (
                       <p className="mt-0.5 text-[12px] text-muted dark:text-muted-dark">
                         {methodLabels[invoice.method] || invoice.method}
@@ -526,6 +547,21 @@ export function Financeiro() {
                 <option value="BOLETO">Boleto</option>
                 <option value="CASH">Dinheiro</option>
                 <option value="OTHER">Outro</option>
+              </select>
+            </Field>
+
+            <Field label="Contato vinculado" className="sm:col-span-2">
+              <select
+                className={inputClass}
+                value={form.contactId}
+                onChange={(e) => setForm({ ...form, contactId: e.target.value })}
+              >
+                <option value="">— nenhum —</option>
+                {contacts.map((contact) => (
+                  <option key={contact.id} value={contact.id}>
+                    {contact.name}
+                  </option>
+                ))}
               </select>
             </Field>
 

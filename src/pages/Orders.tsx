@@ -9,6 +9,7 @@ import {
   Trash2,
   FileDown,
   Receipt,
+  User,
 } from "lucide-react";
 
 import {
@@ -21,6 +22,7 @@ import {
   type OrdersSummary,
 } from "../services/orders";
 import { getProducts, type Product } from "../services/products";
+import { getContacts, type Contact } from "../services/contacts";
 import type { PageMeta } from "../services/api";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { ConfirmDialog } from "../components/ConfirmDialog";
@@ -153,6 +155,7 @@ const emptyItem: ItemForm = { productId: "", name: "", quantity: "1", unitPrice:
 const emptyForm = {
   customerName: "",
   customerPhone: "",
+  contactId: "",
   type: "DELIVERY" as Order["type"],
   origin: "MANUAL" as Order["origin"],
   status: "CREATED" as Order["status"],
@@ -175,6 +178,7 @@ export function Orders() {
   const [summary, setSummary] = useState<OrdersSummary | null>(null);
   const [page, setPage] = useState(1);
   const [products, setProducts] = useState<Product[]>([]);
+  const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(true);
   const [period, setPeriod] = useState<PeriodKey>("ALL");
   const [statusFilter, setStatusFilter] = useState("");
@@ -218,6 +222,9 @@ export function Orders() {
     getProducts({ active: "true", limit: "100" })
       .then((result) => setProducts(result.items))
       .catch((err) => console.error("Erro ao carregar produtos:", err));
+    getContacts({ limit: "100" })
+      .then((result) => setContacts(result.items))
+      .catch((err) => console.error("Erro ao carregar contatos:", err));
   }, []);
 
   useEffect(() => {
@@ -257,6 +264,7 @@ export function Orders() {
     setForm({
       customerName: order.customerName,
       customerPhone: order.customerPhone || "",
+      contactId: order.contact?.id || "",
       type: order.type,
       origin: order.origin,
       status: order.status,
@@ -339,6 +347,7 @@ export function Orders() {
       const payload = {
         customerName: form.customerName,
         customerPhone: form.customerPhone || undefined,
+        contactId: form.contactId || undefined,
         type: form.type,
         origin: form.origin,
         status: form.status,
@@ -508,6 +517,15 @@ export function Orders() {
                     {order.customerPhone && (
                       <p className="text-[12px] text-muted dark:text-muted-dark">{order.customerPhone}</p>
                     )}
+                    {order.contact && (
+                      <Link
+                        to={`/contatos/${order.contact.id}`}
+                        className="mt-0.5 flex items-center gap-1 text-[12px] text-forest-600 hover:underline dark:text-forest-400"
+                      >
+                        <User size={11} />
+                        Ver contato
+                      </Link>
+                    )}
                   </Td>
                   <Td>
                     <span className="inline-flex items-center gap-1.5 text-[12.5px] text-muted dark:text-muted-dark">
@@ -618,6 +636,21 @@ export function Orders() {
                 value={form.customerPhone}
                 onChange={(e) => setForm({ ...form, customerPhone: maskPhone(e.target.value) })}
               />
+            </Field>
+
+            <Field label="Contato vinculado" className="sm:col-span-2">
+              <select
+                className={inputClass}
+                value={form.contactId}
+                onChange={(e) => setForm({ ...form, contactId: e.target.value })}
+              >
+                <option value="">— nenhum —</option>
+                {contacts.map((contact) => (
+                  <option key={contact.id} value={contact.id}>
+                    {contact.name}
+                  </option>
+                ))}
+              </select>
             </Field>
 
             <Field label="Tipo">
