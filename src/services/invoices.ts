@@ -11,6 +11,8 @@ export interface Invoice {
   paidAt?: string | null;
   notes?: string | null;
   accessKey?: string | null;
+  reminderSentAt?: string | null;
+  dueSoonReminderSentAt?: string | null;
   contact?: { id: string; name: string } | null;
   createdAt: string;
 }
