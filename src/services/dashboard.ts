@@ -13,6 +13,13 @@ export interface DashboardData {
   // Fluxo líquido projetado (90 dias) a partir das faturas pendentes —
   // não é saldo bancário real, ver DashboardController.buildCashFlowProjection.
   cashFlowProjection: { date: string; in: number; out: number; balance: number }[];
+  attention: {
+    overdueInvoices: { id: string; description: string; amount: number; dueDate: string; type: string }[];
+    overdueInvoicesTotal: number;
+    todayEvents: { id: string; title: string; type: string; startDate: string }[];
+    lowStockProducts: { id: string; name: string; stockQty: number; lowStockThreshold: number }[];
+    lowStockTotal: number;
+  };
 }
 
 export async function getDashboard(): Promise<DashboardData> {
