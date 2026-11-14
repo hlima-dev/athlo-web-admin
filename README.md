@@ -12,7 +12,11 @@ React + TypeScript + Vite no front, Express + Prisma + PostgreSQL no back.
 
 - Frontend: https://athlo-web-admin-fdizioprj-hlima-dev1.vercel.app/
 - API: https://athlo-backend-r176.onrender.com
-- Login: `admin@athlodemo.com.br` / `Admin@2024`
+
+O login de demonstração não é publicado aqui porque esse ambiente ao
+vivo usa Stripe em modo **live** (cobrança real) — ver
+[`athlo-backend`](https://github.com/hlima-dev/athlo-backend) pra rodar
+localmente com o seed de demonstração.
 
 A API roda no plano free do Render, então o primeiro request depois de um
 tempo parado pode demorar ~1 min pra "acordar".
@@ -34,7 +38,8 @@ tempo parado pode demorar ~1 min pra "acordar".
 - Notificação de compromisso da agenda: dentro do sistema + push no
   navegador (funciona no notebook e no celular, sem app nativo)
 - Painel separado pra administração da plataforma (visão de todas as
-  empresas clientes, MRR, suspender conta)
+  empresas clientes, MRR, suspender conta, log de erros 5xx com filtro
+  e busca)
 - Exportação de relatórios em Excel
 - Exclusão de conta/empresa (LGPD)
 - Testes automatizados (Vitest) e CI
@@ -45,6 +50,7 @@ tempo parado pode demorar ~1 min pra "acordar".
 git clone https://github.com/hlima-dev/athlo-web-admin.git
 cd athlo-web-admin
 npm install
+cp .env.example .env   # aponta pra API de demo por padrão
 npm run dev
 ```
 
@@ -71,7 +77,6 @@ tests/
 
 ## Falta
 
-- Monitoramento de erros em produção
 - Upload de logo/avatar
 - Pipeline de vendas / Kanban
 
