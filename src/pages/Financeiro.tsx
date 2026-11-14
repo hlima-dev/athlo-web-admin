@@ -13,6 +13,7 @@ import {
 } from "../services/invoices";
 import type { PageMeta } from "../services/api";
 import { getContacts, type Contact } from "../services/contacts";
+import { getPeriodRange, periodOptions, type PeriodKey } from "../utils/period";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
@@ -112,6 +113,9 @@ export function Financeiro() {
   const [importedXml, setImportedXml] = useState<string | null>(null);
   const xmlInputRef = useRef<HTMLInputElement>(null);
   const [contacts, setContacts] = useState<Contact[]>([]);
+  const [period, setPeriod] = useState<PeriodKey>("ALL");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   const [form, setForm] = useState(emptyForm);
 
@@ -125,7 +129,13 @@ export function Financeiro() {
     try {
       setLoading(true);
       setError("");
-      const result = await getInvoices({ page: String(targetPage) });
+      const range = getPeriodRange(period);
+      const params: Record<string, string> = { page: String(targetPage) };
+      if (range.from) params.from = range.from;
+      if (range.to) params.to = range.to;
+      if (typeFilter) params.type = typeFilter;
+      if (statusFilter) params.status = statusFilter;
+      const result = await getInvoices(params);
       setInvoices(result.items);
       setMeta(result.meta ?? null);
       setSummary(result.summary ?? null);
@@ -139,10 +149,10 @@ export function Financeiro() {
   }
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
-    loadInvoices();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- refaz a busca quando o período/tipo/status do filtro muda
+    loadInvoices(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [period, typeFilter, statusFilter]);
 
   // ?novo=1 (link de criação rápida do header) abre o modal de criação —
   // só na montagem, de propósito (searchParams muda de identidade a cada
@@ -330,6 +340,48 @@ export function Financeiro() {
           }
         />
 
+        <div className="flex flex-wrap items-center gap-1.5 border-b border-line px-5 py-3.5 dark:border-line-dark">
+          {periodOptions.map((option) => (
+            <button
+              key={option.key}
+              type="button"
+              onClick={() => setPeriod(option.key)}
+              className={`rounded-md px-3 py-1.5 text-[12.5px] font-medium transition ${
+                period === option.key
+                  ? "bg-forest text-white dark:bg-forest-400"
+                  : "text-muted hover:bg-[#F0EEE8] dark:text-muted-dark dark:hover:bg-white/[0.06]"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-3 border-b border-line px-5 py-3.5 dark:border-line-dark sm:flex-row">
+          <select
+            className={`${inputClass} sm:w-56`}
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+          >
+            <option value="">Todos os tipos</option>
+            <option value="RECEIVABLE">A receber</option>
+            <option value="PAYABLE">A pagar</option>
+          </select>
+
+          <select
+            className={`${inputClass} sm:w-56`}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="">Todos os status</option>
+            {Object.entries(statusLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         {error ? <ErrorNote message={error} onRetry={loadInvoices} /> : null}
 
         {loading ? (
@@ -338,7 +390,7 @@ export function Financeiro() {
           <EmptyState
             icon={<Wallet size={20} />}
             title="Nenhuma fatura encontrada"
-            description="Cadastre uma conta a pagar ou a receber para começar."
+            description="Cadastre uma conta a pagar ou a receber, ou ajuste os filtros de período/tipo/status."
             action={
               <Button onClick={openCreateModal}>
                 <Plus size={16} />
