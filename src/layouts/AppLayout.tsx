@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import {
+  AlertTriangle,
   Bell,
   BarChart3,
   Calendar,
@@ -104,6 +105,41 @@ function trialDaysLeft(trialEndsAt?: string | null): number | null {
   const diff = new Date(trialEndsAt).getTime() - Date.now()
   if (diff <= 0) return 0
   return Math.ceil(diff / (1000 * 60 * 60 * 24))
+}
+
+// Quanto menos dias faltam, mais chamativo o aviso fica — "calm" ainda dá
+// tempo de decidir com calma, "warning" já é hora de agir, "critical" é
+// hoje ou já acabou.
+type TrialUrgency = 'calm' | 'warning' | 'critical'
+
+function trialUrgency(daysLeft: number): TrialUrgency {
+  if (daysLeft === 0) return 'critical'
+  if (daysLeft <= 3) return 'warning'
+  return 'calm'
+}
+
+const trialBannerStyles: Record<TrialUrgency, { box: string; icon: string; title: string; subtitle: string; button: string }> = {
+  calm: {
+    box: 'bg-forest-700/70',
+    icon: 'text-[#F1C9AE]',
+    title: 'text-[#C6D6CD]',
+    subtitle: 'text-[#8FA99B]',
+    button: 'bg-[#DCE7E0] text-forest hover:bg-white',
+  },
+  warning: {
+    box: 'border border-clay-dark/40 bg-[#3A2F14]',
+    icon: 'text-[#E8C468]',
+    title: 'text-[#E8C468]',
+    subtitle: 'text-[#C9A868]',
+    button: 'bg-[#E8C468] text-[#3A2A0E] hover:bg-[#F0D37E]',
+  },
+  critical: {
+    box: 'border border-danger-dark/50 bg-[#3E1C19]',
+    icon: 'text-danger-dark',
+    title: 'text-danger-dark',
+    subtitle: 'text-[#C98D85]',
+    button: 'bg-danger-dark text-[#2A0E0C] hover:bg-[#E07A6D]',
+  },
 }
 
 type StoredUser = ReturnType<typeof getStoredUser>
@@ -254,23 +290,32 @@ function SidebarContent({
         ) : null}
       </nav>
 
-      {showTrialBanner ? (
-        <div className="mx-4 mb-4 rounded-card bg-forest-700/70 p-3">
-          <div className="flex items-center gap-2 text-[12px] text-[#C6D6CD]">
-            <Sparkles className="h-4 w-4 shrink-0 text-[#F1C9AE]" />
-            <span>{daysLeft === 0 ? 'Trial encerrado' : `Trial termina em ${daysLeft} dia${daysLeft === 1 ? '' : 's'}`}</span>
-          </div>
-          <p className="mt-1.5 text-[11.5px] leading-relaxed text-[#8FA99B]">
-            Escolha um plano para continuar usando o ATHLO sem interrupção.
-          </p>
-          <Link
-            to="/configuracoes"
-            onClick={onNavigate}
-            className="mt-3 block w-full rounded-md bg-[#DCE7E0] py-1.5 text-center text-[12.5px] font-medium text-forest transition hover:bg-white"
-          >
-            Ver planos
-          </Link>
-        </div>
+      {showTrialBanner && daysLeft !== null ? (
+        (() => {
+          const urgency = trialUrgency(daysLeft)
+          const style = trialBannerStyles[urgency]
+          const Icon = urgency === 'calm' ? Sparkles : AlertTriangle
+          return (
+            <div className={`mx-4 mb-4 rounded-card p-3 ${style.box}`}>
+              <div className={`flex items-center gap-2 text-[12px] font-medium ${style.title}`}>
+                <Icon className={`h-4 w-4 shrink-0 ${style.icon}`} />
+                <span>{daysLeft === 0 ? 'Trial encerrado' : `Trial termina em ${daysLeft} dia${daysLeft === 1 ? '' : 's'}`}</span>
+              </div>
+              <p className={`mt-1.5 text-[11.5px] leading-relaxed ${style.subtitle}`}>
+                {urgency === 'critical'
+                  ? 'Escolha um plano agora para não perder o acesso aos seus dados.'
+                  : 'Escolha um plano para continuar usando o ATHLO sem interrupção.'}
+              </p>
+              <Link
+                to="/configuracoes"
+                onClick={onNavigate}
+                className={`mt-3 block w-full rounded-md py-1.5 text-center text-[12.5px] font-medium transition ${style.button}`}
+              >
+                Ver planos
+              </Link>
+            </div>
+          )
+        })()
       ) : null}
 
       <Link
