@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Plus, FileCode, FileDown, FileUp, Wallet } from "lucide-react";
+import { Bell, Plus, FileCode, FileDown, FileUp, Wallet } from "lucide-react";
 import {
   getInvoices,
   createInvoice,
@@ -371,6 +371,18 @@ export function Financeiro() {
                     <Badge tone={statusTones[invoice.status] ?? "neutral"}>
                       {statusLabels[invoice.status] || invoice.status}
                     </Badge>
+                    {(invoice.reminderSentAt || invoice.dueSoonReminderSentAt) && (
+                      <p className="mt-1 flex items-center gap-1 text-[11px] text-muted dark:text-muted-dark">
+                        <Bell size={11} />
+                        Lembrete em{" "}
+                        {formatDate(
+                          [invoice.reminderSentAt, invoice.dueSoonReminderSentAt]
+                            .filter((d): d is string => !!d)
+                            .sort()
+                            .pop()
+                        )}
+                      </p>
+                    )}
                   </Td>
                   <Td>{formatDate(invoice.dueDate)}</Td>
                   <Td

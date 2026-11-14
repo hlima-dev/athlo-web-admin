@@ -15,6 +15,7 @@ export interface Event {
   contact?: { id: string; name: string } | null;
   createdBy?: { id: string; name: string };
   assignedTo?: { id: string; name: string } | null;
+  reminderSentAt?: string | null;
 }
 
 export interface EventsSummary {

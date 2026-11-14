@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { CalendarDays, Check, Plus, MapPin, Wand2 } from "lucide-react";
+import { Bell, CalendarDays, Check, Plus, MapPin, Wand2 } from "lucide-react";
 
 import {
   getEvents,
@@ -397,6 +397,12 @@ export function Events() {
                           <span className="flex items-center gap-1">
                             <MapPin size={11} />
                             {event.location || "Online"}
+                          </span>
+                        )}
+                        {event.reminderSentAt && (
+                          <span className="flex items-center gap-1">
+                            <Bell size={11} />
+                            Lembrete enviado
                           </span>
                         )}
                       </div>
