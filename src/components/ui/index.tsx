@@ -311,8 +311,15 @@ export function Tbody({ children }: { children: ReactNode }) {
   return <tbody className="divide-y divide-line dark:divide-line-dark">{children}</tbody>
 }
 
-export function Tr({ children }: { children: ReactNode }) {
-  return <tr className="text-[13px] transition hover:bg-[#FBF9F4] dark:hover:bg-white/[0.03]">{children}</tr>
+export function Tr({ children, onClick }: { children: ReactNode; onClick?: () => void }) {
+  return (
+    <tr
+      onClick={onClick}
+      className={`text-[13px] transition hover:bg-[#FBF9F4] dark:hover:bg-white/[0.03] ${onClick ? 'cursor-pointer' : ''}`}
+    >
+      {children}
+    </tr>
+  )
 }
 
 export function Td({

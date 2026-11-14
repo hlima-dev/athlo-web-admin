@@ -30,7 +30,38 @@ export async function getContacts(params?: Record<string, string>): Promise<Pagi
   return extractPaginated<Contact, ContactsSummary>(response.data);
 }
 
-export async function getContactById(id: string) {
+export interface ContactInvoiceSummary {
+  id: string;
+  description: string;
+  amount: string | number;
+  dueDate: string;
+  status: "PENDING" | "PAID" | "OVERDUE" | "CANCELED";
+  type: "RECEIVABLE" | "PAYABLE";
+}
+
+export interface ContactOrderSummary {
+  id: string;
+  status: string;
+  paymentStatus: string;
+  total: string | number;
+  createdAt: string;
+}
+
+export interface ContactEventSummary {
+  id: string;
+  title: string;
+  status: string;
+  startDate: string;
+}
+
+export interface ContactDetail extends Contact {
+  balanceDue: number;
+  invoices: ContactInvoiceSummary[];
+  orders: ContactOrderSummary[];
+  events: ContactEventSummary[];
+}
+
+export async function getContactById(id: string): Promise<ContactDetail> {
   const response = await api.get(`/contacts/${id}`);
   return response.data?.data;
 }

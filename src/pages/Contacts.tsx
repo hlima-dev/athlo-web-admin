@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Search, Plus, Mail, Phone } from "lucide-react";
 
 import {
@@ -61,6 +61,7 @@ const statusLabels: Record<string, string> = {
 
 export function Contacts() {
   const toast = useToast();
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [meta, setMeta] = useState<PageMeta | null>(null);
@@ -269,7 +270,7 @@ export function Contacts() {
             </Thead>
             <Tbody>
               {contacts.map((contact) => (
-                <Tr key={contact.id}>
+                <Tr key={contact.id} onClick={() => navigate(`/contatos/${contact.id}`)}>
                   <Td>
                     <p className="font-medium">{contact.name}</p>
                     <p className="text-[12px] text-muted dark:text-muted-dark">
@@ -298,7 +299,7 @@ export function Contacts() {
                   </Td>
                   <Td>{contact.city || "N/I"}</Td>
                   <Td align="right">
-                    <div className="flex justify-end">
+                    <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
                       <RowActionsMenu
                         onEdit={() => openEditModal(contact)}
                         onDelete={() => setDeleteTarget(contact)}
