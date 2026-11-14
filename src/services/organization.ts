@@ -15,6 +15,9 @@ export interface OrganizationDetails {
   zipCode?: string | null;
   logoUrl?: string | null;
   taxRegime?: TaxRegime | null;
+  contactsGoal?: number | null;
+  eventsGoal?: number | null;
+  revenueGoal?: number | string | null;
   status: string;
   subscription?: {
     status: string;

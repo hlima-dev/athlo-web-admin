@@ -1,14 +1,18 @@
 import { useEffect, useState } from "react"
-import { Download, Target } from "lucide-react"
+import { Download, Pencil, Target } from "lucide-react"
 import {
   Area, AreaChart, Bar, BarChart, CartesianGrid, Cell,
   Pie, PieChart, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from "recharts"
 import { getDashboard, type DashboardData } from "../services/dashboard"
+import { getMyOrganization, updateOrganization, type OrganizationDetails } from "../services/organization"
 import { useTheme } from "../components/Theme"
 import { downloadFile } from "../services/api"
 import { useToast } from "../components/Toast"
-import { Button, Card, CardHeader, PageContainer, StatStrip } from "../components/ui"
+import { getErrorMessage } from "../utils/errors"
+import { Button, Card, CardHeader, Field, Modal, PageContainer, StatStrip, inputClass } from "../components/ui"
+
+const DEFAULT_GOALS = { contactsGoal: 50, eventsGoal: 10, revenueGoal: 5000 }
 
 export function Reports() {
   const { theme } = useTheme()
@@ -19,11 +23,21 @@ export function Reports() {
   const secondaryColor = theme === "dark" ? "#D97A43" : "#B4531F"
   const tertiaryColor = theme === "dark" ? "#8CB3D9" : "#3B5B7A"
   const [data, setData] = useState<DashboardData | null>(null)
+  const [org, setOrg] = useState<OrganizationDetails | null>(null)
   const [loading, setLoading] = useState(true)
   const [exporting, setExporting] = useState(false)
+  const [showGoalsModal, setShowGoalsModal] = useState(false)
+  const [savingGoals, setSavingGoals] = useState(false)
+  const [goalsForm, setGoalsForm] = useState({ contactsGoal: "", eventsGoal: "", revenueGoal: "" })
+
+  function loadOrg() {
+    return getMyOrganization().then(setOrg).catch(console.error)
+  }
 
   useEffect(() => {
-    getDashboard().then(setData).catch(console.error).finally(() => setLoading(false))
+    Promise.all([getDashboard().then(setData), loadOrg()])
+      .catch(console.error)
+      .finally(() => setLoading(false))
   }, [])
 
   const contacts = data?.contacts ?? 0
@@ -33,6 +47,10 @@ export function Reports() {
   const growthData = data?.growthData ?? []
   const revenueData = data?.revenueData ?? []
 
+  const contactsGoal = org?.contactsGoal ?? DEFAULT_GOALS.contactsGoal
+  const eventsGoal = org?.eventsGoal ?? DEFAULT_GOALS.eventsGoal
+  const revenueGoal = Number(org?.revenueGoal ?? DEFAULT_GOALS.revenueGoal)
+
   const categoryData = [
     { name: "Contatos", value: contacts },
     { name: "Compromissos", value: events },
@@ -40,10 +58,38 @@ export function Reports() {
   ]
 
   const goals = [
-    { title: "Contatos vs meta (50)", value: Math.min(Math.round((contacts / 50) * 100), 100) },
-    { title: "Compromissos vs meta (10)", value: Math.min(Math.round((events / 10) * 100), 100) },
-    { title: "Receita vs meta (R$ 5.000)", value: Math.min(Math.round((revenue / 5000) * 100), 100) },
+    { title: `Contatos vs meta (${contactsGoal})`, value: Math.min(Math.round((contacts / contactsGoal) * 100), 100) },
+    { title: `Compromissos vs meta (${eventsGoal})`, value: Math.min(Math.round((events / eventsGoal) * 100), 100) },
+    { title: `Receita vs meta (${revenueGoal.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })})`, value: Math.min(Math.round((revenue / revenueGoal) * 100), 100) },
   ]
+
+  function openGoalsModal() {
+    setGoalsForm({
+      contactsGoal: String(contactsGoal),
+      eventsGoal: String(eventsGoal),
+      revenueGoal: String(revenueGoal),
+    })
+    setShowGoalsModal(true)
+  }
+
+  async function handleSaveGoals(e: React.FormEvent) {
+    e.preventDefault()
+    try {
+      setSavingGoals(true)
+      await updateOrganization({
+        contactsGoal: Number(goalsForm.contactsGoal),
+        eventsGoal: Number(goalsForm.eventsGoal),
+        revenueGoal: Number(goalsForm.revenueGoal),
+      })
+      await loadOrg()
+      setShowGoalsModal(false)
+      toast.success("Metas atualizadas com sucesso.")
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao salvar as metas."))
+    } finally {
+      setSavingGoals(false)
+    }
+  }
 
   function formatCurrency(value: number) {
     return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
@@ -147,7 +193,15 @@ export function Reports() {
         </Card>
 
         <Card>
-          <CardHeader title="Metas estratégicas" />
+          <CardHeader
+            title="Metas estratégicas"
+            action={
+              <Button variant="ghost" size="sm" onClick={openGoalsModal}>
+                <Pencil size={14} />
+                Editar metas
+              </Button>
+            }
+          />
           <div className="space-y-5 p-5">
             {goals.map((goal) => (
               <div key={goal.title}>
@@ -180,6 +234,59 @@ export function Reports() {
             : `O sistema registra ${contacts} contato${contacts !== 1 ? "s" : ""}, ${events} compromisso${events !== 1 ? "s" : ""} e ${formatCurrency(revenue)} em receita neste mês. Esses indicadores ajudam a orientar decisões sobre vendas, cobrança e planejamento da equipe.`}
         </p>
       </Card>
+
+      <Modal
+        open={showGoalsModal}
+        onClose={() => setShowGoalsModal(false)}
+        title="Editar metas estratégicas"
+        subtitle="Essas metas são usadas só pra calcular o progresso exibido aqui em Relatórios."
+        footer={
+          <>
+            <Button variant="ghost" onClick={() => setShowGoalsModal(false)}>
+              Cancelar
+            </Button>
+            <Button type="submit" form="goals-form" loading={savingGoals}>
+              Salvar metas
+            </Button>
+          </>
+        }
+      >
+        <form id="goals-form" onSubmit={handleSaveGoals} className="grid grid-cols-1 gap-4">
+          <Field label="Meta de contatos">
+            <input
+              type="number"
+              min="1"
+              className={inputClass}
+              value={goalsForm.contactsGoal}
+              onChange={(e) => setGoalsForm({ ...goalsForm, contactsGoal: e.target.value })}
+              required
+            />
+          </Field>
+
+          <Field label="Meta de compromissos">
+            <input
+              type="number"
+              min="1"
+              className={inputClass}
+              value={goalsForm.eventsGoal}
+              onChange={(e) => setGoalsForm({ ...goalsForm, eventsGoal: e.target.value })}
+              required
+            />
+          </Field>
+
+          <Field label="Meta de receita mensal (R$)">
+            <input
+              type="number"
+              min="1"
+              step="0.01"
+              className={inputClass}
+              value={goalsForm.revenueGoal}
+              onChange={(e) => setGoalsForm({ ...goalsForm, revenueGoal: e.target.value })}
+              required
+            />
+          </Field>
+        </form>
+      </Modal>
     </PageContainer>
   )
 }
