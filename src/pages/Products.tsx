@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { Package, Plus, Search, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, Package, Plus, Search, CheckCircle2 } from "lucide-react";
 import {
   getProducts,
   createProduct,
@@ -47,7 +47,19 @@ const emptyForm = {
   type: "PRODUCT",
   price: "",
   active: true,
+  stockQty: "",
+  lowStockThreshold: "",
 };
+
+function isLowStock(product: Product) {
+  return (
+    product.stockQty !== null &&
+    product.stockQty !== undefined &&
+    product.lowStockThreshold !== null &&
+    product.lowStockThreshold !== undefined &&
+    product.stockQty <= product.lowStockThreshold
+  );
+}
 
 export function Products() {
   const toast = useToast();
@@ -127,6 +139,11 @@ export function Products() {
       type: product.type,
       price: String(product.price ?? ""),
       active: product.active,
+      stockQty: product.stockQty !== null && product.stockQty !== undefined ? String(product.stockQty) : "",
+      lowStockThreshold:
+        product.lowStockThreshold !== null && product.lowStockThreshold !== undefined
+          ? String(product.lowStockThreshold)
+          : "",
     });
     setError("");
     setShowModal(true);
@@ -138,7 +155,12 @@ export function Products() {
 
     try {
       setSaving(true);
-      const payload = { ...form, price: Number(form.price) };
+      const payload = {
+        ...form,
+        price: Number(form.price),
+        stockQty: form.stockQty === "" ? null : Number(form.stockQty),
+        lowStockThreshold: form.lowStockThreshold === "" ? null : Number(form.lowStockThreshold),
+      };
       if (editingId) {
         await updateProduct(editingId, payload);
       } else {
@@ -174,10 +196,16 @@ export function Products() {
 
   // Vem do backend (agregado da organização inteira) — não some quando a
   // busca filtra a lista, nem fica errado quando há mais de 20 produtos.
-  const { total: totalCount, active: activeCount, services: servicesCount } = summary ?? {
+  const {
+    total: totalCount,
+    active: activeCount,
+    services: servicesCount,
+    lowStock: lowStockCount,
+  } = summary ?? {
     total: 0,
     active: 0,
     services: 0,
+    lowStock: 0,
   };
 
   return (
@@ -187,6 +215,7 @@ export function Products() {
           { label: "Itens cadastrados", value: String(totalCount) },
           { label: "Ativos", value: String(activeCount) },
           { label: "Serviços", value: String(servicesCount) },
+          { label: "Estoque baixo", value: String(lowStockCount), tone: lowStockCount > 0 ? "danger" : "default" },
         ]}
       />
 
@@ -236,6 +265,7 @@ export function Products() {
                 <Th>Tipo</Th>
                 <Th>SKU</Th>
                 <Th align="right">Preço</Th>
+                <Th>Estoque</Th>
                 <Th>Status</Th>
                 <Th align="right">Ações</Th>
               </Tr>
@@ -259,6 +289,20 @@ export function Products() {
                   <Td>{product.sku || "—"}</Td>
                   <Td align="right" className="font-medium tabular-nums">
                     {toCurrency(Number(product.price || 0))}
+                  </Td>
+                  <Td>
+                    {product.stockQty === null || product.stockQty === undefined ? (
+                      <span className="text-faint dark:text-faint-dark">—</span>
+                    ) : (
+                      <span className="flex items-center gap-1.5 tabular-nums">
+                        {product.stockQty}
+                        {isLowStock(product) && (
+                          <span title="Estoque baixo">
+                            <AlertTriangle size={13} className="text-danger dark:text-danger-dark" />
+                          </span>
+                        )}
+                      </span>
+                    )}
                   </Td>
                   <Td>
                     {product.active ? (
@@ -318,7 +362,13 @@ export function Products() {
               <select
                 className={inputClass}
                 value={form.type}
-                onChange={(e) => setForm({ ...form, type: e.target.value })}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    type: e.target.value,
+                    ...(e.target.value === "SERVICE" ? { stockQty: "", lowStockThreshold: "" } : {}),
+                  })
+                }
               >
                 <option value="PRODUCT">Produto</option>
                 <option value="SERVICE">Serviço</option>
@@ -344,6 +394,32 @@ export function Products() {
                 onChange={(e) => setForm({ ...form, sku: e.target.value })}
               />
             </Field>
+
+            {form.type === "PRODUCT" && (
+              <>
+                <Field label="Estoque atual (opcional)" hint="Deixe em branco pra não controlar estoque deste item.">
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    className={inputClass}
+                    value={form.stockQty}
+                    onChange={(e) => setForm({ ...form, stockQty: e.target.value })}
+                  />
+                </Field>
+
+                <Field label="Avisar quando chegar em (opcional)">
+                  <input
+                    type="number"
+                    min="0"
+                    step="1"
+                    className={inputClass}
+                    value={form.lowStockThreshold}
+                    onChange={(e) => setForm({ ...form, lowStockThreshold: e.target.value })}
+                  />
+                </Field>
+              </>
+            )}
 
             <Field label="Descrição" className="sm:col-span-2">
               <textarea

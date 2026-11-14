@@ -8,6 +8,8 @@ export interface Product {
   type: "PRODUCT" | "SERVICE";
   price: string | number;
   active: boolean;
+  stockQty?: number | null;
+  lowStockThreshold?: number | null;
   createdAt: string;
 }
 
@@ -15,6 +17,7 @@ export interface ProductsSummary {
   total: number;
   active: number;
   services: number;
+  lowStock: number;
 }
 
 export async function getProducts(params?: Record<string, string>): Promise<PaginatedResult<Product, ProductsSummary>> {

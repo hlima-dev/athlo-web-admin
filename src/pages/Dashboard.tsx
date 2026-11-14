@@ -5,10 +5,14 @@ import { useTheme } from "../components/Theme";
 import { Card, CardHeader, PageContainer, StatStrip, EmptyState } from "../components/ui";
 
 import {
+  AlertTriangle,
   CalendarDays,
+  Clock,
+  PackageX,
   Sparkles,
   ArrowUpRight,
   TrendingUp,
+  Wallet,
 } from "lucide-react";
 
 import {
@@ -103,6 +107,9 @@ export function Dashboard() {
   ];
 
   const cashFlowProjection = dashboard?.cashFlowProjection ?? [];
+  const attention = dashboard?.attention;
+  const attentionCount =
+    (attention?.overdueInvoicesTotal ?? 0) + (attention?.todayEvents.length ?? 0) + (attention?.lowStockTotal ?? 0);
 
   return (
     <PageContainer>
@@ -132,6 +139,102 @@ export function Dashboard() {
       </section>
 
       <StatStrip items={stats} />
+
+      <Card>
+        <CardHeader
+          title="Precisa de atenção"
+          subtitle={
+            attentionCount === 0
+              ? "Tudo em dia por aqui."
+              : `${attentionCount} ${attentionCount === 1 ? "item cruza" : "itens cruzam"} faturas vencidas, compromissos de hoje e estoque baixo.`
+          }
+          action={<AlertTriangle className="text-muted dark:text-muted-dark" size={20} />}
+        />
+        {attentionCount === 0 ? (
+          <EmptyState
+            icon={<AlertTriangle size={20} />}
+            title="Nada pedindo atenção agora"
+            description="Faturas vencidas, compromissos de hoje e produtos com estoque baixo aparecem aqui assim que surgirem."
+          />
+        ) : (
+          <div className="grid grid-cols-1 gap-px bg-line dark:bg-line-dark md:grid-cols-3">
+            <div className="bg-surface p-5 dark:bg-surface-dark">
+              <div className="mb-3 flex items-center gap-2 text-[12.5px] font-medium text-muted dark:text-muted-dark">
+                <Wallet size={14} />
+                Faturas vencidas ({attention?.overdueInvoicesTotal ?? 0})
+              </div>
+              {(attention?.overdueInvoices.length ?? 0) === 0 ? (
+                <p className="text-[12.5px] text-faint dark:text-faint-dark">Nenhuma fatura vencida.</p>
+              ) : (
+                <ul className="space-y-2.5">
+                  {attention?.overdueInvoices.map((invoice) => (
+                    <li
+                      key={invoice.id}
+                      className="flex cursor-pointer items-center justify-between gap-2 text-[12.5px]"
+                      onClick={() => navigate("/financeiro")}
+                    >
+                      <span className="truncate text-ink dark:text-ink-dark">{invoice.description}</span>
+                      <span className="shrink-0 font-medium tabular-nums text-danger dark:text-danger-dark">
+                        {formatBRL(Number(invoice.amount))}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="bg-surface p-5 dark:bg-surface-dark">
+              <div className="mb-3 flex items-center gap-2 text-[12.5px] font-medium text-muted dark:text-muted-dark">
+                <Clock size={14} />
+                Compromissos de hoje ({attention?.todayEvents.length ?? 0})
+              </div>
+              {(attention?.todayEvents.length ?? 0) === 0 ? (
+                <p className="text-[12.5px] text-faint dark:text-faint-dark">Nenhum compromisso hoje.</p>
+              ) : (
+                <ul className="space-y-2.5">
+                  {attention?.todayEvents.map((event) => (
+                    <li
+                      key={event.id}
+                      className="flex cursor-pointer items-center justify-between gap-2 text-[12.5px]"
+                      onClick={() => navigate("/eventos")}
+                    >
+                      <span className="truncate text-ink dark:text-ink-dark">{event.title}</span>
+                      <span className="shrink-0 tabular-nums text-muted dark:text-muted-dark">
+                        {new Date(event.startDate).toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            <div className="bg-surface p-5 dark:bg-surface-dark">
+              <div className="mb-3 flex items-center gap-2 text-[12.5px] font-medium text-muted dark:text-muted-dark">
+                <PackageX size={14} />
+                Estoque baixo ({attention?.lowStockTotal ?? 0})
+              </div>
+              {(attention?.lowStockProducts.length ?? 0) === 0 ? (
+                <p className="text-[12.5px] text-faint dark:text-faint-dark">Nenhum produto com estoque baixo.</p>
+              ) : (
+                <ul className="space-y-2.5">
+                  {attention?.lowStockProducts.map((product) => (
+                    <li
+                      key={product.id}
+                      className="flex cursor-pointer items-center justify-between gap-2 text-[12.5px]"
+                      onClick={() => navigate("/produtos")}
+                    >
+                      <span className="truncate text-ink dark:text-ink-dark">{product.name}</span>
+                      <span className="shrink-0 font-medium tabular-nums text-danger dark:text-danger-dark">
+                        {product.stockQty}/{product.lowStockThreshold}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        )}
+      </Card>
 
       <Card>
         <CardHeader title="Ações rápidas" />
