@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDashboard, type DashboardData } from "../services/dashboard";
 import { useTheme } from "../components/Theme";
+import { OnboardingChecklist } from "../components/OnboardingChecklist";
 import { Card, CardHeader, PageContainer, StatStrip, EmptyState } from "../components/ui";
 
 import {
@@ -139,6 +140,8 @@ export function Dashboard() {
       </section>
 
       <StatStrip items={stats} />
+
+      <OnboardingChecklist />
 
       <Card>
         <CardHeader
