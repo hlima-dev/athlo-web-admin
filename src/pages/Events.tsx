@@ -12,6 +12,7 @@ import {
   type EventsSummary,
 } from "../services/events";
 import type { PageMeta } from "../services/api";
+import { getPeriodRange, periodOptions, type PeriodKey } from "../utils/period";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { ConfirmDialog } from "../components/ConfirmDialog";
 import { useToast } from "../components/Toast";
@@ -72,6 +73,9 @@ export function Events() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Event | null>(null);
   const [deleting, setDeleting] = useState(false);
+  const [period, setPeriod] = useState<PeriodKey>("ALL");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   const [quickPrompt, setQuickPrompt] = useState("");
   const [quickLoading, setQuickLoading] = useState(false);
@@ -82,7 +86,13 @@ export function Events() {
     try {
       setLoading(true);
       setError("");
-      const result = await getEvents({ page: String(targetPage) });
+      const range = getPeriodRange(period);
+      const params: Record<string, string> = { page: String(targetPage) };
+      if (range.from) params.from = range.from;
+      if (range.to) params.to = range.to;
+      if (typeFilter) params.type = typeFilter;
+      if (statusFilter) params.status = statusFilter;
+      const result = await getEvents(params);
       setEvents(result.items);
       setMeta(result.meta ?? null);
       setSummary(result.summary ?? null);
@@ -96,10 +106,10 @@ export function Events() {
   }
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
-    loadEvents();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- refaz a busca quando o período/tipo/status do filtro muda
+    loadEvents(1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [period, typeFilter, statusFilter]);
 
   // ?novo=1 (link de criação rápida do header) abre o modal de criação —
   // só na montagem, de propósito (searchParams muda de identidade a cada
@@ -325,6 +335,51 @@ export function Events() {
         </div>
       </div>
 
+      <Card>
+        <div className="flex flex-wrap items-center gap-1.5 border-b border-line px-5 py-3.5 dark:border-line-dark">
+          {periodOptions.map((option) => (
+            <button
+              key={option.key}
+              type="button"
+              onClick={() => setPeriod(option.key)}
+              className={`rounded-md px-3 py-1.5 text-[12.5px] font-medium transition ${
+                period === option.key
+                  ? "bg-forest text-white dark:bg-forest-400"
+                  : "text-muted hover:bg-[#F0EEE8] dark:text-muted-dark dark:hover:bg-white/[0.06]"
+              }`}
+            >
+              {option.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-3 px-5 py-3.5 sm:flex-row">
+          <select
+            className={`${inputClass} sm:w-56`}
+            value={typeFilter}
+            onChange={(e) => setTypeFilter(e.target.value)}
+          >
+            <option value="">Todos os tipos</option>
+            {Object.entries(typeLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+
+          <select
+            className={`${inputClass} sm:w-56`}
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+          >
+            <option value="">Todos os status</option>
+            <option value="SCHEDULED">Agendado</option>
+            <option value="COMPLETED">Concluído</option>
+            <option value="CANCELED">Cancelado</option>
+          </select>
+        </div>
+      </Card>
+
       {error ? (
         <Card>
           <ErrorNote message={error} onRetry={() => loadEvents()} />
@@ -340,7 +395,7 @@ export function Events() {
           <EmptyState
             icon={<CalendarDays size={20} />}
             title="Nenhum item encontrado"
-            description="Cadastre um compromisso manualmente ou use o cadastro rápido por texto acima."
+            description="Cadastre um compromisso manualmente, use o cadastro rápido por texto acima, ou ajuste os filtros de período/tipo/status."
             action={
               <Button onClick={openCreateModal}>
                 <Plus size={16} />
