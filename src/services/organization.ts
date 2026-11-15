@@ -55,7 +55,7 @@ export async function getMembers(): Promise<Member[]> {
   return response.data.data ?? [];
 }
 
-export type OrgModule = "CONTACTS" | "INVOICES" | "PRODUCTS" | "ORDERS" | "EVENTS";
+export type OrgModule = "CONTACTS" | "INVOICES" | "PRODUCTS" | "ORDERS" | "EVENTS" | "INSUMOS";
 
 export interface ModulePermission {
   module: OrgModule;

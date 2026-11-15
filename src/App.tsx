@@ -11,6 +11,7 @@ import { Financeiro } from "./pages/Financeiro";
 import { Contacts } from "./pages/Contacts";
 import { ContactDetail } from "./pages/ContactDetail";
 import { Products } from "./pages/Products";
+import { Insumos } from "./pages/Insumos";
 import { Orders } from "./pages/Orders";
 import { Events } from "./pages/Events";
 import { Calendar } from "./pages/Calendar";
@@ -61,6 +62,7 @@ export default function App() {
           <Route path="/contatos" element={<Contacts />} />
           <Route path="/contatos/:id" element={<ContactDetail />} />
           <Route path="/produtos" element={<Products />} />
+          <Route path="/insumos" element={<Insumos />} />
           <Route path="/pedidos" element={<Orders />} />
           <Route path="/eventos" element={<Events />} />
           <Route path="/calendario" element={<Calendar />} />
