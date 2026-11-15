@@ -19,7 +19,7 @@ export interface Order {
   contact?: { id: string; name: string; phone?: string | null } | null;
   type: "DELIVERY" | "PICKUP";
   status: "CREATED" | "CONFIRMED" | "IN_PREPARATION" | "OUT_FOR_DELIVERY" | "DELIVERED" | "CANCELED";
-  origin: "MANUAL" | "CALLCENTER" | "SITE";
+  origin: "MANUAL" | "CALLCENTER" | "SITE" | "MERCADO_PAGO";
   paymentMethod: "PIX" | "CREDIT_CARD" | "DEBIT_CARD" | "CASH" | "BANK_TRANSFER" | "ONLINE" | "OTHER";
   paymentStatus: "PENDING" | "PAID" | "REFUNDED";
   address?: string | null;
@@ -32,6 +32,10 @@ export interface Order {
   operator?: { id: string; name: string } | null;
   items: OrderItem[];
   invoice?: { id: string } | null;
+  // true quando o pedido foi criado automaticamente a partir de um PIX
+  // no Mercado Pago — o item ainda é um placeholder até ser identificado.
+  needsItemReview?: boolean;
+  mercadoPagoPaymentId?: string | null;
   createdAt: string;
 }
 
@@ -40,6 +44,7 @@ export interface OrdersSummary {
   open: number;
   delivered: number;
   revenue: number;
+  needsReview: number;
 }
 
 export async function getOrders(params?: Record<string, string>): Promise<PaginatedResult<Order, OrdersSummary>> {

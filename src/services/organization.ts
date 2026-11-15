@@ -18,6 +18,7 @@ export interface OrganizationDetails {
   contactsGoal?: number | null;
   eventsGoal?: number | null;
   revenueGoal?: number | string | null;
+  mercadoPagoConnected?: boolean;
   status: string;
   subscription?: {
     status: string;
