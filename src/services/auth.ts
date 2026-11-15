@@ -164,3 +164,13 @@ export function getStoredOrganization(): Organization | null {
     return null
   }
 }
+
+// Atualiza o cache local da empresa ativa (ex.: depois de editar o nome
+// em Configurações) e dispara um evento pro resto da UI reagir sem
+// precisar de F5 — hoje só o nome na barra lateral (AppLayout) escuta.
+export function updateStoredOrganization(patch: Partial<Pick<Organization, 'name'>>): void {
+  const current = getStoredOrganization()
+  if (!current) return
+  localStorage.setItem('@athlo:organization', JSON.stringify({ ...current, ...patch }))
+  window.dispatchEvent(new Event('athlo:organization-updated'))
+}

@@ -10,7 +10,7 @@ import {
 import { getPlans, changePlan, checkoutPlan, openBillingPortal, type Plan } from "../services/plans";
 import { useToast } from "../components/Toast";
 import { useTheme } from "../components/Theme";
-import { clearSession, getStoredUser } from "../services/auth";
+import { clearSession, getStoredUser, updateStoredOrganization } from "../services/auth";
 import { maskCpfCnpj, maskPhone } from "../utils/masks";
 import { getErrorMessage } from "../utils/errors";
 import { Button, Card, CardHeader, Field, Modal, PageContainer, inputClass } from "../components/ui";
@@ -87,6 +87,7 @@ export function Settings() {
     try {
       setSaving(true);
       await updateOrganization({ ...form, taxRegime: form.taxRegime || null });
+      updateStoredOrganization({ name: form.name });
       setMessage("Dados da empresa atualizados com sucesso.");
       await load();
     } catch (err: unknown) {
