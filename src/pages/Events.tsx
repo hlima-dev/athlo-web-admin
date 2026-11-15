@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
-import { Bell, CalendarDays, Check, Plus, MapPin, Wand2 } from "lucide-react";
+import { Bell, CalendarDays, Check, Plus, MapPin, Repeat, Wand2 } from "lucide-react";
 
 import {
   getEvents,
@@ -8,6 +8,8 @@ import {
   updateEvent,
   deleteEvent,
   parseEventFromText,
+  makeEventRecurring,
+  stopEventRecurrence,
   type Event,
   type EventsSummary,
 } from "../services/events";
@@ -39,6 +41,20 @@ const typeLabels: Record<string, string> = {
   DEADLINE: "Prazo",
   OTHER: "Outro",
 };
+
+const weekdayLabels = [
+  "domingo",
+  "segunda-feira",
+  "terça-feira",
+  "quarta-feira",
+  "quinta-feira",
+  "sexta-feira",
+  "sábado",
+];
+
+function weekdayLabelFor(iso: string) {
+  return weekdayLabels[new Date(iso).getUTCDay()];
+}
 
 const emptyForm = {
   title: "",
@@ -267,6 +283,26 @@ export function Events() {
     }
   }
 
+  async function handleMakeRecurring(event: Event) {
+    try {
+      await makeEventRecurring(event.id);
+      await loadEvents();
+      toast.success(`Repetição ativada! Esse compromisso vai se repetir toda ${weekdayLabelFor(event.startDate)}.`);
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao tornar o compromisso recorrente."));
+    }
+  }
+
+  async function handleStopRecurrence(event: Event) {
+    try {
+      await stopEventRecurrence(event.id);
+      await loadEvents();
+      toast.success("Rotina parada. Os compromissos já criados continuam na agenda.");
+    } catch (err: unknown) {
+      toast.error(getErrorMessage(err, "Erro ao parar a rotina."));
+    }
+  }
+
   // Vem do backend (agregado da organização inteira) — não some quando a
   // página atual não tem nenhum item de um tipo específico.
   const { scheduled, tasks, deadlines, total: totalEvents } = summary ?? {
@@ -447,6 +483,12 @@ export function Events() {
                       </p>
                       <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[12px] text-muted dark:text-muted-dark">
                         <Badge tone="neutral">{typeLabels[event.type] || event.type}</Badge>
+                        {event.recurrenceId &&
+                          (event.recurrence?.active ? (
+                            <Badge tone="info">🔁 Recorrente</Badge>
+                          ) : (
+                            <Badge tone="neutral">🔁 Rotina parada</Badge>
+                          ))}
                         {event.status === "CANCELED" && <Badge tone="negative">Cancelado</Badge>}
                         {(event.location || event.isOnline) && (
                           <span className="flex items-center gap-1">
@@ -463,7 +505,17 @@ export function Events() {
                       </div>
                     </div>
 
-                    <RowActionsMenu onEdit={() => openEditModal(event)} onDelete={() => setDeleteTarget(event)} />
+                    <RowActionsMenu
+                      onEdit={() => openEditModal(event)}
+                      onDelete={() => setDeleteTarget(event)}
+                      extraActions={
+                        event.recurrenceId && event.recurrence?.active
+                          ? [{ label: "Parar rotina", icon: Repeat, onClick: () => void handleStopRecurrence(event) }]
+                          : !event.recurrenceId
+                            ? [{ label: "Tornar recorrente", icon: Repeat, onClick: () => void handleMakeRecurring(event) }]
+                            : []
+                      }
+                    />
                   </li>
                 ))}
               </ul>
