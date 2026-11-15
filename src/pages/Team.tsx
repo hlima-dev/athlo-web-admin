@@ -43,6 +43,7 @@ const moduleLabels: Record<OrgModule, string> = {
   PRODUCTS: "Produtos",
   ORDERS: "Pedidos",
   EVENTS: "Agenda",
+  INSUMOS: "Insumos",
 };
 
 const ALL_MODULES: OrgModule[] = ["CONTACTS", "INVOICES", "PRODUCTS", "ORDERS", "EVENTS"];

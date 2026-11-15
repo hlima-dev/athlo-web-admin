@@ -21,6 +21,7 @@ import {
   User,
   Users,
   Wallet,
+  Wheat,
   X,
 } from 'lucide-react'
 import { logout as logoutRequest, getStoredOrganization, getStoredUser } from '../services/auth'
@@ -48,6 +49,7 @@ const navSections: { title: string | null; items: { label: string; path: string;
       { label: 'Contatos', path: '/contatos', icon: Users },
       { label: 'Financeiro', path: '/financeiro', icon: Wallet },
       { label: 'Produtos', path: '/produtos', icon: Package },
+      { label: 'Insumos', path: '/insumos', icon: Wheat },
       { label: 'Pedidos', path: '/pedidos', icon: ClipboardList },
       { label: 'Agenda', path: '/eventos', icon: Calendar },
       { label: 'Calendário', path: '/calendario', icon: CalendarDays },
@@ -71,6 +73,7 @@ const navItemModule: Record<string, OrgModule> = {
   '/contatos': 'CONTACTS',
   '/financeiro': 'INVOICES',
   '/produtos': 'PRODUCTS',
+  '/insumos': 'INSUMOS',
   '/pedidos': 'ORDERS',
   '/eventos': 'EVENTS',
 }
@@ -80,6 +83,7 @@ const quickCreateItems = [
   { label: 'Nova fatura', to: '/financeiro?novo=1' },
   { label: 'Novo pedido', to: '/pedidos?novo=1' },
   { label: 'Novo produto', to: '/produtos?novo=1' },
+  { label: 'Novo insumo', to: '/insumos?novo=1' },
   { label: 'Novo compromisso', to: '/eventos?novo=1' },
 ]
 
@@ -88,6 +92,7 @@ const pageTitles: Record<string, { title: string; subtitle: string }> = {
   '/contatos': { title: 'Contatos', subtitle: 'Clientes e fornecedores' },
   '/financeiro': { title: 'Financeiro', subtitle: 'Faturas, recebimentos e projeção' },
   '/produtos': { title: 'Produtos', subtitle: 'Catálogo e estoque' },
+  '/insumos': { title: 'Insumos', subtitle: 'Matéria-prima e cotações de fornecedores' },
   '/pedidos': { title: 'Pedidos', subtitle: 'Vendas e entregas' },
   '/eventos': { title: 'Agenda', subtitle: 'Compromissos e lembretes' },
   '/calendario': { title: 'Calendário', subtitle: 'Visão mensal da agenda' },
