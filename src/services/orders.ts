@@ -8,6 +8,7 @@ export interface OrderItem {
   unitPrice: string | number;
   total?: string | number;
   product?: { id: string; name: string } | null;
+  estimatedProfit?: number | null;
 }
 
 export interface Order {

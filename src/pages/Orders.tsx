@@ -9,6 +9,7 @@ import {
   Trash2,
   FileDown,
   Receipt,
+  TrendingUp,
   User,
 } from "lucide-react";
 
@@ -116,9 +117,12 @@ interface ItemForm {
   name: string;
   quantity: string;
   unitPrice: string;
+  // Só informativo (preview de ganho salvo na última vez) — não é editável
+  // nem recalculado ao vivo enquanto o pedido é editado.
+  estimatedProfit?: number | null;
 }
 
-const emptyItem: ItemForm = { productId: "", name: "", quantity: "1", unitPrice: "" };
+const emptyItem: ItemForm = { productId: "", name: "", quantity: "1", unitPrice: "", estimatedProfit: null };
 
 const emptyForm = {
   customerName: "",
@@ -250,6 +254,7 @@ export function Orders() {
             name: item.name,
             quantity: String(item.quantity),
             unitPrice: String(item.unitPrice),
+            estimatedProfit: item.estimatedProfit ?? null,
           }))
         : [{ ...emptyItem }],
     });
@@ -260,7 +265,9 @@ export function Orders() {
   function updateItem(index: number, patch: Partial<ItemForm>) {
     setForm((current) => ({
       ...current,
-      items: current.items.map((item, i) => (i === index ? { ...item, ...patch } : item)),
+      // Qualquer edição manual invalida o lucro estimado exibido (ele
+      // reflete a última vez que o pedido foi salvo, não o rascunho atual).
+      items: current.items.map((item, i) => (i === index ? { ...item, ...patch, estimatedProfit: null } : item)),
     }));
   }
 
@@ -803,6 +810,13 @@ export function Orders() {
                   >
                     <Trash2 size={15} />
                   </button>
+
+                  {item.estimatedProfit !== null && item.estimatedProfit !== undefined && (
+                    <p className="flex items-center gap-1 text-[11.5px] text-muted dark:text-muted-dark md:col-span-12">
+                      <TrendingUp size={12} className="text-forest-600 dark:text-forest-400" />
+                      Lucro estimado nesta venda: {toCurrency(item.estimatedProfit)}
+                    </p>
+                  )}
                 </div>
               ))}
             </div>

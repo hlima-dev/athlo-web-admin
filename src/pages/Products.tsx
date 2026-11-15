@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import { AlertTriangle, Package, Plus, Search, CheckCircle2 } from "lucide-react";
+import { AlertTriangle, Package, Plus, Search, CheckCircle2, Trash2, Wheat } from "lucide-react";
 import {
   getProducts,
+  getProductById,
   createProduct,
   updateProduct,
+  updateProductRecipe,
   deleteProduct,
   type Product,
   type ProductsSummary,
 } from "../services/products";
+import { getInsumos, type Insumo } from "../services/insumos";
 import type { PageMeta } from "../services/api";
 import { RowActionsMenu } from "../components/RowActionsMenu";
 import { ConfirmDialog } from "../components/ConfirmDialog";
@@ -49,7 +52,19 @@ const emptyForm = {
   active: true,
   stockQty: "",
   lowStockThreshold: "",
+  taxPercent: "",
+  paymentFeePercent: "",
+  shippingCost: "",
 };
+
+interface RecipeRowForm {
+  insumoId: string;
+  quantity: string;
+  insumoName?: string;
+  unit?: string;
+}
+
+const MARGIN_HEALTHY_THRESHOLD = 15;
 
 function isLowStock(product: Product) {
   return (
@@ -79,6 +94,12 @@ export function Products() {
 
   const [form, setForm] = useState(emptyForm);
 
+  const [insumos, setInsumos] = useState<Insumo[]>([]);
+  const [recipeItems, setRecipeItems] = useState<RecipeRowForm[]>([]);
+  const [recipeLoading, setRecipeLoading] = useState(false);
+  const [recipeSaving, setRecipeSaving] = useState(false);
+  const [recipeError, setRecipeError] = useState("");
+
   async function loadProducts(targetPage = page) {
     try {
       setLoading(true);
@@ -101,6 +122,9 @@ export function Products() {
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- busca inicial ao montar a tela
     loadProducts();
+    getInsumos({ limit: "100" })
+      .then((result) => setInsumos(result.items))
+      .catch((err) => console.error("Erro ao carregar insumos:", err));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -127,10 +151,12 @@ export function Products() {
     setEditingId(null);
     setForm(emptyForm);
     setError("");
+    setRecipeItems([]);
+    setRecipeError("");
     setShowModal(true);
   }
 
-  function openEditModal(product: Product) {
+  async function openEditModal(product: Product) {
     setEditingId(product.id);
     setForm({
       name: product.name,
@@ -144,10 +170,82 @@ export function Products() {
         product.lowStockThreshold !== null && product.lowStockThreshold !== undefined
           ? String(product.lowStockThreshold)
           : "",
+      taxPercent: product.taxPercent !== null && product.taxPercent !== undefined ? String(product.taxPercent) : "",
+      paymentFeePercent:
+        product.paymentFeePercent !== null && product.paymentFeePercent !== undefined
+          ? String(product.paymentFeePercent)
+          : "",
+      shippingCost:
+        product.shippingCost !== null && product.shippingCost !== undefined ? String(product.shippingCost) : "",
     });
     setError("");
     setShowModal(true);
+
+    setRecipeItems([]);
+    setRecipeError("");
+    setRecipeLoading(true);
+    try {
+      const detail = await getProductById(product.id);
+      setRecipeItems(
+        (detail.recipeItems ?? []).map((item) => ({
+          insumoId: item.insumoId,
+          quantity: String(item.quantity),
+          insumoName: item.insumoName,
+          unit: item.unit,
+        })),
+      );
+    } catch (err) {
+      setRecipeError(getErrorMessage(err, "Erro ao carregar a ficha técnica."));
+    } finally {
+      setRecipeLoading(false);
+    }
   }
+
+  function addRecipeRow() {
+    setRecipeItems((current) => [...current, { insumoId: "", quantity: "1" }]);
+  }
+
+  function updateRecipeRow(index: number, patch: Partial<RecipeRowForm>) {
+    setRecipeItems((current) => current.map((item, i) => (i === index ? { ...item, ...patch } : item)));
+  }
+
+  function removeRecipeRow(index: number) {
+    setRecipeItems((current) => current.filter((_, i) => i !== index));
+  }
+
+  async function handleSaveRecipe() {
+    if (!editingId) return;
+    setRecipeError("");
+
+    try {
+      setRecipeSaving(true);
+      const items = recipeItems
+        .filter((item) => item.insumoId && Number(item.quantity) > 0)
+        .map((item) => ({ insumoId: item.insumoId, quantity: Number(item.quantity) }));
+      await updateProductRecipe(editingId, items);
+      await loadProducts();
+      toast.success("Ficha técnica atualizada com sucesso.");
+    } catch (err: unknown) {
+      setRecipeError(getErrorMessage(err, "Erro ao salvar a ficha técnica."));
+    } finally {
+      setRecipeSaving(false);
+    }
+  }
+
+  const liveMargin = useMemo(() => {
+    const price = Number(form.price) || 0;
+    const productionCost = recipeItems.reduce((sum, item) => {
+      const insumo = insumos.find((i) => i.id === item.insumoId);
+      const qty = Number(item.quantity) || 0;
+      return sum + (insumo?.bestPrice?.price ?? 0) * qty;
+    }, 0);
+    const taxAmount = price * ((Number(form.taxPercent) || 0) / 100);
+    const paymentFeeAmount = price * ((Number(form.paymentFeePercent) || 0) / 100);
+    const shippingCost = Number(form.shippingCost) || 0;
+    const netMargin = price - productionCost - taxAmount - paymentFeeAmount - shippingCost;
+    const netMarginPercent = price > 0 ? (netMargin / price) * 100 : 0;
+    return { price, productionCost, taxAmount, paymentFeeAmount, shippingCost, netMargin, netMarginPercent };
+  }, [form.price, form.taxPercent, form.paymentFeePercent, form.shippingCost, recipeItems, insumos]);
 
   async function handleSaveProduct(e: React.FormEvent) {
     e.preventDefault();
@@ -160,6 +258,9 @@ export function Products() {
         price: Number(form.price),
         stockQty: form.stockQty === "" ? null : Number(form.stockQty),
         lowStockThreshold: form.lowStockThreshold === "" ? null : Number(form.lowStockThreshold),
+        taxPercent: form.taxPercent === "" ? null : Number(form.taxPercent),
+        paymentFeePercent: form.paymentFeePercent === "" ? null : Number(form.paymentFeePercent),
+        shippingCost: form.shippingCost === "" ? null : Number(form.shippingCost),
       };
       if (editingId) {
         await updateProduct(editingId, payload);
@@ -443,6 +544,166 @@ export function Products() {
               </label>
             )}
           </div>
+
+          {editingId && (
+            <div className="border-t border-line pt-4 dark:border-line-dark">
+              <div className="mb-3 flex items-center gap-2">
+                <Wheat size={16} className="text-forest-600 dark:text-forest-400" />
+                <h3 className="text-[13.5px] font-semibold">Ficha técnica e margem</h3>
+              </div>
+
+              {recipeError && (
+                <p className="mb-3 rounded-md bg-[#F6E4E1] px-3.5 py-2.5 text-[12.5px] text-danger dark:bg-danger-dark/10 dark:text-danger-dark">
+                  {recipeError}
+                </p>
+              )}
+
+              {recipeLoading ? (
+                <p className="text-[12.5px] text-muted dark:text-muted-dark">Carregando ficha técnica...</p>
+              ) : (
+                <>
+                  <div className="space-y-2">
+                    {recipeItems.map((item, index) => {
+                      const insumoInList = insumos.some((i) => i.id === item.insumoId);
+                      return (
+                        <div key={index} className="grid grid-cols-1 gap-2 sm:grid-cols-12">
+                          <select
+                            className={`${inputClass} sm:col-span-7`}
+                            value={item.insumoId}
+                            onChange={(e) => updateRecipeRow(index, { insumoId: e.target.value })}
+                          >
+                            <option value="">Selecione o insumo...</option>
+                            {!insumoInList && item.insumoId && (
+                              <option value={item.insumoId}>
+                                {item.insumoName} ({item.unit})
+                              </option>
+                            )}
+                            {insumos.map((insumo) => (
+                              <option key={insumo.id} value={insumo.id}>
+                                {insumo.name} ({insumo.unit})
+                              </option>
+                            ))}
+                          </select>
+
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.0001"
+                            placeholder="Quantidade"
+                            className={`${inputClass} sm:col-span-4`}
+                            value={item.quantity}
+                            onChange={(e) => updateRecipeRow(index, { quantity: e.target.value })}
+                          />
+
+                          <button
+                            type="button"
+                            onClick={() => removeRecipeRow(index)}
+                            className="flex items-center justify-center rounded-md bg-[#F6E4E1] px-2 py-2 text-danger hover:bg-[#F0D8D3] dark:bg-danger-dark/15 dark:text-danger-dark dark:hover:bg-danger-dark/25 sm:col-span-1"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={addRecipeRow}
+                    className="mt-2.5 text-[12.5px] font-medium text-forest-600 hover:underline dark:text-forest-400"
+                  >
+                    + Adicionar insumo
+                  </button>
+
+                  <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-3">
+                    <Field label="Imposto % (opcional)">
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        className={inputClass}
+                        value={form.taxPercent}
+                        onChange={(e) => setForm({ ...form, taxPercent: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Taxa de pagamento % (opcional)">
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        step="0.01"
+                        className={inputClass}
+                        value={form.paymentFeePercent}
+                        onChange={(e) => setForm({ ...form, paymentFeePercent: e.target.value })}
+                      />
+                    </Field>
+                    <Field label="Frete (R$, opcional)">
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        className={inputClass}
+                        value={form.shippingCost}
+                        onChange={(e) => setForm({ ...form, shippingCost: e.target.value })}
+                      />
+                    </Field>
+                  </div>
+
+                  <div className="mt-4 rounded-md border border-line p-3.5 dark:border-line-dark">
+                    <p className="mb-2 text-[12px] font-medium text-muted dark:text-muted-dark">
+                      Decomposição do preço
+                    </p>
+                    <div className="space-y-1 text-[12.5px]">
+                      <div className="flex justify-between">
+                        <span>Preço de venda</span>
+                        <span className="tabular-nums">{toCurrency(liveMargin.price)}</span>
+                      </div>
+                      <div className="flex justify-between text-muted dark:text-muted-dark">
+                        <span>− Custo de produção</span>
+                        <span className="tabular-nums">{toCurrency(liveMargin.productionCost)}</span>
+                      </div>
+                      <div className="flex justify-between text-muted dark:text-muted-dark">
+                        <span>− Imposto</span>
+                        <span className="tabular-nums">{toCurrency(liveMargin.taxAmount)}</span>
+                      </div>
+                      <div className="flex justify-between text-muted dark:text-muted-dark">
+                        <span>− Taxa de pagamento</span>
+                        <span className="tabular-nums">{toCurrency(liveMargin.paymentFeeAmount)}</span>
+                      </div>
+                      <div className="flex justify-between text-muted dark:text-muted-dark">
+                        <span>− Frete</span>
+                        <span className="tabular-nums">{toCurrency(liveMargin.shippingCost)}</span>
+                      </div>
+                      <div className="mt-1.5 flex justify-between border-t border-line pt-1.5 font-semibold dark:border-line-dark">
+                        <span>Margem líquida</span>
+                        <span className="tabular-nums">
+                          {toCurrency(liveMargin.netMargin)} ({liveMargin.netMarginPercent.toFixed(1)}%)
+                        </span>
+                      </div>
+                    </div>
+
+                    {form.price &&
+                      (liveMargin.netMarginPercent >= MARGIN_HEALTHY_THRESHOLD ? (
+                        <p className="mt-2.5 flex items-center gap-1.5 text-[12px] font-medium text-forest-600 dark:text-forest-400">
+                          <CheckCircle2 size={14} /> Margem saudável
+                        </p>
+                      ) : (
+                        <p className="mt-2.5 flex items-center gap-1.5 text-[12px] font-medium text-[#8A6414] dark:text-[#E8C468]">
+                          <AlertTriangle size={14} /> Margem apertada
+                        </p>
+                      ))}
+                  </div>
+
+                  <div className="mt-3 flex justify-end">
+                    <Button type="button" variant="ghost" onClick={handleSaveRecipe} loading={recipeSaving}>
+                      Salvar ficha técnica
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
+          )}
         </form>
       </Modal>
 
