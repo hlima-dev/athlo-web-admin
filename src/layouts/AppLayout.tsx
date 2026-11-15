@@ -350,7 +350,7 @@ export function AppLayout() {
   const menuRef = useRef<HTMLDivElement>(null)
 
   const user = getStoredUser()
-  const organization = getStoredOrganization()
+  const [organization, setOrganization] = useState(() => getStoredOrganization())
   const isPlatformAdmin = !!user?.isPlatformAdmin
   const canViewAudit = user?.orgRole === 'OWNER' || user?.orgRole === 'ADMIN'
   const [unresolvedErrorCount, setUnresolvedErrorCount] = useState(0)
@@ -362,6 +362,16 @@ export function AppLayout() {
         setEnabledModules(new Set(permissions.filter((p) => p.enabled).map((p) => p.module)))
       })
       .catch(() => {})
+  }, [])
+
+  // Reflete na hora o nome da empresa editado em Configurações, sem
+  // precisar trocar de empresa ou dar F5 (ver updateStoredOrganization).
+  useEffect(() => {
+    function handleOrganizationUpdated() {
+      setOrganization(getStoredOrganization())
+    }
+    window.addEventListener('athlo:organization-updated', handleOrganizationUpdated)
+    return () => window.removeEventListener('athlo:organization-updated', handleOrganizationUpdated)
   }, [])
 
   const meta = pageTitles[location.pathname] ?? { title: 'ATHLO', subtitle: 'Gestão' }
