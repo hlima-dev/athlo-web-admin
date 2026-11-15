@@ -16,6 +16,8 @@ export interface Event {
   createdBy?: { id: string; name: string };
   assignedTo?: { id: string; name: string } | null;
   reminderSentAt?: string | null;
+  recurrenceId?: string | null;
+  recurrence?: { active: boolean } | null;
 }
 
 export interface EventsSummary {
@@ -44,6 +46,16 @@ export async function updateEvent(id: string, data: Record<string, unknown>) {
 
 export async function deleteEvent(id: string) {
   const response = await api.delete(`/events/${id}`);
+  return response.data;
+}
+
+export async function makeEventRecurring(id: string) {
+  const response = await api.post(`/events/${id}/recurrence`);
+  return response.data;
+}
+
+export async function stopEventRecurrence(id: string) {
+  const response = await api.delete(`/events/${id}/recurrence`);
   return response.data;
 }
 
