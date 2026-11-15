@@ -94,6 +94,7 @@ const originLabels: Record<Order["origin"], string> = {
   MANUAL: "Manual",
   CALLCENTER: "Call Center",
   SITE: "Site",
+  MERCADO_PAGO: "Mercado Pago",
 };
 
 const paymentMethodLabels: Record<Order["paymentMethod"], string> = {
@@ -386,7 +387,7 @@ export function Orders() {
 
   // Vem do backend, já respeitando o filtro de período/status atual — não
   // soma só os 20 pedidos carregados na página.
-  const stats = summary ?? { total: 0, open: 0, delivered: 0, revenue: 0 };
+  const stats = summary ?? { total: 0, open: 0, delivered: 0, revenue: 0, needsReview: 0 };
 
   return (
     <PageContainer>
@@ -396,6 +397,11 @@ export function Orders() {
           { label: "Em aberto", value: String(stats.open) },
           { label: "Entregues", value: String(stats.delivered) },
           { label: "Faturamento (pago)", value: toCurrency(stats.revenue) },
+          {
+            label: "A identificar",
+            value: String(stats.needsReview),
+            tone: stats.needsReview > 0 ? "warn" : "default",
+          },
         ]}
       />
 
@@ -488,7 +494,10 @@ export function Orders() {
               {orders.map((order) => (
                 <Tr key={order.id}>
                   <Td>
-                    <p className="font-medium">{order.customerName}</p>
+                    <p className="flex items-center gap-1.5 font-medium">
+                      {order.customerName}
+                      {order.needsItemReview && <Badge tone="warn">Identificar itens</Badge>}
+                    </p>
                     {order.customerPhone && (
                       <p className="text-[12px] text-muted dark:text-muted-dark">{order.customerPhone}</p>
                     )}

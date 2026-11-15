@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Save, CheckCircle2, Users, Sun, Moon } from "lucide-react";
+import { Save, CheckCircle2, Users, Sun, Moon, Link2, Copy, Unlink } from "lucide-react";
 import {
   getMyOrganization,
   updateOrganization,
@@ -43,6 +43,11 @@ export function Settings() {
   const [deleting, setDeleting] = useState(false);
   const currentUser = getStoredUser();
   const isOwner = currentUser?.orgRole === "OWNER";
+
+  const [mpForm, setMpForm] = useState({ accessToken: "", webhookSecret: "" });
+  const [mpSaving, setMpSaving] = useState(false);
+  const [mpMessage, setMpMessage] = useState("");
+  const [mpCopied, setMpCopied] = useState(false);
 
   async function load() {
     try {
@@ -95,6 +100,56 @@ export function Settings() {
     } finally {
       setSaving(false);
     }
+  }
+
+  async function handleSaveMercadoPago(e: React.FormEvent) {
+    e.preventDefault();
+    setMpMessage("");
+
+    if (!mpForm.accessToken.trim() || !mpForm.webhookSecret.trim()) {
+      setMpMessage("Preencha o Access Token e o Webhook Secret.");
+      return;
+    }
+
+    try {
+      setMpSaving(true);
+      await updateOrganization({
+        mercadoPagoAccessToken: mpForm.accessToken.trim(),
+        mercadoPagoWebhookSecret: mpForm.webhookSecret.trim(),
+      });
+      setMpForm({ accessToken: "", webhookSecret: "" });
+      setMpMessage("Integração com o Mercado Pago conectada com sucesso.");
+      await load();
+    } catch (err: unknown) {
+      setMpMessage(getErrorMessage(err, "Erro ao conectar com o Mercado Pago."));
+    } finally {
+      setMpSaving(false);
+    }
+  }
+
+  async function handleDisconnectMercadoPago() {
+    setMpMessage("");
+    try {
+      setMpSaving(true);
+      await updateOrganization({ mercadoPagoAccessToken: null, mercadoPagoWebhookSecret: null });
+      setMpForm({ accessToken: "", webhookSecret: "" });
+      setMpMessage("Integração com o Mercado Pago desconectada.");
+      await load();
+    } catch (err: unknown) {
+      setMpMessage(getErrorMessage(err, "Erro ao desconectar o Mercado Pago."));
+    } finally {
+      setMpSaving(false);
+    }
+  }
+
+  function handleCopyWebhookUrl(url: string) {
+    navigator.clipboard
+      .writeText(url)
+      .then(() => {
+        setMpCopied(true);
+        setTimeout(() => setMpCopied(false), 2000);
+      })
+      .catch(() => {});
   }
 
   async function handleChangePlan(slug: string) {
@@ -152,6 +207,9 @@ export function Settings() {
   }
 
   const currentPlanSlug = organization?.subscription?.plan?.slug;
+  const mercadoPagoWebhookUrl = organization
+    ? `${import.meta.env.VITE_API_URL ?? ""}/api/v1/webhooks/mercadopago/${organization.id}`
+    : "";
 
   return (
     <PageContainer>
@@ -323,6 +381,78 @@ export function Settings() {
           )}
         </div>
       </Card>
+
+      {isOwner && (
+        <Card>
+          <CardHeader
+            title="Integração Mercado Pago"
+            subtitle="PIX recebido na sua conta gera um pedido automático (pago, pendente de identificar os itens)."
+            action={
+              organization?.mercadoPagoConnected ? (
+                <span className="inline-flex items-center gap-1.5 text-[12.5px] font-medium text-forest-600 dark:text-forest-400">
+                  <CheckCircle2 size={14} /> Conectado
+                </span>
+              ) : undefined
+            }
+          />
+          <div className="p-5">
+            {mpMessage && (
+              <p className="mb-4 rounded-md bg-forest-100 px-3.5 py-2.5 text-[12.5px] text-forest-600 dark:bg-forest-900 dark:text-forest-400">
+                {mpMessage}
+              </p>
+            )}
+
+            <Field
+              label="URL do webhook"
+              className="mb-4"
+              hint="Cole essa URL no painel do Mercado Pago (Suas integrações → Webhooks) depois de salvar o Access Token e o Webhook Secret abaixo."
+            >
+              <div className="flex gap-2">
+                <input className={inputClass} value={mercadoPagoWebhookUrl} readOnly />
+                <Button type="button" variant="ghost" onClick={() => handleCopyWebhookUrl(mercadoPagoWebhookUrl)}>
+                  <Copy size={15} />
+                  {mpCopied ? "Copiado!" : "Copiar"}
+                </Button>
+              </div>
+            </Field>
+
+            <form onSubmit={handleSaveMercadoPago} className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <Field label="Access Token" hint="Encontrado em Suas integrações → Credenciais, na sua conta Mercado Pago.">
+                <input
+                  type="password"
+                  className={inputClass}
+                  value={mpForm.accessToken}
+                  onChange={(e) => setMpForm({ ...mpForm, accessToken: e.target.value })}
+                  placeholder={organization?.mercadoPagoConnected ? "••••••••••••" : "APP_USR-..."}
+                />
+              </Field>
+
+              <Field label="Webhook Secret" hint="Chave secreta mostrada junto com a configuração do webhook.">
+                <input
+                  type="password"
+                  className={inputClass}
+                  value={mpForm.webhookSecret}
+                  onChange={(e) => setMpForm({ ...mpForm, webhookSecret: e.target.value })}
+                  placeholder={organization?.mercadoPagoConnected ? "••••••••••••" : ""}
+                />
+              </Field>
+
+              <div className="flex items-end gap-2.5 sm:col-span-2">
+                <Button type="submit" loading={mpSaving}>
+                  <Link2 size={16} />
+                  {organization?.mercadoPagoConnected ? "Atualizar credenciais" : "Conectar"}
+                </Button>
+                {organization?.mercadoPagoConnected && (
+                  <Button type="button" variant="ghost" disabled={mpSaving} onClick={handleDisconnectMercadoPago}>
+                    <Unlink size={15} />
+                    Desconectar
+                  </Button>
+                )}
+              </div>
+            </form>
+          </div>
+        </Card>
+      )}
 
       <section className="grid grid-cols-1 gap-6 xl:grid-cols-2">
         <Card>
